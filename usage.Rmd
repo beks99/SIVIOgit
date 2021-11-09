@@ -13,7 +13,7 @@ library(kableExtra)
 ```
 
 ```{r}
-data = read.csv(file = "~/SIVIO/clean_financial_inclusion.csv")
+data = read.csv(file = "~/SIVIOgit/clean_financial_inclusion.csv")
 ```
 
 # levels of inclusion.
@@ -62,7 +62,7 @@ Nothing from this section of the survey
 
 - frequency_bank_account == "I have never used it." ~ 0
 
-```{r}
+```{r echo=FALSE}
 data %>%
   select(all_of(level), 
          bank_account, frequency_bank_account) %>%
@@ -118,7 +118,7 @@ Scoring
 
 - number_services == 1 ~ 1
 
-```{r}
+```{r echo=FALSE}
 data %>%
   select(all_of(level), 
          bank_account, 
@@ -154,7 +154,7 @@ data %>%
 
 ### successful bids on sme auction
 
-```{r}
+```{r echo=FALSE}
 data %>%
   select(all_of(level), 
          foreign_currency, sme_foreign_exchange_auction, successful_bids) %>%
@@ -186,7 +186,7 @@ Will need to add that component!!!
 
 Can discriminates against a newer business
 
-```{r}
+```{r echo=FALSE}
 data %>%
   select(all_of(level), 
          commercial_loan_application, number_commercial_loan_applications_12months, number_commercial_loan_applications_4years) %>%
@@ -218,7 +218,7 @@ data %>%
 
 ### Successful loan application
 
-```{r}
+```{r echo=FALSE}
 # 12 months
 success_loan_12months = data %>%
   select(all_of(level), 
@@ -263,7 +263,7 @@ success_loan %>%
 
 ### Service loan
 
-```{r}
+```{r echo=FALSE}
 # 12months
 service_loan_12months = data %>%
   select(all_of(level), 
@@ -320,7 +320,7 @@ Scoring
 
 Filter out any values above 100 as not interpreted correctly.
 
-```{r}
+```{r echo=FALSE}
 interest_12months = data %>%
   select(all_of(level),
          number_commercial_loan_applications_12months, interest_rate_commercial_loan_12months) %>%
@@ -381,7 +381,7 @@ Number of months... currently prioritises to pay back in a year... but maybe inv
 
 - Payback <= 12 ~ 3
 
-```{r}
+```{r echo=FALSE}
 payback_12months = data %>%
   select(all_of(level),
          number_commercial_loan_applications_12months, payback_commercial_loan_12months_months) %>%
@@ -462,7 +462,7 @@ Scoring
 
 - number_services == 1 ~ 1
 
-```{r}
+```{r echo=FALSE}
 data %>%
   select(all_of(level),
          other_finance_institutions, 
@@ -514,7 +514,7 @@ Informal
 - Local based family and friends (X.105)
 - Remittances from family and friends outside Zimbabwe (X.106)
 
-```{r}
+```{r echo=FALSE}
 data %>% select(all_of(level),
                 other_finance_institutions, 
                 loan_other_5years, X.97, X.98, X.99, X.100, X.101, X.102, X.103, X.104, X.105, X.106, X.107, X.108) %>%
@@ -552,7 +552,7 @@ data %>%
 
 ### Interest Rate
 
-```{r}
+```{r echo=FALSE}
 # clean up as characters with %
 
 data %>%
@@ -579,7 +579,7 @@ data %>%
 
 ### Payback Period
 
-```{r}
+```{r echo=FALSE}
 data %>%
   select(all_of(level),
          X.108, payback_loan_other_5years) %>%
@@ -615,7 +615,7 @@ data %>%
 
 Of those who have insurance have comprehensive insurance, staff insurance and/or product insurance
 
-```{r}
+```{r echo=FALSE}
 insurance_12months = data %>%
   select(all_of(level),
          insurance_business_products, insurance_12months, X.110, X.111, X.112, X.113, X.114, X.115) %>%
@@ -690,7 +690,7 @@ Nothing in this section
 
 - frequency_mobile_money == "Never" ~ 0,
 
-```{r}
+```{r echo=FALSE}
 data %>%
   select(all_of(level), 
          mobile_money_account, frequency_mobile_money) %>%
@@ -718,7 +718,7 @@ data %>%
 
 of those who have a mobile money account, have received a loan
 
-```{r}
+```{r echo=FALSE}
 loan_mm = data %>%
   select(all_of(level), mobile_money_account, loan_mobile_platform, loan_MM_logic) %>%
   filter(mobile_money_account == "Yes") %>%

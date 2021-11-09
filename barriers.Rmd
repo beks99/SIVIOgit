@@ -13,7 +13,7 @@ library(kableExtra)
 ```
 
 ```{r}
-data = read.csv(file = "~/SIVIO/clean_financial_inclusion.csv")
+data = read.csv(file = "~/SIVIOgit/clean_financial_inclusion.csv")
 ```
 
 # levels of inclusion.
@@ -32,6 +32,11 @@ This can be used to compare across the different measures.
 level = c("province")
 ```
 
+```{r}
+provincial_totals = c(128,155,151,111,125,161,154,144,134,125)
+```
+
+
 # Penetration Barriers
 
 ## Business characteristics
@@ -44,7 +49,7 @@ level = c("province")
 
 ### Knowledge, Finance/Affordability, Complicated law, Bureaucracy
 
-```{r}
+```{r echo=FALSE}
 register = data %>%
   select(all_of(level), 
          registered, reason_not_registered) %>%
@@ -73,7 +78,7 @@ register %>%
   kable_styling()
 ```
 
-```{r}
+```{r echo=FALSE}
 zimra = data %>%
   select(all_of(level), 
          zimra_registration, reason_not_zimra) %>%
@@ -123,7 +128,7 @@ zimra %>%
 
 ### Knowledge, legal standing, finance, Complicated law, trust
 
-```{r}
+```{r echo=FALSE}
 bank_account = data %>%
   select(all_of(level), 
          bank_account, reason_no_bank_account) %>%
@@ -170,7 +175,7 @@ bank_account %>%
   kable_styling()
 ```
 
-```{r}
+```{r echo=FALSE}
 sme_auction = data %>%
   select(all_of(level), 
          sme_foreign_exchange_auction, reason_not_sme_auction) %>%
@@ -215,7 +220,7 @@ sme_auction %>%
 
 ## Loans
 
-```{r}
+```{r echo=FALSE}
 commercial_loan = data %>%
   select(all_of(level), 
          commercial_loan_application, reason_not_apply_commercial_loan) %>%
@@ -262,7 +267,7 @@ commercial_loan %>%
 
 ## Insurance
 
-```{r}
+```{r echo=FALSE}
 business_insurance = data %>%
   select(all_of(level), 
          insurance_business_products, reason_no_insurance_products_services) %>%
@@ -315,7 +320,7 @@ business_insurance %>%
 
 ## Pensions
 
-```{r}
+```{r echo=FALSE}
 pension = data %>%
   select(all_of(level), 
          pension_policy, reason_no_pension_policy) %>%
@@ -366,7 +371,7 @@ pension %>%
 
 ## Mobile Money
 
-```{r}
+```{r echo=FALSE}
 mobile_money = data %>%
   select(all_of(level), 
          mobile_money_account, reason_no_mobile_money_account) %>%
@@ -411,7 +416,7 @@ mobile_money %>%
 
 ## Savings facility
 
-```{r}
+```{r echo=FALSE}
 investments = data %>%
   select(all_of(level), 
          investments, reason_no_investments) %>%
@@ -456,7 +461,54 @@ investments %>%
 
 ## Access to information
 
-Knowledge score
+
+## Combine into 8 measures
+
+```{r echo=FALSE}
+reasons = 
+  register %>% select(all_of(level), knowledge_register, finance_register, law_register, bureaucracy_register) %>%
+  full_join((zimra %>% select(all_of(level), knowledge_zimra, finance_zimra, inflation_zimra, law_zimra, bureaucracy_zimra)), 
+            by = all_of(level)) %>%
+  full_join((bank_account %>% select(all_of(level), documentation_account, legal_account, finance_account, trust_account, bureaucracy_account, inappropriate_account)),
+            by = all_of(level)) %>%
+  full_join((sme_auction %>% select(all_of(level), knowledge_sme, legal_sme, law_sme, trust_sme, inappropriate_sme)),
+            by = all_of(level)) %>%
+  full_join((commercial_loan %>% select(all_of(level), knowledge_commercial_loan, documentation_commercial_loan,legal_commercial_loan,finance_commercial_loan,inappropriate_commercial_loan)),
+            by = all_of(level)) %>%
+  full_join((business_insurance %>% select(all_of(level), knowledge_insurance,legal_insurance,finance_insurance,inflation_insurance, law_insurance,trust_insurance,inappropriate_insurance)),
+            by = all_of(level)) %>%
+  full_join((pension %>% select(all_of(level), knowledge_pensions,finance_pensions, inflation_pensions, law_pensions,trust_pensions,inappropriate_pensions)),
+            by = all_of(level)) %>%
+  full_join((mobile_money %>% select(all_of(level), documentation_mobile,finance_mobile,trust_mobile,bureaucracy_mobile)),
+            by = all_of(level)) %>%
+  full_join((investments %>% select(all_of(level),knowledge_investments, finance_investments, inflation_investments)),
+            by = all_of(level))
+
+
+barrier_reasons = reasons %>%
+  mutate(knowledge = rowMeans(reasons[, 
+                                      c("knowledge_register", "knowledge_zimra", "knowledge_sme", "knowledge_commercial_loan", "knowledge_insurance", "knowledge_pensions", "knowledge_investments")]),
+         documentation = rowMeans(reasons[, 
+                                          c("documentation_account", "documentation_commercial_loan", "documentation_mobile")]),
+         legal = rowMeans(reasons[, 
+                                  c("legal_account", "legal_sme", "legal_commercial_loan", "legal_insurance")]),
+         finance = rowMeans(reasons[, 
+                                    c("finance_register", "finance_zimra", "finance_account", "finance_commercial_loan", "finance_insurance", "finance_pensions", "finance_mobile", "finance_investments")]),
+         inflation = rowMeans(reasons[,
+                                      c("inflation_zimra", "inflation_insurance", "inflation_pensions", "inflation_investments")]),
+         law = rowMeans(reasons[, 
+                                c("law_register", "law_zimra", "law_sme", "law_insurance", "law_pensions")]),
+         trust = rowMeans(reasons[, 
+                                  c("trust_account", "trust_sme", "trust_insurance", "trust_pensions", "trust_mobile")]),
+         bureaucracy = rowMeans(reasons[, 
+                                        c("bureaucracy_register", "bureaucracy_zimra", "bureaucracy_account", "bureaucracy_mobile")]),
+         inappropraite = rowMeans(reasons[, 
+                                          c("inappropriate_account", "inappropriate_sme", "inappropriate_commercial_loan", "inappropriate_insurance", "inappropriate_pensions")]),
+         )
+
+```
+
+## Knowledge score
 
 - Very good: 5
 
@@ -470,9 +522,9 @@ Knowledge score
 
 - I don't know anything: 0
 
-```{r}
+```{r echo=FALSE}
 # Knowledge score... each out of 5
-data %>%
+knowledge_score = data %>%
   select(all_of(level),
          knowledge_banking_services, knowledge_mobile_money_services, knowledge_investements_capital_markets,
          knowledge_business_insurance_products, knowledge_pension_products, knowledge_loans_credit_commercial_banks,
@@ -572,85 +624,70 @@ data %>%
   ) %>%
   group_by(across(all_of(level))) %>%
   summarise_if(is.numeric, sum) %>%
-  mutate(responses = c(128,155,151,111,121,161,154,142,134,125),
-         max_score = (5*(responses-not_answered))*9)
-```
+  mutate(responses = provincial_totals)
 
+knowledge_score$not_answered = rowSums(knowledge_score[, c("not_answered_banking", "not_answered_mobile", "not_answered_investments",
+                                                           "not_answered_insurance", "not_answered_pensions", "not_answered_commercial_loan",
+                                                           "not_answered_mfi_loan", "not_answered_rosal_loan", "not_answered_tax")])
 
-## Combine into 8 measures
+knowledge_score$score = rowSums(knowledge_score[, c("knowledge_banking_services", "knowledge_mobile_money_services", "knowledge_investements_capital_markets",
+         "knowledge_business_insurance_products", "knowledge_pension_products", "knowledge_loans_credit_commercial_banks",
+         "knowledge_loans_credit_microfinance", "knowledge_loans_credit_roscas_isals", "knowledge_taxation_regulations")])
 
-```{r}
-reasons = 
-  register %>% select(all_of(level), knowledge_register, finance_register, law_register, bureaucracy_register) %>%
-  full_join((zimra %>% select(all_of(level), knowledge_zimra, finance_zimra, inflation_zimra, law_zimra, bureaucracy_zimra)), 
-            by = all_of(level)) %>%
-  full_join((bank_account %>% select(all_of(level), documentation_account, legal_account, finance_account, trust_account, bureaucracy_account, inappropriate_account)),
-            by = all_of(level)) %>%
-  full_join((sme_auction %>% select(all_of(level), knowledge_sme, legal_sme, law_sme, trust_sme, inappropriate_sme)),
-            by = all_of(level)) %>%
-  full_join((commercial_loan %>% select(all_of(level), knowledge_commercial_loan, documentation_commercial_loan,legal_commercial_loan,finance_commercial_loan,inappropriate_commercial_loan)),
-            by = all_of(level)) %>%
-  full_join((business_insurance %>% select(all_of(level), knowledge_insurance,legal_insurance,finance_insurance,inflation_insurance, law_insurance,trust_insurance,inappropriate_insurance)),
-            by = all_of(level)) %>%
-  full_join((pension %>% select(all_of(level), knowledge_pensions,finance_pensions, inflation_pensions, law_pensions,trust_pensions,inappropriate_pensions)),
-            by = all_of(level)) %>%
-  full_join((mobile_money %>% select(all_of(level), documentation_mobile,finance_mobile,trust_mobile,bureaucracy_mobile)),
-            by = all_of(level)) %>%
-  full_join((investments %>% select(all_of(level),knowledge_investments, finance_investments, inflation_investments)),
-            by = all_of(level))
-
-
-reasons %>%
-  mutate(knowledge = rowMeans(reasons[, 
-                                      c("knowledge_register", "knowledge_zimra", "knowledge_sme", "knowledge_commercial_loan", "knowledge_insurance", "knowledge_pensions", "knowledge_investments")]),
-         documentation = rowMeans(reasons[, 
-                                          c("documentation_account", "documentation_commercial_loan", "documentation_mobile")]),
-         legal = rowMeans(reasons[, 
-                                  c("legal_account", "legal_sme", "legal_commercial_loan", "legal_insurance")]),
-         finance = rowMeans(reasons[, 
-                                    c("finance_register", "finance_zimra", "finance_account", "finance_commercial_loan", "finance_insurance", "finance_pensions", "finance_mobile", "finance_investments")]),
-         inflation = rowMeans(reasons[,
-                                      c("inflation_zimra", "inflation_insurance", "inflation_pensions", "inflation_investments")]),
-         law = rowMeans(reasons[, 
-                                c("law_register", "law_zimra", "law_sme", "law_insurance", "law_pensions")]),
-         trust = rowMeans(reasons[, 
-                                  c("trust_account", "trust_sme", "trust_insurance", "trust_pensions", "trust_mobile")]),
-         bureaucracy = rowMeans(reasons[, 
-                                        c("bureaucracy_register", "bureaucracy_zimra", "bureaucracy_account", "bureaucracy_mobile")]),
-         inappropraite = rowMeans(reasons[, 
-                                          c("inappropriate_account", "inappropriate_sme", "inappropriate_commercial_loan", "inappropriate_insurance", "inappropriate_pensions")]),
+knowledge_score_final = knowledge_score %>%
+  mutate(max_score = (5* (responses - not_answered)) * 9,
+         score_value = score / max_score
          )
 
+knowledge_score_final %>%
+  kable() %>%
+  kable_styling()
+```
+
+```{r}
+barriers_critera = data %>%
+  group_by(across(all_of(level))) %>%
+  summarise(n=n()) %>%
+  full_join(y = (barrier_reasons %>% select(all_of(level), knowledge, documentation, legal, finance, inflation, law, trust, bureaucracy, inappropraite)), by = all_of(level)) %>%
+  full_join(y = (knowledge_score_final %>% select(all_of(level), score_value)))
+
+barriers_critera %>%
+  kable() %>%
+  kable_styling()
 ```
 
 
 ```{r}
-data %>%
-  select(
-    # characteristics
-    
-    # registration
-    
-    # banking
-    barriers_use_bank_account,
-    restrictions_bank_account,
-    
-    # loans
-    reason_rejected_commercial_loan_12months,
-    
-    # other financial institutions
-    
-    # insurance
-    
-    # pensions
-    
-    # mobile money
-    barriers_use_mobile_money,
-    restrictions_use_mobile_money,
-    
-    # investments
-    
-    # access to information
-    
-  )
+write.csv(barriers_critera, file = "~/SIVIOgit/barriers_criteria.csv")
+```
+
+```{r}
+# data %>%
+#   select(
+#     # characteristics
+#     
+#     # registration
+#     
+#     # banking
+#     barriers_use_bank_account,
+#     restrictions_bank_account,
+#     
+#     # loans
+#     reason_rejected_commercial_loan_12months,
+#     
+#     # other financial institutions
+#     
+#     # insurance
+#     
+#     # pensions
+#     
+#     # mobile money
+#     barriers_use_mobile_money,
+#     restrictions_use_mobile_money,
+#     
+#     # investments
+#     
+#     # access to information
+#     
+#   )
 ```

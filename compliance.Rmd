@@ -1,0 +1,114 @@
+---
+title: "compliance"
+author: "Beks"
+date: "11/9/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(kableExtra)
+```
+
+```{r}
+data = read.csv(file = "~/SIVIOgit/clean_financial_inclusion.csv")
+```
+
+
+# levels of inclusion.
+
+This can be used to compare across the different measures.
+
+```{r}
+# "province",
+# "gender_inclusion", 
+# "location_inclusion", 
+# "size_inclusion",
+# "age_inclusion",
+# "formality_inclusion",
+# "sector_inclusion"
+
+level = c("province")
+```
+
+```{r}
+# 2 possible criteria
+
+# "registered_value",
+# "zimra_value","
+
+criteria = c(
+  "registered_value",
+  "zimra_value")
+```
+
+## Registration
+
+### Registration
+
+IS your business registered?
+
+```{r echo=FALSE}
+registered = data %>%
+  select(all_of(level),
+         registered, registration_logic) %>%
+  mutate(not_answered = ifelse(registered == "", 1, 0)) %>%
+  group_by(across(all_of(level))) %>%
+  summarise(not_answered_register = sum(not_answered, na.rm = T),
+            registered = sum(registration_logic, na.rm = T),
+            responses = n()) %>%
+  mutate(registered_value = registered / (responses - not_answered_register)) 
+
+registered %>%
+  kable() %>%
+  kable_styling()
+```
+
+### ZIMRA registration
+
+Of those who are registered, did they register with ZIMRA
+
+```{r echo=FALSE}
+zimra = data %>%
+  select(all_of(level),
+         zimra_registration, zimra_register_logic, registered) %>%
+  mutate(not_answered = ifelse(registered == "Yes" & zimra_registration == "", 1, 0)) %>%
+  group_by(across(all_of(level))) %>%
+  summarise(not_answered_zimra_register = sum(not_answered, na.rm = T),
+            zimra_registered = sum(zimra_register_logic, na.rm = T),
+            responses = n()) %>%
+  mutate(zimra_value = zimra_registered / (responses - not_answered_zimra_register)) 
+
+zimra %>%
+  kable() %>%
+  kable_styling()
+```
+
+## Final Table
+
+```{r echo=FALSE}
+# 2 criteria
+compliance_critera = data %>%
+  group_by(across(all_of(level))) %>%
+  summarise(n=n()) %>%
+  full_join(y = (registered %>% select(all_of(level), registered_value)), by = all_of(level)) %>%
+  full_join(y = (zimra %>% select(all_of(level), zimra_value)), by = all_of(level))
+
+compliance_critera$compliance_score = rowSums(compliance_critera[, c(
+  all_of(criteria))])
+
+compliance_critera$compliance_normalise = (compliance_critera$compliance_score / 2)
+
+compliance_critera$compliance_percentage = round((compliance_critera$compliance_normalise * 100),2)
+
+compliance_critera %>%
+  kable() %>%
+  kable_styling()
+```
+
+```{r}
+write.csv(compliance_critera, file = "~/SIVIOgit/compliance_criteria.csv")
+```
+
