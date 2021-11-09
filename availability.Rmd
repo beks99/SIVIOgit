@@ -1,0 +1,943 @@
+---
+title: "availability"
+author: "Beks"
+date: "10/22/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(kableExtra)
+```
+
+```{r include=FALSE}
+data = read.csv(file = "~/SIVIO/clean_financial_inclusion.csv")
+```
+
+# levels of inclusion.
+
+This can be used to compare across the different measures.
+
+```{r}
+# "province",
+# "gender_inclusion", 
+# "location_inclusion", 
+# "size_inclusion",
+# "age_inclusion",
+# "formality_inclusion",
+# "sector_inclusion"
+
+level = c("province")
+```
+
+```{r}
+# 20 possible criteria
+
+# "funds_start_value",
+# "funds_ongoing_value",
+# "registered_value",
+# "zimra_value",
+# "bank_account_value",
+# "time_open_bank_value",
+# "sme_auction_value",
+# "commercial_loan_apply_value",
+# "time_approval_commercial_value",
+# "collateral_commercial_value",
+# "other_financial_value",
+# "time_approval_other_value",
+# "collateral_other_value",
+# "insurance_value",
+# "pension_value",
+# "mm_account_value",
+# "time_open_mm_value",
+# "insurance_mm_value",
+# "savings_facility_value",
+# "advice_sources_value"
+
+criteria = c(
+  "funds_start_value",
+  "funds_ongoing_value",
+  "registered_value",
+  "zimra_value",
+  "bank_account_value",
+  "time_open_bank_value",
+  "sme_auction_value",
+  "commercial_loan_apply_value",
+  "time_approval_commercial_value",
+  "collateral_commercial_value",
+  "other_financial_value",
+  "time_approval_other_value",
+  "collateral_other_value",
+  "insurance_value",
+  "pension_value",
+  "mm_account_value",
+  "time_open_mm_value",
+  "insurance_mm_value",
+  "savings_facility_value",
+  "advice_sources_value")
+```
+
+# Availability
+
+This section consists of **20** criteria
+
+### funds start
+
+Where generally get funds to start business
+
+Informal vs formal vs both
+
+- Formal (MFI, Bank, Order finance, Rotating and Savings group, Local NGO, Credit Union, Government assiatnce program, International org through a grant, fellow business colleagues)
+
+- Informal (personal savings, loan sharks, loaccly based family and friends, remittances from family or friends outside Zimbabwe)
+
+- Both
+
+Will just look at % who got their funds from a formal source irregardless of whether they got funds from an informal source.
+
+```{r echo=FALSE}
+funds_start = data %>%
+  # columns with the details of this question... can select multiple
+  select(all_of(level), 
+         funds_start, # Personal savings (from salary or other business initiatives)
+         X.25, #        Micro finance institution
+         X.26, #        Banks
+         X.27, #        Order finance companies
+         X.28, #        Rotating and savings groups
+         X.29, #        Local NGOs
+         X.30, #        Loan sharks (chimbadzo)
+         X.31, #        Credit unions
+         X.32, #        Government assistance programs
+         X.33, #        International organization through a grant
+         X.34, #        Locally based Family and friends
+         X.35, #        Remittances from family or friends outside Zimbabwe
+         X.36, #        Fellow business colleagues
+         X.37 #         Other
+         ) %>%
+  # section off informal, formal sources of funds
+  mutate(X.27 = as.character(X.27),
+         informal_start = ifelse((funds_start != "" | X.30 != "" | X.34 != "" | X.35 != ""), 1, 0),
+         formal_start = ifelse((X.25 != "" | X.26 != "" | X.27 != "" | is.na(X.27) | X.28 != "" | X.29 != "" | 
+                                  X.31 != "" | X.32 != "" | X.33 != "" | X.36 != ""), 1, 0),
+         
+         informal_funds_start = ifelse(informal_start == 1 & formal_start == 0, 1, 0),
+         formal_funds_start = ifelse(formal_start == 1 & informal_start == 0, 1,0),
+         both_informal_formal_funds_start = ifelse(informal_start == 1 & formal_start == 1, 1, 0),
+         not_answered = ifelse(informal_start == 0 & formal_start == 0, 1, 0)
+  ) %>%
+  # provincial aggregated results
+  group_by(across(all_of(level))) %>%
+  summarise(informal_funds_start = sum(informal_funds_start, na.rm = T),
+            formal_funds_start = sum(formal_funds_start, na.rm = T),
+            both_informal_formal_funds_start = sum(both_informal_formal_funds_start, na.rm =T),
+            no_answers_funds_start = sum(not_answered, na.rm = T),
+            responses = n()) %>%
+  # final figure to use in the index
+  mutate(funds_start = formal_funds_start + both_informal_formal_funds_start) %>%
+  # standardize as percentage of those answered
+  mutate(informal_funds_start = informal_funds_start / (responses - no_answers_funds_start),
+         formal_funds_start = formal_funds_start / (responses - no_answers_funds_start),
+         both_informal_formal_funds_start = both_informal_formal_funds_start / (responses - no_answers_funds_start),
+         funds_start_value = funds_start / (responses - no_answers_funds_start)) 
+
+funds_start %>%
+  kable() %>%
+  kable_styling()
+```
+
+### funds ongoing
+
+Where generally get funds for ongoing business ventures
+
+Informal vs formal vs both
+
+- Formal
+
+- Informal
+
+- Informal
+
+Again proportion that get funds from formal sources
+
+```{r echo=FALSE}
+funds_ongoing = data %>%
+  # columns with the details of this question... can select multiple
+  select(all_of(level),
+         funds_ongoing, # Personal savings (from salary or other business initiatives)
+         X.45, #        Micro finance institution
+         X.46, #        Banks
+         X.47, #        Order finance companies
+         X.48, #        Rotating and savings groups
+         X.49, #        Internal Savings and Lending Group
+         X.50, #        Local NGOs
+         X.51, #        Loan sharks (chimbadzo)
+         X.52, #        Credit unions
+         X.53, #        Government of Zimbabwe
+         X.54, #        Remittances from family or friends outside Zimbabwe
+         X.55, #        International organization through a grant
+         X.56, #        Locally based Family and friends
+         X.57, #        Fellow business colleagues
+         X.58, #        Other
+         ) %>%
+  # section off informal, formal sources of funds
+  mutate(X.49 = as.character(X.49),
+         informal_ongoing = ifelse((funds_ongoing != "" | X.51 != "" | X.54 != "" | X.56 != ""), 1, 0),
+         formal_ongoing = ifelse((X.45 != "" | X.46 != "" | X.47 != "" | X.48 != "" | X.49 != "" | is.na(X.49) | X.50 != "" | X.52 != "" | X.53 != "" | X.55 != "" | X.57 != ""), 1, 0),
+         informal_funds_ongoing = ifelse(informal_ongoing == 1 & formal_ongoing == 0, 1, 0),
+         formal_funds_ongoing = ifelse(formal_ongoing == 1 & informal_ongoing == 0, 1,0),
+         both_informal_formal_funds_ongoing = ifelse(informal_ongoing == 1 & formal_ongoing == 1, 1, 0),
+         not_answered = ifelse(informal_ongoing == 0 & formal_ongoing == 0, 1, 0)
+  ) %>%
+  # provincial aggregated results
+  group_by(across(all_of(level))) %>%
+  summarise(informal_funds_ongoing = sum(informal_funds_ongoing, na.rm = T),
+            formal_funds_ongoing = sum(formal_funds_ongoing, na.rm = T),
+            both_informal_formal_funds_ongoing = sum(both_informal_formal_funds_ongoing, na.rm =T),
+            no_answers_funds_ongoing = sum(not_answered, na.rm = T),
+            responses = n()) %>%
+  # final figure to use in the index
+  mutate(funds_ongoing = formal_funds_ongoing + both_informal_formal_funds_ongoing) %>%
+  # standardize as percentage of those answered
+  mutate(informal_funds_ongoing = informal_funds_ongoing / (responses - no_answers_funds_ongoing),
+         formal_funds_ongoing = formal_funds_ongoing / (responses - no_answers_funds_ongoing),
+         both_informal_formal_funds_ongoing = both_informal_formal_funds_ongoing / (responses - no_answers_funds_ongoing),
+         funds_ongoing_value = funds_ongoing / (responses - no_answers_funds_ongoing)) 
+
+funds_ongoing %>%
+  kable() %>%
+  kable_styling()
+```
+
+## Registration
+
+### Registration
+
+IS your business registered?
+
+```{r echo=FALSE}
+registered = data %>%
+  select(all_of(level),
+         registered, registration_logic) %>%
+  mutate(not_answered = ifelse(registered == "", 1, 0)) %>%
+  group_by(across(all_of(level))) %>%
+  summarise(not_answered_register = sum(not_answered, na.rm = T),
+            registered = sum(registration_logic, na.rm = T),
+            responses = n()) %>%
+  mutate(registered_value = registered / (responses - not_answered_register)) 
+
+registered %>%
+  kable() %>%
+  kable_styling()
+```
+
+### ZIMRA registration
+
+Of those who are registered, did they register with ZIMRA
+
+```{r echo=FALSE}
+zimra = data %>%
+  select(all_of(level),
+         zimra_registration, zimra_register_logic, registered) %>%
+  # filter(registered == "Yes") %>%
+  mutate(not_answered = ifelse(registered == "Yes" & zimra_registration == "", 1, 0)) %>%
+  group_by(across(all_of(level))) %>%
+  summarise(not_answered_zimra_register = sum(not_answered, na.rm = T),
+            zimra_registered = sum(zimra_register_logic, na.rm = T),
+            responses = n()) %>%
+  mutate(zimra_value = zimra_registered / (responses - not_answered_zimra_register)) 
+
+zimra %>%
+  kable() %>%
+  kable_styling()
+```
+
+## Banking
+
+### Bank account
+
+```{r echo=FALSE}
+bank_account = data %>%
+  select(all_of(level),
+         bank_account, bank_account_logic) %>%
+  mutate(not_answered = ifelse(bank_account == "", 1, 0)) %>%
+  group_by(across(all_of(level))) %>%
+  summarise(not_answered_bank_account = sum(not_answered, na.rm = T),
+            bank_account = sum(bank_account_logic, na.rm = T),
+            responses = n()) %>%
+  mutate(bank_account_value = bank_account / (responses - not_answered_bank_account)) 
+
+
+bank_account %>%
+  kable() %>%
+  kable_styling()
+```
+
+### Time open bank account
+
+- time_open_bank_account == "1 day /same day service" ~ 5,
+
+- time_open_bank_account == "2 to 3 days" ~ 5,
+
+- time_open_bank_account == "4 to 6 days" ~ 4,
+
+- time_open_bank_account == "7 to 10 days" ~ 3,
+
+- time_open_bank_account == "11 to 30 days" ~ 2,
+
+- time_open_bank_account == "31 days plus" ~ 1
+
+Final value is calculated as the average score and then divided by 5 so as to normalize between 0-1
+
+When displayed, it will be rounded off so as to use categories so a 4.5 = "< 3 days" a 3.2 = "7 to 10 days"
+
+```{r echo=FALSE}
+time_open_bank = data %>%
+  select(all_of(level),
+         bank_account, time_open_bank_account) %>%
+  filter(bank_account == "Yes") %>%
+  mutate(time_open = case_when(
+    time_open_bank_account == "1 day /same day service" ~ 5,
+    time_open_bank_account == "2 to 3 days" ~ 5,
+    time_open_bank_account == "4 to 6 days" ~ 4,
+    time_open_bank_account == "7 to 10 days" ~ 3,
+    time_open_bank_account == "11 to 30 days" ~ 2,
+    time_open_bank_account == "31 days plus" ~ 1,
+    TRUE ~ as.double(0)
+  )) %>%
+  filter(time_open != 0) %>%
+  group_by(across(all_of(level))) %>%
+  summarise(resposnes = n(),
+            time_open_value = mean(time_open)) %>%
+  mutate(time_open_bank_value = time_open_value / 5) 
+
+time_open_bank %>%
+  kable() %>%
+  kable_styling()
+```
+
+### SME auction
+
+- those who need foreign currency, are they registered on the SME foreign exchange auction
+
+```{r echo=FALSE}
+sme_auction = data %>%
+  select(all_of(level), 
+          sme_foreign_exchange_auction,sme_auction_logic, foreign_currency, foreign_currency_logic) %>%
+  filter(foreign_currency == "Yes") %>%
+  mutate(not_answered = ifelse(sme_foreign_exchange_auction == "", 1, 0)) %>%
+  group_by(across(all_of(level))) %>%
+  summarise(sme_foreign_exchange_auction = sum(sme_auction_logic, na.rm = T),
+            responses = n(),
+            not_answered_sme = sum(not_answered, na.rm = T)) %>%
+  mutate(sme_auction_value = sme_foreign_exchange_auction / (responses - not_answered_sme)) 
+
+sme_auction %>%
+  kable() %>%
+  kable_styling()
+```
+
+## Commercial Loans
+
+### Loan application in the past
+
+% applied for a loan in the past
+
+```{r echo=FALSE}
+commercial_loan_apply = data %>%
+  select(all_of(level),
+         commercial_loan_application, commercial_loan_application_past_logic) %>%
+  mutate(not_answered = ifelse(commercial_loan_application == "", 1, 0))%>%
+  group_by(province) %>%
+  summarise(commercial_loan_application = sum(commercial_loan_application_past_logic, na.rm = T),
+            responses = n(),
+            not_answered_commercial_loan = sum(not_answered, na.rm = T)) %>%
+  mutate(commercial_loan_apply_value = commercial_loan_application / (responses - not_answered_commercial_loan)) 
+
+commercial_loan_apply %>%
+  kable() %>%
+  kable_styling()
+```
+
+### approval time
+
+- time_approval_commercial_loan == "1 day /same day service" ~ 5,
+
+- time_approval_commercial_loan == "2 to 3 days" ~ 5,
+
+- time_approval_commercial_loan == "4 to 6 days" ~ 5,
+
+- time_approval_commercial_loan == "7 to 10 days" ~ 4,
+
+- time_approval_commercial_loan == "11 to 30 days" ~ 3,
+
+- time_approval_commercial_loan == "31 to 60 days" ~ 2,
+
+- time_approval_commercial_loan == "60 to 90 days" ~ 2,
+
+- time_approval_commercial_loan == "91 days plus" ~ 1
+
+This is calculated for 12 months, then again for the previous four years. Then averaged across the 2 groups so as to find the average for the last five years
+
+The final value is the average of the scores then divided by 5 to normalize between 0 and 1
+
+The final displayed score will be rounded off so as to land in a category
+
+```{r echo=FALSE}
+# 12 months
+time_12months = data %>%
+  select(all_of(level), 
+         commercial_loan_application,
+         number_commercial_loan_applications_12months, time_approval_commercial_loan_12months) %>%
+  filter(commercial_loan_application == "Yes") %>%
+  filter(number_commercial_loan_applications_12months != "Never" & 
+           number_commercial_loan_applications_12months != "") %>%
+  mutate(not_answered = ifelse(time_approval_commercial_loan_12months == "", 1, 0),
+         time_approval = case_when(
+           time_approval_commercial_loan_12months == "1 day /same day service" ~ 5,
+           time_approval_commercial_loan_12months == "2 to 3 days" ~ 5,
+           time_approval_commercial_loan_12months == "4 to 6 days" ~ 5,
+           time_approval_commercial_loan_12months == "7 to 10 days" ~ 4,
+           time_approval_commercial_loan_12months == "11 to 30 days" ~ 3,
+           time_approval_commercial_loan_12months == "31 to 60 days" ~ 2,
+           time_approval_commercial_loan_12months == "60 to 90 days" ~ 2,
+           time_approval_commercial_loan_12months == "91 days plus" ~ 1, 
+           TRUE ~ as.double(0)
+         ))%>%
+  filter(time_approval != 0) %>%
+  group_by(across(all_of(level))) %>%
+  summarise(time_approval_12months = mean(time_approval, na.rm = T),
+              not_answered_time_12months = sum(not_answered, na.rm = T),
+            responses = n()) %>%
+  mutate(time_approval_12months = time_approval_12months/5)
+
+# 4 years
+time_4years = data %>%
+  select(all_of(level), 
+         commercial_loan_application,
+         number_commercial_loan_applications_4years, time_approval_commercial_loan_4years) %>%
+  filter(commercial_loan_application == "Yes") %>%
+  filter(number_commercial_loan_applications_4years != "Never" & 
+           number_commercial_loan_applications_4years != "") %>%
+  mutate(not_answered = ifelse(time_approval_commercial_loan_4years == "", 1, 0),
+         time_approval = case_when(
+           time_approval_commercial_loan_4years == "1 day /same day service" ~ 5,
+           time_approval_commercial_loan_4years == "2 to 3 days" ~ 5,
+           time_approval_commercial_loan_4years == "4 to 6 days" ~ 5,
+           time_approval_commercial_loan_4years == "7 to 10 days" ~ 4,
+           time_approval_commercial_loan_4years == "11 to 30 days" ~ 3,
+           time_approval_commercial_loan_4years == "31 to 60 days" ~ 2,
+           time_approval_commercial_loan_4years == "60 to 90 days" ~ 2,
+           time_approval_commercial_loan_4years == "91 days plus" ~ 1, 
+           TRUE ~ as.double(0)
+         ))%>%
+  filter(time_approval != 0) %>%
+  group_by(across(all_of(level))) %>%
+  summarise(time_approval_4years = mean(time_approval),
+              not_answered_time_4years = sum(not_answered),
+            responses = n()) %>%
+  mutate(time_approval_4years = time_approval_4years / 5)
+
+# combine
+time_approval_commercial = time_12months %>%
+  select(all_of(level), 
+         time_approval_12months) %>%
+  full_join((time_4years %>% select(all_of(level), time_approval_4years)), by = (all_of(level)))
+
+time_approval_commercial$time_approval_commercial_value = rowMeans(time_approval_commercial[, c( "time_approval_12months" , "time_approval_4years" )])
+
+time_approval_commercial %>%
+  kable() %>%
+  kable_styling()
+```
+
+### Collateral
+
+for those who applied for a loan in the last five years, did they need collateral. "Yes" = 0, "No" = 1 ...
+
+```{r echo=FALSE}
+# 12 months
+collateral_12months = data %>%
+  select(all_of(level),
+         commercial_loan_application, number_commercial_loan_applications_12months,
+         collateral_commercial_loan_12months, collateral_commercial_loan_12months_logic) %>%
+  filter(commercial_loan_application == "Yes") %>%
+  filter(number_commercial_loan_applications_12months != "" & number_commercial_loan_applications_12months != "Never") %>%
+  mutate(not_answered = ifelse(collateral_commercial_loan_12months == "", 1, 0)) %>%
+  group_by(across(all_of(level))) %>%
+  summarise(collateral_commercial_loan_12months = sum(collateral_commercial_loan_12months_logic, na.rm = T),
+            not_answered_collateral_12months = sum(not_answered),
+            responses = n()) %>%
+  mutate(collateral_commercial_loan_12months = collateral_commercial_loan_12months / (responses - not_answered_collateral_12months))
+
+# 4 years
+collateral_4years = data %>%
+  select(all_of(level), 
+         commercial_loan_application, number_commercial_loan_applications_4years,
+         collateral_commercial_loan_4years, collateral_commercial_loan_4years_logic) %>%
+  filter(commercial_loan_application == "Yes") %>%
+  filter(number_commercial_loan_applications_4years != "" & number_commercial_loan_applications_4years != "Never") %>%
+  mutate(not_answered = ifelse(collateral_commercial_loan_4years == "", 1, 0)) %>%
+  group_by(across(all_of(level))) %>%
+  summarise(collateral_commercial_loan_4years = sum(collateral_commercial_loan_4years_logic, na.rm = T),
+            not_answered_collateral_12months = sum(not_answered),
+            responses = n()) %>%
+  mutate(collateral_commercial_loan_4years = collateral_commercial_loan_4years / (responses - not_answered_collateral_12months))
+
+# combine
+collateral_commercial = collateral_12months %>%
+  select(all_of(level),
+         collateral_commercial_loan_12months) %>%
+  full_join((collateral_4years %>% select(all_of(level), collateral_commercial_loan_4years)), by = (all_of(level)))
+
+collateral_commercial$collateral_commercial_value = rowMeans(collateral_commercial[, c("collateral_commercial_loan_12months", "collateral_commercial_loan_4years")], na.rm = T)
+
+collateral_commercial %>%
+  kable() %>%
+  kable_styling()
+```
+
+## other financial services
+
+### Relationship with other financial services
+
+Those who have a relationship with a another financial service
+
+```{r echo=FALSE}
+other_financial = data %>%
+  select(all_of(level),
+         other_finance_institutions, other_finance_institutions_logic) %>%
+  mutate(not_answered = ifelse(other_finance_institutions == "", 1, 0)) %>%
+  group_by(across(all_of(level))) %>%
+  summarise(other_finance_institutions = sum(other_finance_institutions_logic),
+            responses = n(),
+            not_answered_other_financial = sum(not_answered)) %>%
+  mutate(other_financial_value = other_finance_institutions / (responses - not_answered_other_financial)) 
+
+other_financial %>%
+  kable() %>%
+  kable_styling()
+```
+
+### time approval for loan over last 5 years
+
+- time_approval_loan == "1 day /same day service" ~ 5,
+
+- time_approval_loan == "2 to 3 days" ~ 5,
+
+- time_approval_loan == "4 to 6 days" ~ 5,
+
+- time_approval_loan == "7 to 10 days" ~ 4,
+
+- time_approval_loan == "11 to 30 days" ~ 3,
+
+- time_approval_loan == "31 to 60 days" ~ 2,
+
+- time_approval_loan == "60 to 90 days" ~ 2,
+
+- time_approval_loan == "91 days plus" ~ 1
+
+Averaged for 12 months and previous 4 years
+
+```{r echo=FALSE}
+time_approval_other = data %>%
+  select(all_of(level), 
+         time_approval_loan_other_5years,
+         loan_other_5years, X.97, X.98, X.99, X.100, X.101, X.102, X.103, X.104, X.105, X.106, X.107, X.108) %>%
+  filter(X.108 == "") %>% # none of the above
+  mutate(formal_loan_other = case_when(
+           loan_other_5years != "" ~ 1, # micro finance
+           X.97 != "" ~ 1, # order finance companies
+           X.98 != "" ~ 1, # Money clubs 
+           X.100 != "" ~ 1, # credit unions
+           X.101 != "" ~ 1, # fellow business colleagues
+           X.102 != "" ~ 1, # local ngo
+           X.103 != "" ~ 1, # government of Zimbabwe
+           X.104 != "" ~ 1, # international org through grant
+           X.107 != "" ~ 1, # fellow business colleagues
+           TRUE ~ as.double(0)),
+         informal_loan_other = case_when(
+           X.99 != "" ~ 1, # loan sharks
+           X.105 != "" ~ 1, # local family/friends
+           X.106 != "" ~ 1, # remittances
+           TRUE ~ as.double(0)),
+         other_loan_source = case_when(
+           informal_loan_other == 1 & formal_loan_other == 0 ~ "informal",
+           formal_loan_other == 1 & informal_loan_other == 0 ~ "fomal",
+           informal_loan_other == 1 & formal_loan_other == 1 ~ "both",
+           TRUE ~ as.character("not answered")
+           ),
+         not_answered = ifelse(formal_loan_other == 0 & informal_loan_other == 0, 1, 0),
+         time_approval = case_when(
+           time_approval_loan_other_5years == "1 day /same day service" ~ 5,
+           time_approval_loan_other_5years == "2 to 3 days" ~ 5,
+           time_approval_loan_other_5years == "4 to 6 days" ~ 5,
+           time_approval_loan_other_5years == "7 to 10 days" ~ 4,
+           time_approval_loan_other_5years == "11 to 30 days" ~ 3,
+           time_approval_loan_other_5years == "31 to 60 days" ~ 2,
+           time_approval_loan_other_5years == "60 to 90 days" ~ 2,
+           time_approval_loan_other_5years == "91 days plus" ~ 1, 
+           TRUE ~ as.double(0))
+         ) %>%
+  filter(not_answered == 0) %>%
+  filter(time_approval != 0) %>%
+  group_by(across(all_of(level))) %>%
+  summarise(time_approval_loan_other_5years = mean(time_approval),
+            not_answered_time_other = sum(not_answered),
+            responses = n()) %>%
+  mutate(time_approval_other_value = time_approval_loan_other_5years / 5) 
+
+time_approval_other %>%
+  kable() %>%
+  kable_styling()
+```
+
+#### Formal, informal sources
+
+Formal sources of loans
+
+- micro finance institution
+
+- order finance
+
+- money clubs
+
+- credit unions
+
+- fellow business colleagues
+
+- local NGO
+
+- government of Zimbabwe
+
+- international grant
+
+Informal sources
+
+- loan sharks
+
+- local family/friends
+
+- remittances
+
+```{r echo=FALSE}
+# data %>%
+#   select(all_of(level),
+#          time_approval_loan_other_5years,
+#          loan_other_5years, X.97, X.98, X.99, X.100, X.101, X.102, X.103, X.104, X.105, X.106, X.107, X.108) %>%
+#   filter(X.108 == "") %>% # none of the above
+#   mutate(formal_loan_other = case_when(
+#            loan_other_5years != "" ~ 1, # micro finance
+#            X.97 != "" ~ 1, # order finance companies
+#            X.98 != "" ~ 1, # Money clubs 
+#            X.100 != "" ~ 1, # credit unions
+#            X.101 != "" ~ 1, # fellow business colleagues
+#            X.102 != "" ~ 1, # local ngo
+#            X.103 != "" ~ 1, # government of Zimbabwe
+#            X.104 != "" ~ 1, # international org through grant
+#            X.107 != "" ~ 1, # fellow business colleagues
+#            TRUE ~ as.double(0)),
+#          informal_loan_other = case_when(
+#            X.99 != "" ~ 1, # loan sharks
+#            X.105 != "" ~ 1, # local family/friends
+#            X.106 != "" ~ 1, # remittances
+#            TRUE ~ as.double(0)),
+#          other_loan_source = case_when(
+#            informal_loan_other == 1 & formal_loan_other == 0 ~ "informal",
+#            formal_loan_other == 1 & informal_loan_other == 0 ~ "fomal",
+#            informal_loan_other == 1 & formal_loan_other == 1 ~ "both",
+#            TRUE ~ as.character("not answered")
+#            ),
+#          not_answered = ifelse(formal_loan_other == 0 & informal_loan_other == 0, 1, 0),
+#          time_approval = case_when(
+#            time_approval_loan_other_5years == "1 day /same day service" ~ 5,
+#            time_approval_loan_other_5years == "2 to 3 days" ~ 5,
+#            time_approval_loan_other_5years == "4 to 6 days" ~ 5,
+#            time_approval_loan_other_5years == "7 to 10 days" ~ 4,
+#            time_approval_loan_other_5years == "11 to 30 days" ~ 3,
+#            time_approval_loan_other_5years == "31 to 60 days" ~ 2,
+#            time_approval_loan_other_5years == "60 to 90 days" ~ 2,
+#            time_approval_loan_other_5years == "91 days plus" ~ 1, 
+#            TRUE ~ as.double(0))
+#          ) %>%
+#   filter(not_answered == 0) %>%
+#   filter(time_approval != 0) %>%
+#   group_by(across(all_of(level)), other_loan_source) %>%
+#   summarise(time_approval_loan_other_5years = mean(time_approval),
+#             not_answered_time_other = sum(not_answered),
+#             responses = n()) %>%
+#   mutate(time_approval_loan_other_5years = time_approval_loan_other_5years/5) %>%
+#   kable() %>%
+#   kable_styling()
+```
+
+
+### collateral
+
+For those who got a loan from at least one formal financial institution, did they provide collateral... 1 if no
+
+Filter out those who got from an informal source
+
+```{r echo=FALSE}
+collateral_other = data %>%
+  select(all_of(level),
+         collateral_loan_other_5years, collateral_loan_other_5years_logic,
+         loan_other_5years, X.97, X.98, X.99, X.100, X.101, X.102, X.103, X.104, X.105, X.106, X.107, X.108) %>%
+  filter(X.108 == "") %>% # none of the above
+  mutate(formal_loan_other = case_when(
+           loan_other_5years != "" ~ 1, # micro finance
+           X.97 != "" ~ 1, # order finance companies
+           X.98 != "" ~ 1, # Money clubs 
+           X.100 != "" ~ 1, # credit unions
+           X.101 != "" ~ 1, # fellow business colleagues
+           X.102 != "" ~ 1, # local ngo
+           X.103 != "" ~ 1, # government of Zimbabwe
+           X.104 != "" ~ 1, # international org through grant
+           X.107 != "" ~ 1, # fellow business colleagues
+           TRUE ~ as.double(0)),
+         informal_loan_other = case_when(
+           X.99 != "" ~ 1, # loan sharks
+           X.105 != "" ~ 1, # local family/friends
+           X.106 != "" ~ 1, # remittances
+           TRUE ~ as.double(0)),
+         other_loan_source = case_when(
+           informal_loan_other == 1 & formal_loan_other == 0 ~ "informal",
+           formal_loan_other == 1 & informal_loan_other == 0 ~ "fomal",
+           informal_loan_other == 1 & formal_loan_other == 1 ~ "formal",
+           TRUE ~ as.character("not answered")
+           ),
+         not_answered_loan = ifelse(formal_loan_other == 0 & informal_loan_other == 0, 1, 0),
+         not_answered = ifelse(collateral_loan_other_5years == "", 1, 0)
+  ) %>%
+  filter(other_loan_source == "informal") %>%
+  group_by(across(all_of(level))) %>%
+  summarise(collateral_loan_other_5years = sum(collateral_loan_other_5years_logic),
+            responses = n(),
+            not_answered_collateral = sum(not_answered)) %>%
+  mutate(collateral_other_value = collateral_loan_other_5years / (responses - not_answered_collateral)) 
+
+collateral_other %>%
+  kable() %>%
+  kable_styling()
+
+```
+
+## Insurance
+
+Those who have insurance business producs
+
+```{r echo=FALSE}
+insurance = data %>%
+  select(all_of(level),
+         insurance_business_products, insurance_logic) %>%
+  mutate(not_answered = ifelse(insurance_business_products == "", 1, 0)) %>%
+  group_by(across(all_of(level))) %>%
+  summarise(has_insurance = sum(insurance_logic),
+            responses = n(),
+            not_answered_insurance = sum(not_answered)) %>%
+  mutate(insurance_value = has_insurance / (responses - not_answered_insurance)) 
+
+insurance %>%
+  kable() %>%
+  kable_styling()
+```
+
+## Pensions
+
+Businesses that have a pension policy
+
+```{r echo=FALSE}
+pension = data %>%
+  select(all_of(level),
+         pension_policy, pension_logic) %>%
+  mutate(not_answered = ifelse(pension_policy == "", 1, 0)) %>%
+  group_by(across(all_of(level))) %>%
+  summarise(has_pension_policy = sum(pension_logic),
+            responses = n(),
+            not_answered_pension = sum(not_answered)) %>%
+  mutate(pension_value = has_pension_policy / (responses - not_answered_pension)) 
+
+pension %>%
+  kable() %>%
+  kable_styling()
+```
+
+## Mobile Money
+         
+### account
+
+Those that have a MM for their business
+
+```{r echo=FALSE}
+mm_account = data %>%
+  select(all_of(level),
+         mobile_money_account, mobile_account_logic) %>%
+  mutate(not_answered = ifelse(mobile_money_account == "", 1, 0)) %>%
+  group_by(across(all_of(level))) %>%
+  summarise(mobile_money_account = sum(mobile_account_logic),
+            responses = n(),
+            not_answered_mobile_account = sum(not_answered)) %>%
+  mutate(mm_account_value = mobile_money_account / (responses - not_answered_mobile_account)) 
+
+mm_account %>%
+  kable() %>%
+  kable_styling()
+```
+
+### time open account
+
+- time_open_mobile_money_account == "1 day /same day service" ~ 5,
+
+- time_open_mobile_money_account == "2 to 3 days" ~ 5,
+
+- time_open_mobile_money_account == "4 to 6 days" ~ 4,
+
+- time_open_mobile_money_account == "7 to 10 days" ~ 3,
+
+- time_open_mobile_money_account == "11 to 30 days" ~ 2,
+
+- time_open_mobile_money_account == "31 days plus" ~ 1,
+
+```{r echo=FALSE}
+time_open_mm = data %>%
+  select(all_of(level), 
+         mobile_money_account, time_open_mobile_money_account) %>%
+  filter(mobile_money_account == "Yes") %>%
+  mutate(time_open = case_when(
+    time_open_mobile_money_account == "1 day /same day service" ~ 5,
+    time_open_mobile_money_account == "2 to 3 days" ~ 5,
+    time_open_mobile_money_account == "4 to 6 days" ~ 4,
+    time_open_mobile_money_account == "7 to 10 days" ~ 3,
+    time_open_mobile_money_account == "11 to 30 days" ~ 2,
+    time_open_mobile_money_account == "31 days plus" ~ 1,
+    TRUE ~ as.double(0)
+  )) %>%
+  filter(time_open != 0) %>%
+  group_by(across(all_of(level))) %>%
+  summarise(resposnes = n(),
+            time_open_mm_value = mean(time_open) / 5) 
+
+time_open_mm %>%
+  kable() %>%
+  kable_styling()
+```
+
+### insuracnce awareness
+
+Proportion aware of insurance products offered on mobile money account... for those who have a mobile money account
+
+```{r echo=FALSE}
+insurance_mm = data %>%
+  select(all_of(level),
+         mobile_money_account, insurance_mobile_awareness, insurance_mobile_awareness_logic) %>%
+  filter(mobile_money_account == "Yes") %>%
+  mutate(not_answered = ifelse(insurance_mobile_awareness == "", 1, 0)) %>%
+  group_by(across(all_of(level))) %>%
+  summarise(insurance_mobile_awareness = sum(insurance_mobile_awareness_logic),
+            responses = n(),
+            not_answered_mobile_insurance_aware = sum(not_answered)) %>%
+  mutate(insurance_mm_value = insurance_mobile_awareness / (responses - not_answered_mobile_insurance_aware)) 
+
+insurance_mm %>%
+  kable() %>%
+  kable_styling()
+```
+
+
+## Investments and Capital Markets
+
+Have access to a savings facility
+
+```{r echo=FALSE}
+savings_facility = data %>%
+  select(all_of(level),
+         savings_facility_access, savings_logic) %>%
+  mutate(not_answered = ifelse(savings_facility_access == "", 1, 0)) %>%
+  group_by(across(all_of(level))) %>%
+  summarise(access_savings_facility = sum(savings_logic),
+            responses = n(),
+            not_answered_savings = sum(not_answered)) %>%
+  mutate(savings_facility_value = access_savings_facility / (responses - not_answered_savings)) 
+
+savings_facility %>%
+  kable() %>%
+  kable_styling()
+```
+
+## Access to Information
+
+Business advice
+
+- Formal sources (bank, accountant, financial advisor, investment broker) 
+
+- Informal & informal sources
+
+- Informal sources (family, friends)
+
+```{r echo=FALSE}
+advice_sources = data %>%
+  select(all_of(level),
+         business_advice) %>%
+  mutate(business_advice_logic = case_when(
+    business_advice == "Formal sources (bank, accountant, financial advisor, investment broker)"~ 1,
+    business_advice == "Informal & informal sources" ~ 1,
+    business_advice == "Informal sources (family, friends)" ~ 0,
+    TRUE ~ as.double(0)),
+    not_answered = ifelse(business_advice == "", 1, 0)
+    ) %>%
+  group_by(across(all_of(level))) %>%
+  summarise(business_advice = sum(business_advice_logic),
+            responses = n(),
+            not_answered_advice = sum(not_answered)) %>%
+  mutate(advice_sources_value = business_advice / (responses - not_answered_advice))
+
+advice_sources %>%
+  kable() %>%
+  kable_styling()
+```
+
+
+```{r echo=FALSE}
+# 20 criteria
+availability_critera = data %>%
+  group_by(across(all_of(level))) %>%
+  summarise(n=n()) %>%
+  full_join(y = (funds_start %>% select(all_of(level), funds_start_value)), by = all_of(level)) %>%
+  full_join(y = (funds_ongoing %>% select(all_of(level), funds_ongoing_value)), by = all_of(level)) %>%
+  full_join(y = (registered %>% select(all_of(level), registered_value)), by = all_of(level)) %>%
+  full_join(y = (zimra %>% select(all_of(level), zimra_value)), by = all_of(level)) %>%
+  full_join(y = (bank_account %>% select(all_of(level), bank_account_value)), by = all_of(level)) %>%
+  full_join(y = (time_open_bank %>% select(all_of(level), time_open_bank_value)), by = all_of(level)) %>%
+  full_join(y = (sme_auction %>% select(all_of(level), sme_auction_value)), by = all_of(level)) %>%
+  full_join(y = (commercial_loan_apply %>% select(all_of(level), commercial_loan_apply_value)), by = all_of(level)) %>%
+  full_join(y = (time_approval_commercial %>% select(all_of(level), time_approval_commercial_value)), by = all_of(level)) %>%
+  full_join(y = (collateral_commercial %>% select(all_of(level), collateral_commercial_value)), by = all_of(level)) %>%
+  full_join(y = (other_financial %>% select(all_of(level), other_financial_value)), by = all_of(level)) %>%
+  full_join(y = (time_approval_other %>% select(all_of(level), time_approval_other_value)), by = all_of(level)) %>%
+  full_join(y = (collateral_other %>% select(all_of(level), collateral_other_value)), by = all_of(level)) %>%
+  full_join(y = (insurance %>% select(all_of(level), insurance_value)), by = all_of(level)) %>%
+  full_join(y = (pension %>% select(all_of(level), pension_value)), by = all_of(level)) %>%
+  full_join(y = (mm_account %>% select(all_of(level), mm_account_value)), by = all_of(level)) %>%
+  full_join(y = (time_open_mm %>% select(all_of(level), time_open_mm_value)), by = all_of(level)) %>%
+  full_join(y = (insurance_mm %>% select(all_of(level), insurance_mm_value)), by = all_of(level)) %>%
+  full_join(y = (savings_facility %>% select(all_of(level), savings_facility_value)), by = all_of(level)) %>%
+  full_join(y = (advice_sources %>% select(all_of(level), advice_sources_value)), by = all_of(level)) %>%
+  mutate_if(is.numeric, replace_na, 0.5)
+
+availability_critera$availability_score = rowSums(availability_critera[, c(
+  all_of(criteria))])
+
+availability_critera$availability_normalise = (availability_critera$availability_score / 20)
+
+availability_critera$availability_percentage = round((availability_critera$availability_normalise * 100),2)
+
+availability_critera %>%
+  kable() %>%
+  kable_styling()
+```
+
+```{r}
+write.csv(availability_critera, file = "~/SIVIO/availability_criteria.csv")
+```
+

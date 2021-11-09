@@ -1,0 +1,656 @@
+---
+title: "barriers"
+author: "Beks"
+date: "10/25/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(kableExtra)
+```
+
+```{r}
+data = read.csv(file = "~/SIVIO/clean_financial_inclusion.csv")
+```
+
+# levels of inclusion.
+
+This can be used to compare across the different measures.
+
+```{r}
+# province
+# gender_inclusion 
+# location_inclusion 
+# size_inclusion
+# age_inclusion
+# formality_inclusion
+# sector_inclusion
+
+level = c("province")
+```
+
+# Penetration Barriers
+
+## Business characteristics
+
+## Registration 
+
+- not registered
+
+- not registered with Zimra
+
+### Knowledge, Finance/Affordability, Complicated law, Bureaucracy
+
+```{r}
+register = data %>%
+  select(all_of(level), 
+         registered, reason_not_registered) %>%
+  filter(registered == "No") %>%
+  # filter(reason_not_registered != "I simply do not want to register.") %>%
+  mutate(not_answered = ifelse(reason_not_registered == "", 1, 0),
+         knowledge = ifelse(reason_not_registered == "I do not know how to register.", 1, 0),
+         finance = ifelse(reason_not_registered == "It costs too much", 1, 0),
+         law = ifelse(reason_not_registered == "Lack of simplicity and accuracy of the company registration law", 1, 0),
+         bureaucracy = ifelse(reason_not_registered == "The process is bureaucratic.", 1, 0)
+         ) %>%
+  group_by(across(all_of(level))) %>%
+  summarise(knowledge = sum(knowledge),
+            finance = sum(finance),
+            law = sum(law),
+            bureaucracy = sum(bureaucracy),
+            responses = n(),
+            not_answered_reason = sum(not_answered)) %>%
+  mutate(knowledge_register = knowledge / (responses - not_answered_reason),
+         finance_register = finance / (responses - not_answered_reason),
+         law_register = law / (responses - not_answered_reason),
+         bureaucracy_register = bureaucracy / (responses - not_answered_reason))
+
+register %>%
+  kable() %>%
+  kable_styling()
+```
+
+```{r}
+zimra = data %>%
+  select(all_of(level), 
+         zimra_registration, reason_not_zimra) %>%
+  filter(zimra_registration == "None of the above")%>%
+  # filter(reason_not_zimra != "I donâ€™t need any of the above to operate") %>%
+  mutate(not_answered = ifelse(reason_not_zimra == "", 1, 0),
+         knowledge = ifelse(reason_not_zimra == "I do not know how to register.", 1, 0),
+         finance = ifelse(reason_not_zimra == "Taxes are too high.", 1, 0),
+         inflation = ifelse(reason_not_zimra == "Inflation", 1, 0),
+         law = ifelse(reason_not_zimra == "Lack of simplicity and accuracy of the tax legislation", 1, 0),
+         bureaucracy = ifelse(reason_not_zimra == "The process is bureaucratic.", 1, 0)
+         ) %>%
+  group_by(across(all_of(level))) %>%
+  summarise(knowledge = sum(knowledge),
+            finance = sum(finance),
+            inflation = sum(inflation),
+            law = sum(law),
+            bureaucracy = sum(bureaucracy),
+            responses = n(),
+            not_answered_reason = sum(not_answered)) %>%
+  mutate(knowledge_zimra = knowledge / (responses - not_answered_reason),
+         finance_zimra = finance / (responses - not_answered_reason),
+         inflation_zimra = inflation / (responses - not_answered_reason),
+         law_zimra = law / (responses - not_answered_reason),
+         bureaucracy_zimra = bureaucracy / (responses - not_answered_reason),
+         
+         knowledge_zimra = ifelse(responses == not_answered_reason, 0 , knowledge_zimra),
+         finance_zimra = ifelse(responses == not_answered_reason, 0 , finance_zimra),
+         inflation_zimra = ifelse(responses == not_answered_reason, 0 , inflation_zimra),
+         law_zimra = ifelse(responses == not_answered_reason, 0 , law_zimra),
+         bureaucracy_zimra = ifelse(responses == not_answered_reason, 0 , bureaucracy_zimra),
+         )
+
+zimra %>%
+  kable() %>%
+  kable_styling()
+```
+
+
+## Banking
+
+- reason no bank account
+
+### Documentation, legal standing, finance, trust, bureaucracy
+
+- reason not registered on SME auction
+
+### Knowledge, legal standing, finance, Complicated law, trust
+
+```{r}
+bank_account = data %>%
+  select(all_of(level), 
+         bank_account, reason_no_bank_account) %>%
+  filter(bank_account == "No") %>%
+  # filter(reason_no_bank_account != "My business does not need a bank account") %>% # need to add this option
+  mutate(not_answered = ifelse(reason_no_bank_account == "", 1, 0),
+         documentation = ifelse(reason_no_bank_account == "Documentation (I do not have one or more of the required documents)", 1, 0),
+         legal = ifelse(reason_no_bank_account == "My business is not legally registered.", 1, 0),
+         finance = ifelse(reason_no_bank_account == "Affordability (The cost of using a bank account i.e., charges are too high for me)", 1, 0),
+         trust = ifelse(reason_no_bank_account == "Insufficient security protocols (I do not feel my money is safe in the banking system)", 1, 0),
+         bureaucracy = ifelse(reason_no_bank_account == "Bureaucracy (it takes too long to open an account and there are too many processes involved)", 1, 0),
+         inappropriate = ifelse(reason_no_bank_account == "Distance (The bank is too far)", 1, 0),
+         ) %>%
+  group_by(across(all_of(level))) %>%
+  summarise(# knowledge = sum(knowledge),
+            documentation = sum(documentation),
+            legal = sum(legal),
+            finance = sum(finance),
+            # law = sum(law),
+            trust = sum(trust),
+            bureaucracy = sum(bureaucracy),
+            inappropriate = sum(inappropriate),
+            responses = n(),
+            not_answered_reason = sum(not_answered)) %>%
+  mutate(# knowledge = knowledge / (responses - not_answered_reason),
+         documentation_account = documentation / (responses - not_answered_reason),
+         legal_account = legal / (responses - not_answered_reason),
+         finance_account = finance / (responses - not_answered_reason),
+         # law = law / (responses - not_answered_reason),
+         trust_account = trust / (responses - not_answered_reason),
+         bureaucracy_account = bureaucracy / (responses - not_answered_reason),
+         inappropriate_account = inappropriate / (responses - not_answered_reason),
+         
+         documentation_account = ifelse(responses == not_answered_reason, 0 , documentation_account),
+         legal_account = ifelse(responses == not_answered_reason, 0 , legal_account),
+         finance_account = ifelse(responses == not_answered_reason, 0 , finance_account),
+         trust_account = ifelse(responses == not_answered_reason, 0 , trust_account),
+         bureaucracy_account = ifelse(responses == not_answered_reason, 0 , bureaucracy_account),
+         inappropriate_account = ifelse(responses == not_answered_reason, o, inappropriate_account),
+         )
+
+bank_account %>%
+  kable() %>%
+  kable_styling()
+```
+
+```{r}
+sme_auction = data %>%
+  select(all_of(level), 
+         sme_foreign_exchange_auction, reason_not_sme_auction) %>%
+  filter(sme_foreign_exchange_auction == "No") %>%
+  # filter(reason_not_sme_auction != "I donâ€™t need to register i.e. I donâ€™t need FOREX" | reason_not_sme_auction != "I donâ€™t see the need/ value") %>%
+  mutate(not_answered = ifelse(reason_not_sme_auction == "", 1, 0),
+         knowledge = ifelse(reason_not_sme_auction == "I am not aware of the auction system", 1, 0),
+         legal = ifelse(reason_not_sme_auction == "My company does not qualify.", 1, 0),
+         inappropriate = ifelse(reason_not_sme_auction == "The time frames do not meet my companyâ€™s needs.", 1, 0),
+         law = ifelse(reason_not_sme_auction == "I donâ€™t understand how it works â€“ Language/Terminology used is difficult to understand.", 1, 0),
+         trust = ifelse(reason_not_sme_auction == "I donâ€™t trust the auction system", 1, 0)
+  ) %>%
+  group_by(across(all_of(level))) %>%
+  summarise(knowledge = sum(knowledge),
+            # documentation = sum(documentation),
+            legal = sum(legal),
+            inappropriate = sum(inappropriate),
+            law = sum(law),
+            trust = sum(trust),
+            # bureaucracy = sum(bureaucracy),
+            responses = n(),
+            not_answered_reason = sum(not_answered)) %>%
+  mutate(knowledge_sme = knowledge / (responses - not_answered_reason),
+         # documentation_account = documentation / (responses - not_answered_reason),
+         legal_sme = legal / (responses - not_answered_reason),
+         inappropriate_sme = inappropriate / (responses - not_answered_reason),
+         law_sme = law / (responses - not_answered_reason),
+         trust_sme = trust / (responses - not_answered_reason),
+         # bureaucracy_account = bureaucracy / (responses - not_answered_reason),
+         
+         knowledge_sme = ifelse(responses == not_answered_reason, 0 , knowledge_sme),
+         legal_sme = ifelse(responses == not_answered_reason, 0 , legal_sme),
+         inappropriate_sme = ifelse(responses == not_answered_reason, 0 , inappropriate_sme),
+         law_sme = ifelse(responses == not_answered_reason, 0 , law_sme),
+         trust_sme = ifelse(responses == not_answered_reason, 0 , trust_sme)
+         )
+
+sme_auction %>%
+  kable() %>%
+  kable_styling()
+```
+
+## Loans
+
+```{r}
+commercial_loan = data %>%
+  select(all_of(level), 
+         commercial_loan_application, reason_not_apply_commercial_loan) %>%
+  filter(commercial_loan_application == "No") %>%
+  # filter() %>%
+  mutate(not_answered = ifelse(reason_not_apply_commercial_loan == "", 1, 0),
+         knowledge = ifelse(reason_not_apply_commercial_loan == "I donâ€™t have information on how I can apply for a loan.", 1, 0),
+         documentation = ifelse(reason_not_apply_commercial_loan == "I donâ€™t meet the documentation requirements.", 1, 0),
+         legal = ifelse(reason_not_apply_commercial_loan == "I donâ€™t have sufficient collateral.", 1, 0),
+         finance = ifelse(reason_not_apply_commercial_loan == "Cost (interest rates are too high)", 1, 0),
+         inappropriate = ifelse(reason_not_apply_commercial_loan == "It is not a product being offered by my bank.", 1, 0)
+  ) %>%
+  group_by(across(all_of(level))) %>%
+  summarise(knowledge = sum(knowledge),
+            documentation = sum(documentation),
+            legal = sum(legal),
+            finance = sum(finance),
+            # law = sum(law),
+            # trust = sum(trust),
+            # bureaucracy = sum(bureaucracy),
+            inappropriate = sum(inappropriate),
+            responses = n(),
+            not_answered_reason = sum(not_answered)) %>%
+  mutate(knowledge_commercial_loan = knowledge / (responses - not_answered_reason),
+         documentation_commercial_loan = documentation / (responses - not_answered_reason),
+         legal_commercial_loan = legal / (responses - not_answered_reason),
+         finance_commercial_loan = finance / (responses - not_answered_reason),
+         # law_sme = law / (responses - not_answered_reason),
+         # trust_sme = trust / (responses - not_answered_reason),
+         # bureaucracy_account = bureaucracy / (responses - not_answered_reason),
+         inappropriate_commercial_loan = inappropriate / (responses - not_answered_reason),
+         
+         knowledge_commercial_loan = ifelse(responses == not_answered_reason, 0 , knowledge_commercial_loan),
+         documentation_commercial_loan = ifelse(responses == not_answered_reason, 0 , documentation_commercial_loan),
+         legal_commercial_loan = ifelse(responses == not_answered_reason, 0 , legal_commercial_loan),
+         finance_commercial_loan = ifelse(responses == not_answered_reason, 0 , finance_commercial_loan),
+         inappropriate_commercial_loan = ifelse(responses == not_answered_reason, 0 , inappropriate_commercial_loan),
+         )
+
+commercial_loan %>%
+  kable() %>%
+  kable_styling()
+```
+
+## Insurance
+
+```{r}
+business_insurance = data %>%
+  select(all_of(level), 
+         insurance_business_products, reason_no_insurance_products_services) %>%
+  filter(insurance_business_products == "No") %>%
+  # filter(I donâ€™t see the need/ value.) %>%
+  mutate(not_answered = ifelse(reason_no_insurance_products_services == "", 1, 0),
+         knowledge = ifelse(reason_no_insurance_products_services == "I am not aware of the insurance products.", 1, 0),
+         legal = ifelse(reason_no_insurance_products_services == "My company does not qualify.", 1, 0),
+         finance = ifelse(reason_no_insurance_products_services == "The products are unaffordable", 1, 0),
+         inflation = ifelse(reason_no_insurance_products_services == "Inflation(The sum assured loses value)", 1, 0),
+         law = ifelse(reason_no_insurance_products_services == "I donâ€™t understand how it works â€“ Language/Terminology used is difficult to understand.", 1, 0),
+         trust = ifelse(reason_no_insurance_products_services == "I donâ€™t trust insurance companies.", 1, 0),
+         inappropriate = ifelse(reason_no_insurance_products_services == "The insurance products do not meet my companyâ€™s needs.", 1, 0)
+  ) %>%
+  group_by(across(all_of(level))) %>%
+  summarise(knowledge = sum(knowledge),
+            # documentation = sum(documentation),
+            legal = sum(legal),
+            finance = sum(finance),
+            inflation = sum(inflation),
+            law = sum(law),
+            trust = sum(trust),
+            # bureaucracy = sum(bureaucracy),
+            inappropriate = sum(inappropriate),
+            responses = n(),
+            not_answered_reason = sum(not_answered)) %>%
+  mutate(knowledge_insurance = knowledge / (responses - not_answered_reason),
+         # documentation_insurance = documentation / (responses - not_answered_reason),
+         legal_insurance = legal / (responses - not_answered_reason),
+         finance_insurance = finance / (responses - not_answered_reason),
+         inflation_insurance = inflation / (responses - not_answered_reason),
+         law_insurance = law / (responses - not_answered_reason),
+         trust_insurance = trust / (responses - not_answered_reason),
+         # bureaucracy_insurance = bureaucracy / (responses - not_answered_reason),
+         inappropriate_insurance = inappropriate / (responses - not_answered_reason),
+         
+         knowledge_insurance = ifelse(responses == not_answered_reason, 0 , knowledge_insurance),
+         legal_insurance = ifelse(responses == not_answered_reason, 0 , legal_insurance),
+         finance_insurance = ifelse(responses == not_answered_reason, 0 , finance_insurance),
+         inflation_insurance = ifelse(responses == not_answered_reason, 0 , inflation_insurance),
+         law_insurance = ifelse(responses == not_answered_reason, 0 , law_insurance),
+         trust_insurance = ifelse(responses == not_answered_reason, 0 , trust_insurance),
+         inappropriate_insurance = ifelse(responses == not_answered_reason, 0 , inappropriate_insurance),
+         )
+
+business_insurance %>%
+  kable() %>%
+  kable_styling()
+```
+
+## Pensions
+
+```{r}
+pension = data %>%
+  select(all_of(level), 
+         pension_policy, reason_no_pension_policy) %>%
+  filter(pension_policy == "No") %>%
+  # filter(I donâ€™t see the need/ value.) %>%
+  mutate(not_answered = ifelse(reason_no_pension_policy == "", 1, 0),
+         knowledge = ifelse(reason_no_pension_policy == "I am not aware of the pensions products.", 1, 0),
+         finance = ifelse(reason_no_pension_policy == "The products are too expensive.", 1, 0),
+         inflation = ifelse(reason_no_pension_policy == "Inflation", 1, 0),
+         law = ifelse(reason_no_pension_policy == "I donâ€™t understand how it works â€“ Language/Terminology used is difficult to understand.", 1, 0),
+         trust = ifelse(reason_no_pension_policy == "I donâ€™t trust service providers companies.", 1, 0),
+         inappropriate = ifelse(reason_no_pension_policy == "The products do not meet my companyâ€™s needs.", 1, 0)
+  ) %>%
+  group_by(across(all_of(level))) %>%
+  summarise(knowledge = sum(knowledge),
+            # documentation = sum(documentation),
+            # legal = sum(legal),
+            finance = sum(finance),
+            inflation = sum(inflation),
+            law = sum(law),
+            trust = sum(trust),
+            # bureaucracy = sum(bureaucracy),
+            inappropriate = sum(inappropriate),
+            responses = n(),
+            not_answered_reason = sum(not_answered)) %>%
+  mutate(knowledge_pensions = knowledge / (responses - not_answered_reason),
+         # documentation_pensions = documentation / (responses - not_answered_reason),
+         # legal_pensions = legal / (responses - not_answered_reason),
+         finance_pensions = finance / (responses - not_answered_reason),
+         inflation_pensions = inflation / (responses - not_answered_reason),
+         law_pensions = law / (responses - not_answered_reason),
+         trust_insurance = trust / (responses - not_answered_reason),
+         # bureaucracy_pensions = bureaucracy / (responses - not_answered_reason),
+         inappropriate_pensions = inappropriate / (responses - not_answered_reason),
+         
+         knowledge_pensions = ifelse(responses == not_answered_reason, 0 , knowledge_pensions),
+         finance_pensions = ifelse(responses == not_answered_reason, 0 , finance_pensions),
+         inflation_pensions = ifelse(responses == not_answered_reason, 0 , inflation_pensions),
+         law_pensions = ifelse(responses == not_answered_reason, 0 , law_pensions),
+         trust_pensions = ifelse(responses == not_answered_reason, 0 , trust_insurance),
+         inappropriate_pensions = ifelse(responses == not_answered_reason, 0 , inappropriate_pensions),
+         )
+
+pension %>%
+  kable() %>%
+  kable_styling()
+```
+
+## Mobile Money
+
+```{r}
+mobile_money = data %>%
+  select(all_of(level), 
+         mobile_money_account, reason_no_mobile_money_account) %>%
+  filter(mobile_money_account == "No") %>%
+  # filter(My business does not need a mobile money account (because we only/mainly handle cash transactions)) %>%
+  mutate(not_answered = ifelse(reason_no_mobile_money_account == "", 1, 0),
+         documentation = ifelse(reason_no_mobile_money_account == "Documentation (I do not have one or more of the required documents)", 1, 0),
+         finance = ifelse(reason_no_mobile_money_account == "Affordability (The charges are too high)", 1, 0),
+         trust = ifelse(reason_no_mobile_money_account == "Insufficient security protocols (I do not feel my money is safe in the mobile money system)", 1, 0),
+         bureaucracy = ifelse(reason_no_mobile_money_account == "Bureaucracy (it takes too long to open an account and there are too many processes involved)", 1, 0)
+  ) %>%
+  group_by(across(all_of(level))) %>%
+  summarise(# knowledge = sum(knowledge),
+            documentation = sum(documentation),
+            # legal = sum(legal),
+            finance = sum(finance),
+            # law = sum(law),
+            trust = sum(trust),
+            bureaucracy = sum(bureaucracy),
+            # inappropriate = sum(inappropriate),
+            responses = n(),
+            not_answered_reason = sum(not_answered)) %>%
+  mutate(# knowledge_mobile = knowledge / (responses - not_answered_reason),
+         documentation_mobile = documentation / (responses - not_answered_reason),
+         # legal_mobile = legal / (responses - not_answered_reason),
+         finance_mobile = finance / (responses - not_answered_reason),
+         # law_mobile = law / (responses - not_answered_reason),
+         trust_mobile = trust / (responses - not_answered_reason),
+         bureaucracy_mobile = bureaucracy / (responses - not_answered_reason),
+         # inappropriate_mobile = inappropriate / (responses - not_answered_reason),
+         
+         documentation_mobile = ifelse(responses == not_answered_reason, 0 , documentation_mobile),
+         finance_mobile = ifelse(responses == not_answered_reason, 0 , finance_mobile),
+         trust_mobile = ifelse(responses == not_answered_reason, 0 , trust_mobile),
+         bureaucracy_mobile = ifelse(responses == not_answered_reason, 0 , bureaucracy_mobile)
+         )
+
+mobile_money %>%
+  kable() %>%
+  kable_styling()
+```
+
+## Savings facility
+
+```{r}
+investments = data %>%
+  select(all_of(level), 
+         investments, reason_no_investments) %>%
+  filter(investments == "No") %>%
+  # filter(My business does not need a mobile money account (because we only/mainly handle cash transactions)) %>%
+  mutate(not_answered = ifelse(reason_no_investments == "", 1, 0),
+         knowledge = ifelse(reason_no_investments == "I am not aware of any investment products.", 1, 0),
+         finance = ifelse(reason_no_investments == "Inadequate cash flows for investment", 1, 0),
+         inflation = ifelse(reason_no_investments == "Inflation", 1, 0),
+  ) %>%
+  group_by(across(all_of(level))) %>%
+  summarise(knowledge = sum(knowledge),
+            # documentation = sum(documentation),
+            # legal = sum(legal),
+            finance = sum(finance),
+            inflation = sum(inflation),
+            # law = sum(law),
+            # trust = sum(trust),
+            # bureaucracy = sum(bureaucracy),
+            # inappropriate = sum(inappropriate),
+            responses = n(),
+            not_answered_reason = sum(not_answered)) %>%
+  mutate(knowledge_investments = knowledge / (responses - not_answered_reason),
+         # documentation_investments = documentation / (responses - not_answered_reason),
+         # legal_investments = legal / (responses - not_answered_reason),
+         finance_investments = finance / (responses - not_answered_reason),
+         inflation_investments = inflation / (responses - not_answered_reason),
+         # law_investments = law / (responses - not_answered_reason),
+         # trust_investments = trust / (responses - not_answered_reason),
+         # bureaucracy_investments = bureaucracy / (responses - not_answered_reason),
+         # inappropriate_investments = inappropriate / (responses - not_answered_reason),
+         
+         knowledge_investments = ifelse(responses == not_answered_reason, 0 , knowledge_investments),
+         finance_investments = ifelse(responses == not_answered_reason, 0 , finance_investments),
+         inflation_investments = ifelse(responses == not_answered_reason, 0 , inflation_investments),
+         )
+
+investments %>%
+  kable() %>%
+  kable_styling()
+```
+
+## Access to information
+
+Knowledge score
+
+- Very good: 5
+
+- Good: 4
+
+- Average: 3
+
+- Poor: 2
+
+- Very poor: 1
+
+- I don't know anything: 0
+
+```{r}
+# Knowledge score... each out of 5
+data %>%
+  select(all_of(level),
+         knowledge_banking_services, knowledge_mobile_money_services, knowledge_investements_capital_markets,
+         knowledge_business_insurance_products, knowledge_pension_products, knowledge_loans_credit_commercial_banks,
+         knowledge_loans_credit_microfinance, knowledge_loans_credit_roscas_isals, knowledge_taxation_regulations) %>%
+  mutate(not_answered_banking = ifelse(knowledge_banking_services == "", 1, 0),
+         not_answered_mobile = ifelse(knowledge_mobile_money_services == "", 1, 0),
+         not_answered_investments = ifelse(knowledge_investements_capital_markets == "", 1, 0),
+         not_answered_insurance = ifelse(knowledge_business_insurance_products == "", 1, 0),
+         not_answered_pensions = ifelse(knowledge_pension_products == "", 1, 0),
+         not_answered_commercial_loan = ifelse(knowledge_loans_credit_commercial_banks == "", 1, 0),
+         not_answered_mfi_loan = ifelse(knowledge_loans_credit_microfinance == "", 1, 0),
+         not_answered_rosal_loan = ifelse(knowledge_loans_credit_roscas_isals == "", 1, 0),
+         not_answered_tax = ifelse(knowledge_taxation_regulations == "", 1, 0),
+         
+         
+         knowledge_banking_services = case_when(
+    knowledge_banking_services == "Very good" ~ 5,
+    knowledge_banking_services == "Good" ~ 4,
+    knowledge_banking_services == "Average" ~ 3,
+    knowledge_banking_services == "Poor" ~ 2,
+    knowledge_banking_services == "Very poor" ~ 1,
+    knowledge_banking_services == "I donâ€™t know anything" ~ 0,
+    TRUE ~ as.double(-1)
+  ),
+  knowledge_mobile_money_services = case_when(
+    knowledge_mobile_money_services == "Very good" ~ 5,
+    knowledge_mobile_money_services == "Good" ~ 4,
+    knowledge_mobile_money_services == "Average" ~ 3,
+    knowledge_mobile_money_services == "Poor" ~ 2,
+    knowledge_mobile_money_services == "Very poor" ~ 1,
+    knowledge_mobile_money_services == "I donâ€™t know anything" ~ 0,
+    TRUE ~ as.double(-1)
+  ),
+  knowledge_investements_capital_markets = case_when(
+    knowledge_investements_capital_markets == "Very good" ~ 5,
+    knowledge_investements_capital_markets == "Good" ~ 4,
+    knowledge_investements_capital_markets == "Average" ~ 3,
+    knowledge_investements_capital_markets == "Poor" ~ 2,
+    knowledge_investements_capital_markets == "Very poor" ~ 1,
+    knowledge_investements_capital_markets == "I donâ€™t know anything" ~ 0,
+    TRUE ~ as.double(-1)
+  ),
+  knowledge_business_insurance_products = case_when(
+    knowledge_business_insurance_products == "Very good" ~ 5,
+    knowledge_business_insurance_products == "Good" ~ 4,
+    knowledge_business_insurance_products == "Average" ~ 3,
+    knowledge_business_insurance_products == "Poor" ~ 2,
+    knowledge_business_insurance_products == "Very poor" ~ 1,
+    knowledge_business_insurance_products == "I donâ€™t know anything" ~ 0,
+    TRUE ~ as.double(-1)
+  ),
+  knowledge_pension_products = case_when(
+    knowledge_pension_products == "Very good" ~ 5,
+    knowledge_pension_products == "Good" ~ 4,
+    knowledge_pension_products == "Average" ~ 3,
+    knowledge_pension_products == "Poor" ~ 2,
+    knowledge_pension_products == "Very poor" ~ 1,
+    knowledge_pension_products == "I donâ€™t know anything" ~ 0,
+    TRUE ~ as.double(-1)
+  ),
+  knowledge_loans_credit_commercial_banks = case_when(
+    knowledge_loans_credit_commercial_banks == "Very good" ~ 5,
+    knowledge_loans_credit_commercial_banks == "Good" ~ 4,
+    knowledge_loans_credit_commercial_banks == "Average" ~ 3,
+    knowledge_loans_credit_commercial_banks == "Poor" ~ 2,
+    knowledge_loans_credit_commercial_banks == "Very poor" ~ 1,
+    knowledge_loans_credit_commercial_banks == "I donâ€™t know anything" ~ 0,
+    TRUE ~ as.double(-1)
+  ),
+  knowledge_loans_credit_microfinance = case_when(
+    knowledge_loans_credit_microfinance == "Very good" ~ 5,
+    knowledge_loans_credit_microfinance == "Good" ~ 4,
+    knowledge_loans_credit_microfinance == "Average" ~ 3,
+    knowledge_loans_credit_microfinance == "Poor" ~ 2,
+    knowledge_loans_credit_microfinance == "Very poor" ~ 1,
+    knowledge_loans_credit_microfinance == "I donâ€™t know anything" ~ 0,
+    TRUE ~ as.double(-1)
+  ),
+  knowledge_loans_credit_roscas_isals = case_when(
+    knowledge_loans_credit_roscas_isals == "Very good" ~ 5,
+    knowledge_loans_credit_roscas_isals == "Good" ~ 4,
+    knowledge_loans_credit_roscas_isals == "Average" ~ 3,
+    knowledge_loans_credit_roscas_isals == "Poor" ~ 2,
+    knowledge_loans_credit_roscas_isals == "Very poor" ~ 1,
+    knowledge_loans_credit_roscas_isals == "I donâ€™t know anything" ~ 0,
+    TRUE ~ as.double(-1)
+  ),
+  knowledge_taxation_regulations = case_when(
+    knowledge_taxation_regulations == "Very good" ~ 5,
+    knowledge_taxation_regulations == "Good" ~ 4,
+    knowledge_taxation_regulations == "Average" ~ 3,
+    knowledge_taxation_regulations == "Poor" ~ 2,
+    knowledge_taxation_regulations == "Very poor" ~ 1,
+    knowledge_taxation_regulations == "I donâ€™t know anything" ~ 0,
+    TRUE ~ as.double(-1)
+  )
+  ) %>%
+  group_by(across(all_of(level))) %>%
+  summarise_if(is.numeric, sum) %>%
+  mutate(responses = c(128,155,151,111,121,161,154,142,134,125),
+         max_score = (5*(responses-not_answered))*9)
+```
+
+
+## Combine into 8 measures
+
+```{r}
+reasons = 
+  register %>% select(all_of(level), knowledge_register, finance_register, law_register, bureaucracy_register) %>%
+  full_join((zimra %>% select(all_of(level), knowledge_zimra, finance_zimra, inflation_zimra, law_zimra, bureaucracy_zimra)), 
+            by = all_of(level)) %>%
+  full_join((bank_account %>% select(all_of(level), documentation_account, legal_account, finance_account, trust_account, bureaucracy_account, inappropriate_account)),
+            by = all_of(level)) %>%
+  full_join((sme_auction %>% select(all_of(level), knowledge_sme, legal_sme, law_sme, trust_sme, inappropriate_sme)),
+            by = all_of(level)) %>%
+  full_join((commercial_loan %>% select(all_of(level), knowledge_commercial_loan, documentation_commercial_loan,legal_commercial_loan,finance_commercial_loan,inappropriate_commercial_loan)),
+            by = all_of(level)) %>%
+  full_join((business_insurance %>% select(all_of(level), knowledge_insurance,legal_insurance,finance_insurance,inflation_insurance, law_insurance,trust_insurance,inappropriate_insurance)),
+            by = all_of(level)) %>%
+  full_join((pension %>% select(all_of(level), knowledge_pensions,finance_pensions, inflation_pensions, law_pensions,trust_pensions,inappropriate_pensions)),
+            by = all_of(level)) %>%
+  full_join((mobile_money %>% select(all_of(level), documentation_mobile,finance_mobile,trust_mobile,bureaucracy_mobile)),
+            by = all_of(level)) %>%
+  full_join((investments %>% select(all_of(level),knowledge_investments, finance_investments, inflation_investments)),
+            by = all_of(level))
+
+
+reasons %>%
+  mutate(knowledge = rowMeans(reasons[, 
+                                      c("knowledge_register", "knowledge_zimra", "knowledge_sme", "knowledge_commercial_loan", "knowledge_insurance", "knowledge_pensions", "knowledge_investments")]),
+         documentation = rowMeans(reasons[, 
+                                          c("documentation_account", "documentation_commercial_loan", "documentation_mobile")]),
+         legal = rowMeans(reasons[, 
+                                  c("legal_account", "legal_sme", "legal_commercial_loan", "legal_insurance")]),
+         finance = rowMeans(reasons[, 
+                                    c("finance_register", "finance_zimra", "finance_account", "finance_commercial_loan", "finance_insurance", "finance_pensions", "finance_mobile", "finance_investments")]),
+         inflation = rowMeans(reasons[,
+                                      c("inflation_zimra", "inflation_insurance", "inflation_pensions", "inflation_investments")]),
+         law = rowMeans(reasons[, 
+                                c("law_register", "law_zimra", "law_sme", "law_insurance", "law_pensions")]),
+         trust = rowMeans(reasons[, 
+                                  c("trust_account", "trust_sme", "trust_insurance", "trust_pensions", "trust_mobile")]),
+         bureaucracy = rowMeans(reasons[, 
+                                        c("bureaucracy_register", "bureaucracy_zimra", "bureaucracy_account", "bureaucracy_mobile")]),
+         inappropraite = rowMeans(reasons[, 
+                                          c("inappropriate_account", "inappropriate_sme", "inappropriate_commercial_loan", "inappropriate_insurance", "inappropriate_pensions")]),
+         )
+
+```
+
+
+```{r}
+data %>%
+  select(
+    # characteristics
+    
+    # registration
+    
+    # banking
+    barriers_use_bank_account,
+    restrictions_bank_account,
+    
+    # loans
+    reason_rejected_commercial_loan_12months,
+    
+    # other financial institutions
+    
+    # insurance
+    
+    # pensions
+    
+    # mobile money
+    barriers_use_mobile_money,
+    restrictions_use_mobile_money,
+    
+    # investments
+    
+    # access to information
+    
+  )
+```
