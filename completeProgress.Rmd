@@ -16,7 +16,7 @@ library(kableExtra)
 # date: `r date()`
 
 ```{r include=FALSE}
-completedata = read.csv(file = "~/SIVIO/survey_financial_inclusion.csv", header = T, sep = ",")
+completedata = read.csv(file = "~/SIVIOgit/survey_financial_inclusion.csv", header = T, sep = ",")
 ```
 
 ```{r include=FALSE}

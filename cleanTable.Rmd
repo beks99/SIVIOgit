@@ -13,7 +13,7 @@ library(kableExtra)
 ```
 
 ```{r include=FALSE}
-read_complete = read.csv(file = "~/SIVIO/clean_financial_inclusion.csv")
+read_complete = read.csv(file = "~/SIVIOgit/clean_financial_inclusion.csv")
 ```
 
 ```{r}
@@ -62,67 +62,67 @@ financial_inclusion_survey = read_complete %>%
   select(-(survey_industry)) %>%
   mutate(single_count = 1) %>%
   # categorize the other sectors under our labels
-  mutate(industry_sector = case_when(
-    industry_sector == "Welding" ~ "Construction Energy, Water and Architecture",
-    industry_sector == "Waste recycling" ~ "Construction Energy, Water and Architecture",
-    industry_sector == "Small farmer" ~ "Agriculture, hunting , forestry and fishing.",
-    industry_sector == "Selling cellphones and repairing cellphones" ~ "-",
-    industry_sector == "Security Services" ~ "",
-    industry_sector == "Satellite and visuals" ~ "Information and Communication Technology",
-    industry_sector == "Saloon and barber" ~ "Trichology and cosmetology (hair, makeup, nails and beauty therapy)",
-    industry_sector == "Running a bar" ~ "Tourism accommodation and Restaurants",
-    industry_sector == "REAL ESTATE VALUATIONS" ~ "",
-    industry_sector == "PRINTING" ~ "Graphics, Technical design, computer software and Printing",
-    industry_sector == "Poultry and baking cream dorghnuts" ~ "Catering, baking and culinary arts", 
-    # industry_sector == "Poultry" ~ "Agriculture, hunting , forestry and fishing.", 
-    industry_sector == "PHONES" ~ "", 
-    industry_sector == "Motor Spares and Accessories" ~ "", 
-    industry_sector == "motor mechanic" ~ "", 
-    industry_sector == "Mechanics" ~ "", 
-    industry_sector == "Lodge bed only" ~ "Tourism accommodation and Restaurants", 
-    industry_sector == "Liqour outlet" ~ "Retail and wholesale", 
-    industry_sector == "Importing services shipping" ~ "", 
-    industry_sector == "ICE CREAM COURTENIER RESALER" ~ "", 
-    industry_sector == "Hydraulics and pneumatics and diesel tech" ~ "", 
-    industry_sector == "Hardware stores" ~ "Retail and wholesale", 
-    industry_sector == "Hardware store" ~ "Retail and wholesale", 
-    industry_sector == "Hardware and construction" ~ "Construction Energy, Water and Architecture", 
-    industry_sector == "Hardware and butchery" ~ "", 
-    industry_sector == "Hardware" ~ "", 
-    industry_sector == "Grocery shop" ~ "Retail and wholesale", 
-    industry_sector == "Grocery and cooking sadza" ~ "Catering, baking and culinary arts", 
-    industry_sector == "Grinding meal" ~ "Catering, baking and culinary arts", 
-    industry_sector == "General dealer" ~ "Retail and wholesale", 
-    # industry_sector == "Furniture" ~ "Manufacturing", 
-    industry_sector == "Fruits, airtime and selling money" ~ "", 
-    industry_sector == "Fruits and vegetables" ~ "Agriculture, hunting , forestry and fishing.", 
-    industry_sector == "FASHION" ~ "Textile, apparel, leather", 
-    industry_sector == "Engineering" ~ "Construction Energy, Water and Architecture", 
-    industry_sector == "Energy" ~ "Construction Energy, Water and Architecture", 
-    industry_sector == "electrician" ~ "Construction Energy, Water and Architecture", 
-    industry_sector == "Electrical hardware" ~ "", 
-    industry_sector == "Earthmoving" ~ "Construction Energy, Water and Architecture", 
-    industry_sector == "Driving school" ~ "", 
-    industry_sector == "Croos boarder trading" ~ "", 
-    industry_sector == "Cooking sadza" ~ "Catering, baking and culinary arts", 
-    industry_sector == "Construction" ~ "Construction Energy, Water and Architecture", 
-    industry_sector == "CLOTHING SHOP" ~ "Retail and wholesale", 
-    industry_sector == "Clothing" ~ "Textile, apparel, leather", 
-    industry_sector == "Chicken poultry" ~ "Agriculture, hunting , forestry and fishing.", 
-    industry_sector == "Cell phones and accessories" ~ "Retail and wholesale", 
-    # industry_sector == "Carpentry" ~ "Manufacturing", 
-    industry_sector == "Car sales" ~ "Retail and wholesale", 
-    industry_sector == "Cake making" ~ "Catering, baking and culinary arts", 
-    industry_sector == "Butchery" ~ "", 
-    industry_sector == "Butcher" ~ "",
-    industry_sector == "Bottle store" ~ "Retail and wholesale", 
-    industry_sector == "Beerhall" ~ "Tourism accommodation and Restaurants", 
-    industry_sector == "Beer hall" ~ "Tourism accommodation and Restaurants", 
-    industry_sector == "Barbershop" ~ "Trichology and cosmetology (hair, makeup, nails and beauty therapy)", 
-    industry_sector == "Bar" ~ "Tourism accommodation and Restaurants", 
-    industry_sector == "Automotive" ~ "",
-    TRUE ~ as.character(industry_sector),
-  )) %>%
+  # mutate(industry_sector = case_when(
+  #   industry_sector == "Welding" ~ "Construction Energy, Water and Architecture",
+  #   industry_sector == "Waste recycling" ~ "Construction Energy, Water and Architecture",
+  #   industry_sector == "Small farmer" ~ "Agriculture, hunting , forestry and fishing.",
+  #   industry_sector == "Selling cellphones and repairing cellphones" ~ "-",
+  #   industry_sector == "Security Services" ~ "",
+  #   industry_sector == "Satellite and visuals" ~ "Information and Communication Technology",
+  #   industry_sector == "Saloon and barber" ~ "Trichology and cosmetology (hair, makeup, nails and beauty therapy)",
+  #   industry_sector == "Running a bar" ~ "Tourism accommodation and Restaurants",
+  #   industry_sector == "REAL ESTATE VALUATIONS" ~ "",
+  #   industry_sector == "PRINTING" ~ "Graphics, Technical design, computer software and Printing",
+  #   industry_sector == "Poultry and baking cream dorghnuts" ~ "Catering, baking and culinary arts", 
+  #   # industry_sector == "Poultry" ~ "Agriculture, hunting , forestry and fishing.", 
+  #   industry_sector == "PHONES" ~ "", 
+  #   industry_sector == "Motor Spares and Accessories" ~ "", 
+  #   industry_sector == "motor mechanic" ~ "", 
+  #   industry_sector == "Mechanics" ~ "", 
+  #   industry_sector == "Lodge bed only" ~ "Tourism accommodation and Restaurants", 
+  #   industry_sector == "Liqour outlet" ~ "Retail and wholesale", 
+  #   industry_sector == "Importing services shipping" ~ "", 
+  #   industry_sector == "ICE CREAM COURTENIER RESALER" ~ "", 
+  #   industry_sector == "Hydraulics and pneumatics and diesel tech" ~ "", 
+  #   industry_sector == "Hardware stores" ~ "Retail and wholesale", 
+  #   industry_sector == "Hardware store" ~ "Retail and wholesale", 
+  #   industry_sector == "Hardware and construction" ~ "Construction Energy, Water and Architecture", 
+  #   industry_sector == "Hardware and butchery" ~ "", 
+  #   industry_sector == "Hardware" ~ "", 
+  #   industry_sector == "Grocery shop" ~ "Retail and wholesale", 
+  #   industry_sector == "Grocery and cooking sadza" ~ "Catering, baking and culinary arts", 
+  #   industry_sector == "Grinding meal" ~ "Catering, baking and culinary arts", 
+  #   industry_sector == "General dealer" ~ "Retail and wholesale", 
+  #   # industry_sector == "Furniture" ~ "Manufacturing", 
+  #   industry_sector == "Fruits, airtime and selling money" ~ "", 
+  #   industry_sector == "Fruits and vegetables" ~ "Agriculture, hunting , forestry and fishing.", 
+  #   industry_sector == "FASHION" ~ "Textile, apparel, leather", 
+  #   industry_sector == "Engineering" ~ "Construction Energy, Water and Architecture", 
+  #   industry_sector == "Energy" ~ "Construction Energy, Water and Architecture", 
+  #   industry_sector == "electrician" ~ "Construction Energy, Water and Architecture", 
+  #   industry_sector == "Electrical hardware" ~ "", 
+  #   industry_sector == "Earthmoving" ~ "Construction Energy, Water and Architecture", 
+  #   industry_sector == "Driving school" ~ "", 
+  #   industry_sector == "Croos boarder trading" ~ "", 
+  #   industry_sector == "Cooking sadza" ~ "Catering, baking and culinary arts", 
+  #   industry_sector == "Construction" ~ "Construction Energy, Water and Architecture", 
+  #   industry_sector == "CLOTHING SHOP" ~ "Retail and wholesale", 
+  #   industry_sector == "Clothing" ~ "Textile, apparel, leather", 
+  #   industry_sector == "Chicken poultry" ~ "Agriculture, hunting , forestry and fishing.", 
+  #   industry_sector == "Cell phones and accessories" ~ "Retail and wholesale", 
+  #   # industry_sector == "Carpentry" ~ "Manufacturing", 
+  #   industry_sector == "Car sales" ~ "Retail and wholesale", 
+  #   industry_sector == "Cake making" ~ "Catering, baking and culinary arts", 
+  #   industry_sector == "Butchery" ~ "", 
+  #   industry_sector == "Butcher" ~ "",
+  #   industry_sector == "Bottle store" ~ "Retail and wholesale", 
+  #   industry_sector == "Beerhall" ~ "Tourism accommodation and Restaurants", 
+  #   industry_sector == "Beer hall" ~ "Tourism accommodation and Restaurants", 
+  #   industry_sector == "Barbershop" ~ "Trichology and cosmetology (hair, makeup, nails and beauty therapy)", 
+  #   industry_sector == "Bar" ~ "Tourism accommodation and Restaurants", 
+  #   industry_sector == "Automotive" ~ "",
+  #   TRUE ~ as.character(industry_sector),
+  # )) %>%
   filter(industry_sector != "") %>%
   pivot_wider(names_from = industry_sector,
               values_from = single_count) %>%
@@ -156,17 +156,17 @@ financial_inclusion_survey = read_complete %>%
          funds_start != "") %>%
   select(-(survey_funds_start)) %>%
   mutate(single_count1 = 1) %>%
-  mutate(funds_start = case_when(
-    funds_start == "Sold property" |
-    # funds_start == "Political party funds" |
-    # funds_start == "Pension funds" |
-    funds_start == "pension benefits" |
-    funds_start == "No funds were needed since I just used my hands to plait" ~ "Personal savings (from salary or other business initiatives)",
-    funds_start == "Mukando" ~ "",
-    funds_start == "Mikando" ~ "",
-    funds_start == "LOAN" ~ "",
-    TRUE ~ as.character(funds_start),
-  )) %>%
+  # mutate(funds_start = case_when(
+  #   funds_start == "Sold property" |
+  #   # funds_start == "Political party funds" |
+  #   # funds_start == "Pension funds" |
+  #   funds_start == "pension benefits" |
+  #   funds_start == "No funds were needed since I just used my hands to plait" ~ "Personal savings (from salary or other business initiatives)",
+  #   funds_start == "Mukando" ~ "",
+  #   funds_start == "Mikando" ~ "",
+  #   funds_start == "LOAN" ~ "",
+  #   TRUE ~ as.character(funds_start),
+  # )) %>%
   filter(funds_start != "") %>%
   pivot_wider(names_from = funds_start,
               values_from = single_count1) %>% 
@@ -496,7 +496,7 @@ final_table = summed_percentages %>%
 ```
 
 ```{r}
-write.csv(final_table, file = "~/SIVIO/final_province_summary.csv")
+write.csv(final_table, file = "~/SIVIOgit/final_province_summary.csv")
 ```
 
 ```{r}

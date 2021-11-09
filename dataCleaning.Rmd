@@ -12,7 +12,7 @@ library(tidyverse)
 ```
 
 ```{r}
-read_completedata = read.csv(file = '~/SIVIO/9_11_2021_complete.csv',
+read_completedata = read.csv(file = '~/SIVIOgit/9_11_2021_complete.csv',
                           header = T, sep = ',')
 ```
 
@@ -497,8 +497,8 @@ clean_completedata = survey_completedata %>%
 
 
 ```{r}
-write.csv(survey_completedata, file = "~/SIVIO/survey_financial_inclusion.csv")
+write.csv(survey_completedata, file = "~/SIVIOgit/survey_financial_inclusion.csv")
 
-write.csv(clean_completedata, file = "~/SIVIO/clean_financial_inclusion.csv")
+write.csv(clean_completedata, file = "~/SIVIOgit/clean_financial_inclusion.csv")
 ```
 
