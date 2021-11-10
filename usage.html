@@ -190,9 +190,671 @@ level = c(&quot;province&quot;)</code></pre>
 </div>
 <div id="usage" class="section level1">
 <h1>Usage</h1>
+<div id="criteria-of-dimension" class="section level2">
+<h2>criteria of dimension</h2>
+<p>There are 22 criteria</p>
+<p>The criteria are funds_start_value, funds_ongoing_value, frequency_bank_account_value, number_bank_services_value, successful_bids_value, commercial_loan_apply_value, Number_commercial_loan_application_value, success_loan_commercial_value, service_loan_commercial_value, interest_commercial_value, payback_commercial_value, number_services_other_value, other_formal_loan_value, service_loan_other_value, interest_rate_loan_other_5years_value, payback_loan_other_5years_value, comprehensive_value, staff_value, product_value, frequency_mobile_money_value, loan_mm_value, investments_value</p>
+</div>
 <div id="characteritics" class="section level2">
 <h2>Characteritics</h2>
-<p>Nothing from this section of the survey</p>
+<div id="funds-start" class="section level3">
+<h3>funds start</h3>
+<p>Where generally get funds to start business</p>
+<p>Informal vs formal vs both</p>
+<ul>
+<li><p>Formal (MFI, Bank, Order finance, Rotating and Savings group, Local NGO, Credit Union, Government assiatnce program, International org through a grant, fellow business colleagues)</p></li>
+<li><p>Informal (personal savings, loan sharks, loaccly based family and friends, remittances from family or friends outside Zimbabwe)</p></li>
+<li><p>Both</p></li>
+</ul>
+<p>Will just look at % who got their funds from a formal source irregardless of whether they got funds from an informal source.</p>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+province
+</th>
+<th style="text-align:right;">
+informal_funds_start
+</th>
+<th style="text-align:right;">
+formal_funds_start
+</th>
+<th style="text-align:right;">
+both_informal_formal_funds_start
+</th>
+<th style="text-align:right;">
+no_answers_funds_start
+</th>
+<th style="text-align:right;">
+responses
+</th>
+<th style="text-align:right;">
+funds_start
+</th>
+<th style="text-align:right;">
+funds_start_value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Bulawayo
+</td>
+<td style="text-align:right;">
+0.6718750
+</td>
+<td style="text-align:right;">
+0.0546875
+</td>
+<td style="text-align:right;">
+0.2734375
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+128
+</td>
+<td style="text-align:right;">
+42
+</td>
+<td style="text-align:right;">
+0.3281250
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Harare
+</td>
+<td style="text-align:right;">
+0.8246753
+</td>
+<td style="text-align:right;">
+0.0259740
+</td>
+<td style="text-align:right;">
+0.1493506
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+155
+</td>
+<td style="text-align:right;">
+27
+</td>
+<td style="text-align:right;">
+0.1753247
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Manicaland
+</td>
+<td style="text-align:right;">
+0.6800000
+</td>
+<td style="text-align:right;">
+0.1200000
+</td>
+<td style="text-align:right;">
+0.2000000
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+151
+</td>
+<td style="text-align:right;">
+48
+</td>
+<td style="text-align:right;">
+0.3200000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Mashonaland Central
+</td>
+<td style="text-align:right;">
+0.8990826
+</td>
+<td style="text-align:right;">
+0.0550459
+</td>
+<td style="text-align:right;">
+0.0458716
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+111
+</td>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:right;">
+0.1009174
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Mashonaland East
+</td>
+<td style="text-align:right;">
+0.6299213
+</td>
+<td style="text-align:right;">
+0.0629921
+</td>
+<td style="text-align:right;">
+0.3070866
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+128
+</td>
+<td style="text-align:right;">
+47
+</td>
+<td style="text-align:right;">
+0.3700787
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Mashonaland West
+</td>
+<td style="text-align:right;">
+0.5500000
+</td>
+<td style="text-align:right;">
+0.0812500
+</td>
+<td style="text-align:right;">
+0.3687500
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+161
+</td>
+<td style="text-align:right;">
+72
+</td>
+<td style="text-align:right;">
+0.4500000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Masvingo
+</td>
+<td style="text-align:right;">
+0.7417219
+</td>
+<td style="text-align:right;">
+0.1192053
+</td>
+<td style="text-align:right;">
+0.1390728
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+154
+</td>
+<td style="text-align:right;">
+39
+</td>
+<td style="text-align:right;">
+0.2582781
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Matabeleland North
+</td>
+<td style="text-align:right;">
+0.8750000
+</td>
+<td style="text-align:right;">
+0.0416667
+</td>
+<td style="text-align:right;">
+0.0833333
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+144
+</td>
+<td style="text-align:right;">
+18
+</td>
+<td style="text-align:right;">
+0.1250000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Matabeleland South
+</td>
+<td style="text-align:right;">
+0.8134328
+</td>
+<td style="text-align:right;">
+0.0522388
+</td>
+<td style="text-align:right;">
+0.1343284
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+134
+</td>
+<td style="text-align:right;">
+25
+</td>
+<td style="text-align:right;">
+0.1865672
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Midlands
+</td>
+<td style="text-align:right;">
+0.7520661
+</td>
+<td style="text-align:right;">
+0.0909091
+</td>
+<td style="text-align:right;">
+0.1570248
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+125
+</td>
+<td style="text-align:right;">
+30
+</td>
+<td style="text-align:right;">
+0.2479339
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+total
+</td>
+<td style="text-align:right;">
+7.4377750
+</td>
+<td style="text-align:right;">
+0.7039694
+</td>
+<td style="text-align:right;">
+1.8582557
+</td>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:right;">
+1391
+</td>
+<td style="text-align:right;">
+359
+</td>
+<td style="text-align:right;">
+2.5622250
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="funds-ongoing" class="section level3">
+<h3>funds ongoing</h3>
+<p>Where generally get funds for ongoing business ventures</p>
+<p>Informal vs formal vs both</p>
+<ul>
+<li><p>Formal</p></li>
+<li><p>Informal</p></li>
+<li><p>Informal</p></li>
+</ul>
+<p>Again proportion that get funds from formal sources</p>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+province
+</th>
+<th style="text-align:right;">
+informal_funds_ongoing
+</th>
+<th style="text-align:right;">
+formal_funds_ongoing
+</th>
+<th style="text-align:right;">
+both_informal_formal_funds_ongoing
+</th>
+<th style="text-align:right;">
+no_answers_funds_ongoing
+</th>
+<th style="text-align:right;">
+responses
+</th>
+<th style="text-align:right;">
+funds_ongoing
+</th>
+<th style="text-align:right;">
+funds_ongoing_value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Bulawayo
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.1484375
+</td>
+<td style="text-align:right;">
+0.2265625
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+128
+</td>
+<td style="text-align:right;">
+48
+</td>
+<td style="text-align:right;">
+0.3750000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Harare
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.0322581
+</td>
+<td style="text-align:right;">
+0.1483871
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+155
+</td>
+<td style="text-align:right;">
+28
+</td>
+<td style="text-align:right;">
+0.1806452
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Manicaland
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.1192053
+</td>
+<td style="text-align:right;">
+0.2119205
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+151
+</td>
+<td style="text-align:right;">
+50
+</td>
+<td style="text-align:right;">
+0.3311258
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Mashonaland Central
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.0810811
+</td>
+<td style="text-align:right;">
+0.1081081
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+111
+</td>
+<td style="text-align:right;">
+21
+</td>
+<td style="text-align:right;">
+0.1891892
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Mashonaland East
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.0468750
+</td>
+<td style="text-align:right;">
+0.4296875
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+128
+</td>
+<td style="text-align:right;">
+61
+</td>
+<td style="text-align:right;">
+0.4765625
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Mashonaland West
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.0931677
+</td>
+<td style="text-align:right;">
+0.4409938
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+161
+</td>
+<td style="text-align:right;">
+86
+</td>
+<td style="text-align:right;">
+0.5341615
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Masvingo
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.2012987
+</td>
+<td style="text-align:right;">
+0.2402597
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+154
+</td>
+<td style="text-align:right;">
+68
+</td>
+<td style="text-align:right;">
+0.4415584
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Matabeleland North
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.0486111
+</td>
+<td style="text-align:right;">
+0.1250000
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+144
+</td>
+<td style="text-align:right;">
+25
+</td>
+<td style="text-align:right;">
+0.1736111
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Matabeleland South
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.0373134
+</td>
+<td style="text-align:right;">
+0.1194030
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+134
+</td>
+<td style="text-align:right;">
+21
+</td>
+<td style="text-align:right;">
+0.1567164
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Midlands
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.0720000
+</td>
+<td style="text-align:right;">
+0.1680000
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+125
+</td>
+<td style="text-align:right;">
+30
+</td>
+<td style="text-align:right;">
+0.2400000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+total
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.8802479
+</td>
+<td style="text-align:right;">
+2.2183222
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1391
+</td>
+<td style="text-align:right;">
+438
+</td>
+<td style="text-align:right;">
+3.0985701
+</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 <div id="registration" class="section level2">
 <h2>Registration</h2>
@@ -306,16 +968,16 @@ Mashonaland Central
 Mashonaland East
 </td>
 <td style="text-align:right;">
-4.903846
+4.814815
 </td>
 <td style="text-align:right;">
-52
+54
 </td>
 <td style="text-align:right;">
 0
 </td>
 <td style="text-align:right;">
-0.9807692
+0.9629630
 </td>
 </tr>
 <tr>
@@ -408,16 +1070,16 @@ Midlands
 total
 </td>
 <td style="text-align:right;">
-47.458658
+47.369626
 </td>
 <td style="text-align:right;">
-495
+497
 </td>
 <td style="text-align:right;">
 0
 </td>
 <td style="text-align:right;">
-9.4917315
+9.4739253
 </td>
 </tr>
 </tbody>
@@ -855,6 +1517,220 @@ total
 <div id="loans" class="section level2">
 <h2>Loans</h2>
 <p>Survey differentiates between 12 months and the previous 4 years… so this code asks for over the last five years but takes no consideration of the age of the business… Will need to add that component!!!</p>
+<div id="loan-application-in-the-past" class="section level3">
+<h3>Loan application in the past</h3>
+<p>% applied for a loan in the past</p>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+province
+</th>
+<th style="text-align:right;">
+commercial_loan_application
+</th>
+<th style="text-align:right;">
+responses
+</th>
+<th style="text-align:right;">
+not_answered_commercial_loan
+</th>
+<th style="text-align:right;">
+commercial_loan_apply_value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Bulawayo
+</td>
+<td style="text-align:right;">
+24
+</td>
+<td style="text-align:right;">
+128
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.1875000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Harare
+</td>
+<td style="text-align:right;">
+27
+</td>
+<td style="text-align:right;">
+155
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.1741935
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Manicaland
+</td>
+<td style="text-align:right;">
+24
+</td>
+<td style="text-align:right;">
+151
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.1589404
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Mashonaland Central
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:right;">
+111
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.1801802
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Mashonaland East
+</td>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:right;">
+128
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.1093750
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Mashonaland West
+</td>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:right;">
+161
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.0931677
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Masvingo
+</td>
+<td style="text-align:right;">
+18
+</td>
+<td style="text-align:right;">
+154
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.1168831
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Matabeleland North
+</td>
+<td style="text-align:right;">
+24
+</td>
+<td style="text-align:right;">
+144
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.1666667
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Matabeleland South
+</td>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:right;">
+134
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.1268657
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Midlands
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+125
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.0800000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+total
+</td>
+<td style="text-align:right;">
+193
+</td>
+<td style="text-align:right;">
+1391
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1.3937723
+</td>
+</tr>
+</tbody>
+</table>
+</div>
 <div id="number-loan-applications-in-5-years" class="section level3">
 <h3>Number loan applications in 5 years</h3>
 <ul>
@@ -1102,7 +1978,7 @@ responses.y
 not_answered_success_4years
 </th>
 <th style="text-align:right;">
-success_loan_value
+success_loan_commercial_value
 </th>
 </tr>
 </thead>
@@ -1423,7 +2299,7 @@ responses.y
 not_answered_service_4years
 </th>
 <th style="text-align:right;">
-service_loan_value
+service_loan_commercial_value
 </th>
 </tr>
 </thead>
@@ -2220,7 +3096,7 @@ NA
 province
 </th>
 <th style="text-align:right;">
-number_services
+number_services_other
 </th>
 <th style="text-align:right;">
 responses
@@ -2229,7 +3105,7 @@ responses
 not_answered_services_other
 </th>
 <th style="text-align:right;">
-number_services_value
+number_services_other_value
 </th>
 </tr>
 </thead>
@@ -2446,7 +3322,7 @@ total
 province
 </th>
 <th style="text-align:right;">
-formal_loan
+other_formal_loan
 </th>
 <th style="text-align:right;">
 informal_loan
@@ -2458,7 +3334,7 @@ responses
 not_answered_loan_other
 </th>
 <th style="text-align:right;">
-formal_loan_value
+other_formal_loan_value
 </th>
 </tr>
 </thead>
@@ -2554,10 +3430,10 @@ Mashonaland East
 2
 </td>
 <td style="text-align:right;">
-125
+128
 </td>
 <td style="text-align:right;">
-120
+123
 </td>
 <td style="text-align:right;">
 0.8000000
@@ -2674,10 +3550,10 @@ total
 36
 </td>
 <td style="text-align:right;">
-1388
+1391
 </td>
 <td style="text-align:right;">
-1292
+1295
 </td>
 <td style="text-align:right;">
 9.1634810
@@ -2802,10 +3678,10 @@ Mashonaland East
 4
 </td>
 <td style="text-align:right;">
-125
+128
 </td>
 <td style="text-align:right;">
-120
+123
 </td>
 <td style="text-align:right;">
 0.8000000
@@ -2904,10 +3780,10 @@ total
 81
 </td>
 <td style="text-align:right;">
-1383
+1386
 </td>
 <td style="text-align:right;">
-1291
+1294
 </td>
 <td style="text-align:right;">
 8.7336830
@@ -3563,19 +4439,19 @@ Mashonaland East
 8
 </td>
 <td style="text-align:right;">
-16
+17
 </td>
 <td style="text-align:right;">
 0
 </td>
 <td style="text-align:right;">
-0.3750000
+0.3529412
 </td>
 <td style="text-align:right;">
-0.4375000
+0.4117647
 </td>
 <td style="text-align:right;">
-0.5000000
+0.4705882
 </td>
 <td style="text-align:right;">
 7
@@ -3587,28 +4463,28 @@ Mashonaland East
 7
 </td>
 <td style="text-align:right;">
-16
+17
 </td>
 <td style="text-align:right;">
 0
 </td>
 <td style="text-align:right;">
-0.4375000
+0.4117647
 </td>
 <td style="text-align:right;">
-0.3750000
+0.3529412
 </td>
 <td style="text-align:right;">
-0.4375000
+0.4117647
 </td>
 <td style="text-align:right;">
-0.4062500
+0.3823529
 </td>
 <td style="text-align:right;">
-0.4062500
+0.3823529
 </td>
 <td style="text-align:right;">
-0.4687500
+0.4411765
 </td>
 </tr>
 <tr>
@@ -3935,19 +4811,19 @@ total
 90
 </td>
 <td style="text-align:right;">
-267
+268
 </td>
 <td style="text-align:right;">
 0
 </td>
 <td style="text-align:right;">
-3.3101511
+3.2880923
 </td>
 <td style="text-align:right;">
-3.5882385
+3.5625032
 </td>
 <td style="text-align:right;">
-3.2194965
+3.1900847
 </td>
 <td style="text-align:right;">
 49
@@ -3959,28 +4835,28 @@ total
 95
 </td>
 <td style="text-align:right;">
-267
+268
 </td>
 <td style="text-align:right;">
 4
 </td>
 <td style="text-align:right;">
-2.2053620
+2.1796267
 </td>
 <td style="text-align:right;">
-3.0885280
+3.0664692
 </td>
 <td style="text-align:right;">
-3.2228629
+3.1971277
 </td>
 <td style="text-align:right;">
-2.7577566
+2.7338595
 </td>
 <td style="text-align:right;">
-3.3383833
+3.3144862
 </td>
 <td style="text-align:right;">
-3.2211797
+3.1936062
 </td>
 </tr>
 </tbody>
@@ -4098,16 +4974,16 @@ Mashonaland Central
 Mashonaland East
 </td>
 <td style="text-align:right;">
-4.873786
+4.828571
 </td>
 <td style="text-align:right;">
-103
+105
 </td>
 <td style="text-align:right;">
 0
 </td>
 <td style="text-align:right;">
-0.9747573
+0.9657143
 </td>
 </tr>
 <tr>
@@ -4200,16 +5076,16 @@ Midlands
 total
 </td>
 <td style="text-align:right;">
-47.737795
+47.692580
 </td>
 <td style="text-align:right;">
-800
+802
 </td>
 <td style="text-align:right;">
 0
 </td>
 <td style="text-align:right;">
-9.5475590
+9.5385160
 </td>
 </tr>
 </tbody>
@@ -4234,7 +5110,7 @@ responses
 not_answered_loan_MM
 </th>
 <th style="text-align:right;">
-loan_MM_value
+loan_mm_value
 </th>
 </tr>
 </thead>
@@ -4315,13 +5191,13 @@ Mashonaland East
 6
 </td>
 <td style="text-align:right;">
-103
+105
 </td>
 <td style="text-align:right;">
 0
 </td>
 <td style="text-align:right;">
-0.0582524
+0.0571429
 </td>
 </tr>
 <tr>
@@ -4417,13 +5293,13 @@ total
 37
 </td>
 <td style="text-align:right;">
-800
+802
 </td>
 <td style="text-align:right;">
 8
 </td>
 <td style="text-align:right;">
-0.5503886
+0.5492790
 </td>
 </tr>
 </tbody>
@@ -4526,16 +5402,16 @@ Mashonaland Central
 Mashonaland East
 </td>
 <td style="text-align:right;">
-78
+80
 </td>
 <td style="text-align:right;">
-125
+128
 </td>
 <td style="text-align:right;">
 0
 </td>
 <td style="text-align:right;">
-0.6240000
+0.6250000
 </td>
 </tr>
 <tr>
@@ -4628,16 +5504,16 @@ Midlands
 total
 </td>
 <td style="text-align:right;">
-485
+487
 </td>
 <td style="text-align:right;">
-1388
+1391
 </td>
 <td style="text-align:right;">
 0
 </td>
 <td style="text-align:right;">
-3.5869484
+3.5879484
 </td>
 </tr>
 </tbody>
@@ -4646,6 +5522,929 @@ total
 <div id="access-to-information" class="section level2">
 <h2>Access to Information</h2>
 <p>No information from the survey</p>
+</div>
+<div id="final-table" class="section level2">
+<h2>Final Table</h2>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+province
+</th>
+<th style="text-align:right;">
+n
+</th>
+<th style="text-align:right;">
+funds_start_value
+</th>
+<th style="text-align:right;">
+funds_ongoing_value
+</th>
+<th style="text-align:right;">
+frequency_bank_account_value
+</th>
+<th style="text-align:right;">
+number_bank_services_value
+</th>
+<th style="text-align:right;">
+successful_bids_value
+</th>
+<th style="text-align:right;">
+commercial_loan_apply_value
+</th>
+<th style="text-align:right;">
+Number_commercial_loan_application_value
+</th>
+<th style="text-align:right;">
+success_loan_commercial_value
+</th>
+<th style="text-align:right;">
+service_loan_commercial_value
+</th>
+<th style="text-align:right;">
+interest_commercial_value
+</th>
+<th style="text-align:right;">
+payback_commercial_value
+</th>
+<th style="text-align:right;">
+number_services_other_value
+</th>
+<th style="text-align:right;">
+other_formal_loan_value
+</th>
+<th style="text-align:right;">
+service_loan_other_value
+</th>
+<th style="text-align:right;">
+interest_rate_loan_other_5years_value
+</th>
+<th style="text-align:right;">
+payback_loan_other_5years_value
+</th>
+<th style="text-align:right;">
+comprehensive_value
+</th>
+<th style="text-align:right;">
+product_value
+</th>
+<th style="text-align:right;">
+staff_value
+</th>
+<th style="text-align:right;">
+frequency_mobile_money_value
+</th>
+<th style="text-align:right;">
+loan_mm_value
+</th>
+<th style="text-align:right;">
+investments_value
+</th>
+<th style="text-align:right;">
+usage_score
+</th>
+<th style="text-align:right;">
+usage_normalise
+</th>
+<th style="text-align:right;">
+usage_percentage
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Bulawayo
+</td>
+<td style="text-align:right;">
+128
+</td>
+<td style="text-align:right;">
+0.3281250
+</td>
+<td style="text-align:right;">
+0.3750000
+</td>
+<td style="text-align:right;">
+0.9454545
+</td>
+<td style="text-align:right;">
+0.5454545
+</td>
+<td style="text-align:right;">
+0.3333333
+</td>
+<td style="text-align:right;">
+0.1875000
+</td>
+<td style="text-align:right;">
+0.5833333
+</td>
+<td style="text-align:right;">
+0.7543860
+</td>
+<td style="text-align:right;">
+0.7666667
+</td>
+<td style="text-align:right;">
+0.5000000
+</td>
+<td style="text-align:right;">
+0.7361111
+</td>
+<td style="text-align:right;">
+0.3541667
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+<td style="text-align:right;">
+0.8666667
+</td>
+<td style="text-align:right;">
+0.5000000
+</td>
+<td style="text-align:right;">
+0.6111111
+</td>
+<td style="text-align:right;">
+0.2391304
+</td>
+<td style="text-align:right;">
+0.2391304
+</td>
+<td style="text-align:right;">
+0.2173913
+</td>
+<td style="text-align:right;">
+0.9500000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.4296875
+</td>
+<td style="text-align:right;">
+11.46265
+</td>
+<td style="text-align:right;">
+0.5210295
+</td>
+<td style="text-align:right;">
+52.10
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Harare
+</td>
+<td style="text-align:right;">
+155
+</td>
+<td style="text-align:right;">
+0.1753247
+</td>
+<td style="text-align:right;">
+0.1806452
+</td>
+<td style="text-align:right;">
+0.9794118
+</td>
+<td style="text-align:right;">
+0.5833333
+</td>
+<td style="text-align:right;">
+0.3000000
+</td>
+<td style="text-align:right;">
+0.1741935
+</td>
+<td style="text-align:right;">
+0.4629630
+</td>
+<td style="text-align:right;">
+0.2833333
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+<td style="text-align:right;">
+0.5000000
+</td>
+<td style="text-align:right;">
+0.8888889
+</td>
+<td style="text-align:right;">
+0.5151515
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+<td style="text-align:right;">
+0.9090909
+</td>
+<td style="text-align:right;">
+0.5000000
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+<td style="text-align:right;">
+0.1851852
+</td>
+<td style="text-align:right;">
+0.5740741
+</td>
+<td style="text-align:right;">
+0.2592593
+</td>
+<td style="text-align:right;">
+0.9688073
+</td>
+<td style="text-align:right;">
+0.0183486
+</td>
+<td style="text-align:right;">
+0.1935484
+</td>
+<td style="text-align:right;">
+11.65156
+</td>
+<td style="text-align:right;">
+0.5296163
+</td>
+<td style="text-align:right;">
+52.96
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Manicaland
+</td>
+<td style="text-align:right;">
+151
+</td>
+<td style="text-align:right;">
+0.3200000
+</td>
+<td style="text-align:right;">
+0.3311258
+</td>
+<td style="text-align:right;">
+0.8758621
+</td>
+<td style="text-align:right;">
+0.5438596
+</td>
+<td style="text-align:right;">
+0.4285714
+</td>
+<td style="text-align:right;">
+0.1589404
+</td>
+<td style="text-align:right;">
+0.5208333
+</td>
+<td style="text-align:right;">
+0.5416667
+</td>
+<td style="text-align:right;">
+0.8571429
+</td>
+<td style="text-align:right;">
+0.3333333
+</td>
+<td style="text-align:right;">
+0.7222222
+</td>
+<td style="text-align:right;">
+0.4222222
+</td>
+<td style="text-align:right;">
+0.7333333
+</td>
+<td style="text-align:right;">
+0.9230769
+</td>
+<td style="text-align:right;">
+0.3333333
+</td>
+<td style="text-align:right;">
+0.8571429
+</td>
+<td style="text-align:right;">
+0.3448276
+</td>
+<td style="text-align:right;">
+0.4137931
+</td>
+<td style="text-align:right;">
+0.3965517
+</td>
+<td style="text-align:right;">
+0.9204082
+</td>
+<td style="text-align:right;">
+0.1134021
+</td>
+<td style="text-align:right;">
+0.4503311
+</td>
+<td style="text-align:right;">
+11.54198
+</td>
+<td style="text-align:right;">
+0.5246355
+</td>
+<td style="text-align:right;">
+52.46
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Mashonaland Central
+</td>
+<td style="text-align:right;">
+111
+</td>
+<td style="text-align:right;">
+0.1009174
+</td>
+<td style="text-align:right;">
+0.1891892
+</td>
+<td style="text-align:right;">
+0.9600000
+</td>
+<td style="text-align:right;">
+0.5185185
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+<td style="text-align:right;">
+0.1801802
+</td>
+<td style="text-align:right;">
+0.3500000
+</td>
+<td style="text-align:right;">
+0.6160714
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+<td style="text-align:right;">
+0.5000000
+</td>
+<td style="text-align:right;">
+0.9166667
+</td>
+<td style="text-align:right;">
+0.4761905
+</td>
+<td style="text-align:right;">
+0.8888889
+</td>
+<td style="text-align:right;">
+0.7500000
+</td>
+<td style="text-align:right;">
+0.5000000
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+<td style="text-align:right;">
+0.4017857
+</td>
+<td style="text-align:right;">
+0.0669643
+</td>
+<td style="text-align:right;">
+0.0312500
+</td>
+<td style="text-align:right;">
+0.9545455
+</td>
+<td style="text-align:right;">
+0.1052632
+</td>
+<td style="text-align:right;">
+0.5855856
+</td>
+<td style="text-align:right;">
+12.09202
+</td>
+<td style="text-align:right;">
+0.5496371
+</td>
+<td style="text-align:right;">
+54.96
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Mashonaland East
+</td>
+<td style="text-align:right;">
+128
+</td>
+<td style="text-align:right;">
+0.3700787
+</td>
+<td style="text-align:right;">
+0.4765625
+</td>
+<td style="text-align:right;">
+0.9629630
+</td>
+<td style="text-align:right;">
+0.6333333
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.1093750
+</td>
+<td style="text-align:right;">
+0.4642857
+</td>
+<td style="text-align:right;">
+0.3863636
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+<td style="text-align:right;">
+0.5000000
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+<td style="text-align:right;">
+0.4666667
+</td>
+<td style="text-align:right;">
+0.8000000
+</td>
+<td style="text-align:right;">
+0.8000000
+</td>
+<td style="text-align:right;">
+0.3333333
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+<td style="text-align:right;">
+0.3823529
+</td>
+<td style="text-align:right;">
+0.3823529
+</td>
+<td style="text-align:right;">
+0.4411765
+</td>
+<td style="text-align:right;">
+0.9657143
+</td>
+<td style="text-align:right;">
+0.0571429
+</td>
+<td style="text-align:right;">
+0.6250000
+</td>
+<td style="text-align:right;">
+12.15670
+</td>
+<td style="text-align:right;">
+0.5525773
+</td>
+<td style="text-align:right;">
+55.26
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Mashonaland West
+</td>
+<td style="text-align:right;">
+161
+</td>
+<td style="text-align:right;">
+0.4500000
+</td>
+<td style="text-align:right;">
+0.5341615
+</td>
+<td style="text-align:right;">
+0.9709091
+</td>
+<td style="text-align:right;">
+0.5000000
+</td>
+<td style="text-align:right;">
+0.5000000
+</td>
+<td style="text-align:right;">
+0.0931677
+</td>
+<td style="text-align:right;">
+0.5333333
+</td>
+<td style="text-align:right;">
+0.3000000
+</td>
+<td style="text-align:right;">
+0.3333333
+</td>
+<td style="text-align:right;">
+0.5000000
+</td>
+<td style="text-align:right;">
+0.6666667
+</td>
+<td style="text-align:right;">
+0.3939394
+</td>
+<td style="text-align:right;">
+0.8181818
+</td>
+<td style="text-align:right;">
+0.8181818
+</td>
+<td style="text-align:right;">
+0.5000000
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+<td style="text-align:right;">
+0.2750980
+</td>
+<td style="text-align:right;">
+0.4080392
+</td>
+<td style="text-align:right;">
+0.6643137
+</td>
+<td style="text-align:right;">
+0.9734694
+</td>
+<td style="text-align:right;">
+0.0721649
+</td>
+<td style="text-align:right;">
+0.3850932
+</td>
+<td style="text-align:right;">
+11.69005
+</td>
+<td style="text-align:right;">
+0.5313661
+</td>
+<td style="text-align:right;">
+53.14
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Masvingo
+</td>
+<td style="text-align:right;">
+154
+</td>
+<td style="text-align:right;">
+0.2582781
+</td>
+<td style="text-align:right;">
+0.4415584
+</td>
+<td style="text-align:right;">
+0.9777778
+</td>
+<td style="text-align:right;">
+0.3750000
+</td>
+<td style="text-align:right;">
+0.5000000
+</td>
+<td style="text-align:right;">
+0.1168831
+</td>
+<td style="text-align:right;">
+0.5277778
+</td>
+<td style="text-align:right;">
+0.6333333
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+<td style="text-align:right;">
+0.3333333
+</td>
+<td style="text-align:right;">
+0.8333333
+</td>
+<td style="text-align:right;">
+0.5897436
+</td>
+<td style="text-align:right;">
+0.9230769
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+<td style="text-align:right;">
+0.3333333
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+<td style="text-align:right;">
+0.1052632
+</td>
+<td style="text-align:right;">
+0.2368421
+</td>
+<td style="text-align:right;">
+0.3421053
+</td>
+<td style="text-align:right;">
+0.9824561
+</td>
+<td style="text-align:right;">
+0.0877193
+</td>
+<td style="text-align:right;">
+0.2467532
+</td>
+<td style="text-align:right;">
+11.84457
+</td>
+<td style="text-align:right;">
+0.5383895
+</td>
+<td style="text-align:right;">
+53.84
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Matabeleland North
+</td>
+<td style="text-align:right;">
+144
+</td>
+<td style="text-align:right;">
+0.1250000
+</td>
+<td style="text-align:right;">
+0.1736111
+</td>
+<td style="text-align:right;">
+0.9090909
+</td>
+<td style="text-align:right;">
+0.4102564
+</td>
+<td style="text-align:right;">
+0.5000000
+</td>
+<td style="text-align:right;">
+0.1666667
+</td>
+<td style="text-align:right;">
+0.6041667
+</td>
+<td style="text-align:right;">
+0.8406863
+</td>
+<td style="text-align:right;">
+0.9230769
+</td>
+<td style="text-align:right;">
+0.5000000
+</td>
+<td style="text-align:right;">
+0.9761905
+</td>
+<td style="text-align:right;">
+0.3333333
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+<td style="text-align:right;">
+0.8333333
+</td>
+<td style="text-align:right;">
+0.5000000
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+<td style="text-align:right;">
+0.3000000
+</td>
+<td style="text-align:right;">
+0.3500000
+</td>
+<td style="text-align:right;">
+0.2500000
+</td>
+<td style="text-align:right;">
+0.9636364
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0902778
+</td>
+<td style="text-align:right;">
+11.74933
+</td>
+<td style="text-align:right;">
+0.5340603
+</td>
+<td style="text-align:right;">
+53.41
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Matabeleland South
+</td>
+<td style="text-align:right;">
+134
+</td>
+<td style="text-align:right;">
+0.1865672
+</td>
+<td style="text-align:right;">
+0.1567164
+</td>
+<td style="text-align:right;">
+0.9657895
+</td>
+<td style="text-align:right;">
+0.6296296
+</td>
+<td style="text-align:right;">
+0.1111111
+</td>
+<td style="text-align:right;">
+0.1268657
+</td>
+<td style="text-align:right;">
+0.3823529
+</td>
+<td style="text-align:right;">
+0.2261905
+</td>
+<td style="text-align:right;">
+0.7500000
+</td>
+<td style="text-align:right;">
+0.5000000
+</td>
+<td style="text-align:right;">
+0.8333333
+</td>
+<td style="text-align:right;">
+0.5000000
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+<td style="text-align:right;">
+0.8333333
+</td>
+<td style="text-align:right;">
+0.5000000
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+<td style="text-align:right;">
+0.3714286
+</td>
+<td style="text-align:right;">
+0.3857143
+</td>
+<td style="text-align:right;">
+0.1142857
+</td>
+<td style="text-align:right;">
+0.9547170
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.3656716
+</td>
+<td style="text-align:right;">
+10.89371
+</td>
+<td style="text-align:right;">
+0.4951685
+</td>
+<td style="text-align:right;">
+49.52
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Midlands
+</td>
+<td style="text-align:right;">
+125
+</td>
+<td style="text-align:right;">
+0.2479339
+</td>
+<td style="text-align:right;">
+0.2400000
+</td>
+<td style="text-align:right;">
+0.9266667
+</td>
+<td style="text-align:right;">
+0.5454545
+</td>
+<td style="text-align:right;">
+0.5000000
+</td>
+<td style="text-align:right;">
+0.0800000
+</td>
+<td style="text-align:right;">
+0.5500000
+</td>
+<td style="text-align:right;">
+0.3928571
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+<td style="text-align:right;">
+0.5000000
+</td>
+<td style="text-align:right;">
+0.3333333
+</td>
+<td style="text-align:right;">
+0.4166667
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+<td style="text-align:right;">
+0.5000000
+</td>
+<td style="text-align:right;">
+0.6666667
+</td>
+<td style="text-align:right;">
+0.1287879
+</td>
+<td style="text-align:right;">
+0.2575758
+</td>
+<td style="text-align:right;">
+0.4772727
+</td>
+<td style="text-align:right;">
+0.9047619
+</td>
+<td style="text-align:right;">
+0.0952381
+</td>
+<td style="text-align:right;">
+0.2160000
+</td>
+<td style="text-align:right;">
+10.97922
+</td>
+<td style="text-align:right;">
+0.4990552
+</td>
+<td style="text-align:right;">
+49.91
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>write.csv(usage_critera, file = &quot;~/SIVIOgit/usage_criteria.csv&quot;)</code></pre>
 </div>
 </div>
 

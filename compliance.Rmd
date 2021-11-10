@@ -16,7 +16,6 @@ library(kableExtra)
 data = read.csv(file = "~/SIVIOgit/clean_financial_inclusion.csv")
 ```
 
-
 # levels of inclusion.
 
 This can be used to compare across the different measures.
@@ -33,7 +32,9 @@ This can be used to compare across the different measures.
 level = c("province")
 ```
 
-```{r}
+# Compliance
+
+```{r include=FALSE}
 # 2 possible criteria
 
 # "registered_value",
@@ -43,6 +44,11 @@ criteria = c(
   "registered_value",
   "zimra_value")
 ```
+
+There are **`r length(criteria)`** criteria
+
+The criteria are `r criteria`
+
 
 ## Registration
 

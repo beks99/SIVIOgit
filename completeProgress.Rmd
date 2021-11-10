@@ -88,7 +88,7 @@ Or just remove from analysed data
 ```{r Incorrect codes, echo=FALSE}
 completedata %>%
   filter(!(Respondent.ID %in% clean_complete$Respondent.ID)) %>%
-  select(standardcode, enumerator_name, Respondent.ID, urbanrural)
+  select(standardcode, enumerator_name, Respondent.ID, urbanrural, province, enterprise)
 ```
 
 # Duplicated Code

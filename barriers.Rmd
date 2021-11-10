@@ -32,14 +32,12 @@ This can be used to compare across the different measures.
 level = c("province")
 ```
 
-```{r}
-provincial_totals = c(128,155,151,111,125,161,154,144,134,125)
+```{r include=FALSE}
+provincial_totals = data %>% group_by(across(all_of(level))) %>% summarise(provincial_totals = n())
 ```
 
 
 # Penetration Barriers
-
-## Business characteristics
 
 ## Registration 
 
@@ -47,7 +45,7 @@ provincial_totals = c(128,155,151,111,125,161,154,144,134,125)
 
 - not registered with Zimra
 
-### Knowledge, Finance/Affordability, Complicated law, Bureaucracy
+**Knowledge, Finance/Affordability, Complicated law, Bureaucracy**
 
 ```{r echo=FALSE}
 register = data %>%
@@ -124,11 +122,11 @@ zimra %>%
 
 - reason no bank account
 
-### Documentation, legal standing, finance, trust, bureaucracy
+**Documentation, legal standing, finance, trust, bureaucracy**
 
 - reason not registered on SME auction
 
-### Knowledge, legal standing, finance, Complicated law, trust
+**Knowledge, legal standing, finance, Complicated law, trust**
 
 ```{r echo=FALSE}
 bank_account = data %>%
@@ -224,6 +222,10 @@ sme_auction %>%
 
 ## Loans
 
+- reasons not applied for a loan in the past
+
+**knowledge, documentation, legal, finance, appropriateness**
+
 ```{r echo=FALSE}
 commercial_loan = data %>%
   select(all_of(level), 
@@ -271,6 +273,10 @@ commercial_loan %>%
 ```
 
 ## Insurance
+
+- reasons not having business insurance products
+
+**knowledge, legal standing, finance, inflation, law, trust, appropriateness**
 
 ```{r echo=FALSE}
 business_insurance = data %>%
@@ -326,6 +332,10 @@ business_insurance %>%
 
 ## Pensions
 
+- reasons not having a pension policy
+
+**knowledge, finance, inflation, law, trust, appropriateness**
+
 ```{r echo=FALSE}
 pension = data %>%
   select(all_of(level), 
@@ -378,6 +388,10 @@ pension %>%
 
 ## Mobile Money
 
+- reasons not having a mobile money account
+
+**documentation, finance, trust, bureaucracy**
+
 ```{r echo=FALSE}
 mobile_money = data %>%
   select(all_of(level), 
@@ -422,7 +436,11 @@ mobile_money %>%
   kable_styling()
 ```
 
-## Savings facility
+## Investments and Capital Markets
+
+- reasons for not making investments
+
+**knowledge, finance, inflation**
 
 ```{r echo=FALSE}
 investments = data %>%
@@ -468,10 +486,25 @@ investments %>%
   kable_styling()
 ```
 
-## Access to information
-
-
 ## Combine into 8 measures
+
+- knowledge
+
+- documentation
+
+- legal standing
+
+- finance/ affordability
+
+- inflation
+
+- complicated law/process
+
+- trust
+
+- bureaucracy
+
+- appropriateness
 
 ```{r echo=FALSE}
 reasons = 
@@ -633,7 +666,7 @@ knowledge_score = data %>%
   ) %>%
   group_by(across(all_of(level))) %>%
   summarise_if(is.numeric, sum) %>%
-  mutate(responses = provincial_totals)
+  full_join(y = provincial_totals, by = all_of(level))
 
 knowledge_score$not_answered = rowSums(knowledge_score[, c("not_answered_banking", "not_answered_mobile", "not_answered_investments",
                                                            "not_answered_insurance", "not_answered_pensions", "not_answered_commercial_loan",
@@ -644,7 +677,7 @@ knowledge_score$score = rowSums(knowledge_score[, c("knowledge_banking_services"
          "knowledge_loans_credit_microfinance", "knowledge_loans_credit_roscas_isals", "knowledge_taxation_regulations")])
 
 knowledge_score_final = knowledge_score %>%
-  mutate(max_score = (5* (responses - not_answered)) * 9,
+  mutate(max_score = (5* (provincial_totals - not_answered)) * 9,
          score_value = score / max_score
          )
 
@@ -659,7 +692,7 @@ barriers_critera = data %>%
   group_by(across(all_of(level))) %>%
   summarise(n=n()) %>%
   full_join(y = (barrier_reasons %>% select(all_of(level), knowledge, documentation, legal, finance, inflation, law, trust, bureaucracy, inappropraite)), by = all_of(level)) %>%
-  full_join(y = (knowledge_score_final %>% select(all_of(level), score_value)))
+  full_join(y = (knowledge_score_final %>% select(all_of(level), score_value))) 
 
 barriers_critera %>%
   kable() %>%
@@ -669,35 +702,4 @@ barriers_critera %>%
 
 ```{r}
 write.csv(barriers_critera, file = "~/SIVIOgit/barriers_criteria.csv")
-```
-
-```{r}
-# data %>%
-#   select(
-#     # characteristics
-#     
-#     # registration
-#     
-#     # banking
-#     barriers_use_bank_account,
-#     restrictions_bank_account,
-#     
-#     # loans
-#     reason_rejected_commercial_loan_12months,
-#     
-#     # other financial institutions
-#     
-#     # insurance
-#     
-#     # pensions
-#     
-#     # mobile money
-#     barriers_use_mobile_money,
-#     restrictions_use_mobile_money,
-#     
-#     # investments
-#     
-#     # access to information
-#     
-#   )
 ```

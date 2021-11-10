@@ -32,181 +32,36 @@ This can be used to compare across the different measures.
 level = c("province")
 ```
 
+## Criteria
+
 ```{r include=FALSE}
-# 18 possible criteria
-
-# "funds_start_value",
-# "funds_ongoing_value",
-# "bank_account_value",
-# "time_open_bank_value",
-# "sme_auction_value",
-# "commercial_loan_apply_value",
-# "time_approval_commercial_value",
-# "collateral_commercial_value",
-# "other_financial_value",
-# "time_approval_other_value",
-# "collateral_other_value",
-# "insurance_value",
-# "pension_value",
-# "mm_account_value",
-# "time_open_mm_value",
-# "insurance_mm_value",
-# "savings_facility_value",
-# "advice_sources_value"
-
 criteria = c(
-  "funds_start_value",
-  "funds_ongoing_value",
   "bank_account_value",
   "time_open_bank_value",
   "sme_auction_value",
-  "commercial_loan_apply_value",
-  "time_approval_commercial_value",
-  "collateral_commercial_value",
-  "other_financial_value",
-  "time_approval_other_value",
-  "collateral_other_value",
-  "insurance_value",
+  
+  # "time_approval_commercial_value",
+  # "collateral_commercial_value",
+  # "other_financial_value",
+  # "time_approval_other_value",
+  # "collateral_other_value",
+  # "insurance_value",
+  
   "pension_value",
   "mm_account_value",
   "time_open_mm_value",
   "insurance_mm_value",
   "savings_facility_value",
   "advice_sources_value")
+
+ncriteria = length(criteria)
+
 ```
 
-# Availability
+There are `r ncriteria` criteria
 
-This section consists of **18** criteria
+The criteria are `r criteria`
 
-### funds start
-
-Where generally get funds to start business
-
-Informal vs formal vs both
-
-- Formal (MFI, Bank, Order finance, Rotating and Savings group, Local NGO, Credit Union, Government assiatnce program, International org through a grant, fellow business colleagues)
-
-- Informal (personal savings, loan sharks, loaccly based family and friends, remittances from family or friends outside Zimbabwe)
-
-- Both
-
-Will just look at % who got their funds from a formal source irregardless of whether they got funds from an informal source.
-
-```{r echo=FALSE}
-funds_start = data %>%
-  # columns with the details of this question... can select multiple
-  select(all_of(level), 
-         funds_start, # Personal savings (from salary or other business initiatives)
-         X.25, #        Micro finance institution
-         X.26, #        Banks
-         X.27, #        Order finance companies
-         X.28, #        Rotating and savings groups
-         X.29, #        Local NGOs
-         X.30, #        Loan sharks (chimbadzo)
-         X.31, #        Credit unions
-         X.32, #        Government assistance programs
-         X.33, #        International organization through a grant
-         X.34, #        Locally based Family and friends
-         X.35, #        Remittances from family or friends outside Zimbabwe
-         X.36, #        Fellow business colleagues
-         X.37 #         Other
-         ) %>%
-  # section off informal, formal sources of funds
-  mutate(X.27 = as.character(X.27),
-         informal_start = ifelse((funds_start != "" | X.30 != "" | X.34 != "" | X.35 != ""), 1, 0),
-         formal_start = ifelse((X.25 != "" | X.26 != "" | X.27 != "" | is.na(X.27) | X.28 != "" | X.29 != "" | 
-                                  X.31 != "" | X.32 != "" | X.33 != "" | X.36 != ""), 1, 0),
-         
-         informal_funds_start = ifelse(informal_start == 1 & formal_start == 0, 1, 0),
-         formal_funds_start = ifelse(formal_start == 1 & informal_start == 0, 1,0),
-         both_informal_formal_funds_start = ifelse(informal_start == 1 & formal_start == 1, 1, 0),
-         not_answered = ifelse(informal_start == 0 & formal_start == 0, 1, 0)
-  ) %>%
-  # provincial aggregated results
-  group_by(across(all_of(level))) %>%
-  summarise(informal_funds_start = sum(informal_funds_start, na.rm = T),
-            formal_funds_start = sum(formal_funds_start, na.rm = T),
-            both_informal_formal_funds_start = sum(both_informal_formal_funds_start, na.rm =T),
-            no_answers_funds_start = sum(not_answered, na.rm = T),
-            responses = n()) %>%
-  # final figure to use in the index
-  mutate(funds_start = formal_funds_start + both_informal_formal_funds_start) %>%
-  # standardize as percentage of those answered
-  mutate(informal_funds_start = informal_funds_start / (responses - no_answers_funds_start),
-         formal_funds_start = formal_funds_start / (responses - no_answers_funds_start),
-         both_informal_formal_funds_start = both_informal_formal_funds_start / (responses - no_answers_funds_start),
-         funds_start_value = funds_start / (responses - no_answers_funds_start)) 
-
-funds_start %>%
-  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
-  kable() %>%
-  kable_styling()
-```
-
-### funds ongoing
-
-Where generally get funds for ongoing business ventures
-
-Informal vs formal vs both
-
-- Formal
-
-- Informal
-
-- Informal
-
-Again proportion that get funds from formal sources
-
-```{r echo=FALSE}
-funds_ongoing = data %>%
-  # columns with the details of this question... can select multiple
-  select(all_of(level),
-         funds_ongoing, # Personal savings (from salary or other business initiatives)
-         X.45, #        Micro finance institution
-         X.46, #        Banks
-         X.47, #        Order finance companies
-         X.48, #        Rotating and savings groups
-         X.49, #        Internal Savings and Lending Group
-         X.50, #        Local NGOs
-         X.51, #        Loan sharks (chimbadzo)
-         X.52, #        Credit unions
-         X.53, #        Government of Zimbabwe
-         X.54, #        Remittances from family or friends outside Zimbabwe
-         X.55, #        International organization through a grant
-         X.56, #        Locally based Family and friends
-         X.57, #        Fellow business colleagues
-         X.58, #        Other
-         ) %>%
-  # section off informal, formal sources of funds
-  mutate(X.49 = as.character(X.49),
-         informal_ongoing = ifelse((funds_ongoing != "" | X.51 != "" | X.54 != "" | X.56 != ""), 1, 0),
-         formal_ongoing = ifelse((X.45 != "" | X.46 != "" | X.47 != "" | X.48 != "" | X.49 != "" | is.na(X.49) | X.50 != "" | X.52 != "" | X.53 != "" | X.55 != "" | X.57 != ""), 1, 0),
-         informal_funds_ongoing = ifelse(informal_ongoing == 1 & formal_ongoing == 0, 1, 0),
-         formal_funds_ongoing = ifelse(formal_ongoing == 1 & informal_ongoing == 0, 1,0),
-         both_informal_formal_funds_ongoing = ifelse(informal_ongoing == 1 & formal_ongoing == 1, 1, 0),
-         not_answered = ifelse(informal_ongoing == 0 & formal_ongoing == 0, 1, 0)
-  ) %>%
-  # provincial aggregated results
-  group_by(across(all_of(level))) %>%
-  summarise(informal_funds_ongoing = sum(informal_funds_ongoing, na.rm = T),
-            formal_funds_ongoing = sum(formal_funds_ongoing, na.rm = T),
-            both_informal_formal_funds_ongoing = sum(both_informal_formal_funds_ongoing, na.rm =T),
-            no_answers_funds_ongoing = sum(not_answered, na.rm = T),
-            responses = n()) %>%
-  # final figure to use in the index
-  mutate(funds_ongoing = formal_funds_ongoing + both_informal_formal_funds_ongoing) %>%
-  # standardize as percentage of those answered
-  mutate(informal_funds_ongoing = informal_funds_ongoing / (responses - no_answers_funds_ongoing),
-         formal_funds_ongoing = formal_funds_ongoing / (responses - no_answers_funds_ongoing),
-         both_informal_formal_funds_ongoing = both_informal_formal_funds_ongoing / (responses - no_answers_funds_ongoing),
-         funds_ongoing_value = funds_ongoing / (responses - no_answers_funds_ongoing)) 
-
-funds_ongoing %>%
-  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
-  kable() %>%
-  kable_styling()
-```
 
 ## Banking
 
@@ -297,27 +152,6 @@ sme_auction %>%
 ```
 
 ## Commercial Loans
-
-### Loan application in the past
-
-% applied for a loan in the past
-
-```{r echo=FALSE}
-commercial_loan_apply = data %>%
-  select(all_of(level),
-         commercial_loan_application, commercial_loan_application_past_logic) %>%
-  mutate(not_answered = ifelse(commercial_loan_application == "", 1, 0))%>%
-  group_by(province) %>%
-  summarise(commercial_loan_application = sum(commercial_loan_application_past_logic, na.rm = T),
-            responses = n(),
-            not_answered_commercial_loan = sum(not_answered, na.rm = T)) %>%
-  mutate(commercial_loan_apply_value = commercial_loan_application / (responses - not_answered_commercial_loan)) 
-
-commercial_loan_apply %>%
-  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
-  kable() %>%
-  kable_styling()
-```
 
 ### approval time
 
@@ -864,18 +698,15 @@ advice_sources %>%
   kable_styling()
 ```
 
+## Final Table
 
 ```{r echo=FALSE}
-# 18 criteria
 availability_critera = data %>%
   group_by(across(all_of(level))) %>%
   summarise(n=n()) %>%
-  full_join(y = (funds_start %>% select(all_of(level), funds_start_value)), by = all_of(level)) %>%
-  full_join(y = (funds_ongoing %>% select(all_of(level), funds_ongoing_value)), by = all_of(level)) %>%
   full_join(y = (bank_account %>% select(all_of(level), bank_account_value)), by = all_of(level)) %>%
   full_join(y = (time_open_bank %>% select(all_of(level), time_open_bank_value)), by = all_of(level)) %>%
   full_join(y = (sme_auction %>% select(all_of(level), sme_auction_value)), by = all_of(level)) %>%
-  full_join(y = (commercial_loan_apply %>% select(all_of(level), commercial_loan_apply_value)), by = all_of(level)) %>%
   full_join(y = (time_approval_commercial %>% select(all_of(level), time_approval_commercial_value)), by = all_of(level)) %>%
   full_join(y = (collateral_commercial %>% select(all_of(level), collateral_commercial_value)), by = all_of(level)) %>%
   full_join(y = (other_financial %>% select(all_of(level), other_financial_value)), by = all_of(level)) %>%
@@ -893,7 +724,7 @@ availability_critera = data %>%
 availability_critera$availability_score = rowSums(availability_critera[, c(
   all_of(criteria))])
 
-availability_critera$availability_normalise = (availability_critera$availability_score / 18)
+availability_critera$availability_normalise = (availability_critera$availability_score / ncriteria)
 
 availability_critera$availability_percentage = round((availability_critera$availability_normalise * 100),2)
 

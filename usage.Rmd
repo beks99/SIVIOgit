@@ -34,9 +34,172 @@ level = c("province")
 
 # Usage
 
+## criteria of dimension
+
+```{r include=FALSE}
+criteria = c(
+  "funds_start_value",
+  "funds_ongoing_value",
+  "frequency_bank_account_value",
+  "number_bank_services_value",
+  "successful_bids_value",
+  "commercial_loan_apply_value",
+  "Number_commercial_loan_application_value",
+  "success_loan_commercial_value",
+  "service_loan_commercial_value",
+  "interest_commercial_value",
+  "payback_commercial_value",
+  "number_services_other_value",
+  "other_formal_loan_value",
+  "service_loan_other_value",
+  "interest_rate_loan_other_5years_value",
+  "payback_loan_other_5years_value",
+  "comprehensive_value",
+  "staff_value",
+  "product_value",
+  "frequency_mobile_money_value",
+  "loan_mm_value",
+  "investments_value"
+  )
+
+ncriteria = length(criteria)
+```
+
+There are `r ncriteria` criteria
+
+The criteria are `r criteria`
+
+
 ## Characteritics
 
-Nothing from this section of the survey
+### funds start
+
+Where generally get funds to start business
+
+Informal vs formal vs both
+
+- Formal (MFI, Bank, Order finance, Rotating and Savings group, Local NGO, Credit Union, Government assiatnce program, International org through a grant, fellow business colleagues)
+
+- Informal (personal savings, loan sharks, loaccly based family and friends, remittances from family or friends outside Zimbabwe)
+
+- Both
+
+Will just look at % who got their funds from a formal source irregardless of whether they got funds from an informal source.
+
+```{r echo=FALSE}
+funds_start = data %>%
+  # columns with the details of this question... can select multiple
+  select(all_of(level), 
+         funds_start, # Personal savings (from salary or other business initiatives)
+         X.25, #        Micro finance institution
+         X.26, #        Banks
+         X.27, #        Order finance companies
+         X.28, #        Rotating and savings groups
+         X.29, #        Local NGOs
+         X.30, #        Loan sharks (chimbadzo)
+         X.31, #        Credit unions
+         X.32, #        Government assistance programs
+         X.33, #        International organization through a grant
+         X.34, #        Locally based Family and friends
+         X.35, #        Remittances from family or friends outside Zimbabwe
+         X.36, #        Fellow business colleagues
+         X.37 #         Other
+         ) %>%
+  # section off informal, formal sources of funds
+  mutate(X.27 = as.character(X.27),
+         informal_start = ifelse((funds_start != "" | X.30 != "" | X.34 != "" | X.35 != ""), 1, 0),
+         formal_start = ifelse((X.25 != "" | X.26 != "" | X.27 != "" | is.na(X.27) | X.28 != "" | X.29 != "" | 
+                                  X.31 != "" | X.32 != "" | X.33 != "" | X.36 != ""), 1, 0),
+         
+         informal_funds_start = ifelse(informal_start == 1 & formal_start == 0, 1, 0),
+         formal_funds_start = ifelse(formal_start == 1 & informal_start == 0, 1,0),
+         both_informal_formal_funds_start = ifelse(informal_start == 1 & formal_start == 1, 1, 0),
+         not_answered = ifelse(informal_start == 0 & formal_start == 0, 1, 0)
+  ) %>%
+  # provincial aggregated results
+  group_by(across(all_of(level))) %>%
+  summarise(informal_funds_start = sum(informal_funds_start, na.rm = T),
+            formal_funds_start = sum(formal_funds_start, na.rm = T),
+            both_informal_formal_funds_start = sum(both_informal_formal_funds_start, na.rm =T),
+            no_answers_funds_start = sum(not_answered, na.rm = T),
+            responses = n()) %>%
+  # final figure to use in the index
+  mutate(funds_start = formal_funds_start + both_informal_formal_funds_start) %>%
+  # standardize as percentage of those answered
+  mutate(informal_funds_start = informal_funds_start / (responses - no_answers_funds_start),
+         formal_funds_start = formal_funds_start / (responses - no_answers_funds_start),
+         both_informal_formal_funds_start = both_informal_formal_funds_start / (responses - no_answers_funds_start),
+         funds_start_value = funds_start / (responses - no_answers_funds_start)) 
+
+funds_start %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
+  kable() %>%
+  kable_styling()
+```
+
+### funds ongoing
+
+Where generally get funds for ongoing business ventures
+
+Informal vs formal vs both
+
+- Formal
+
+- Informal
+
+- Informal
+
+Again proportion that get funds from formal sources
+
+```{r echo=FALSE}
+funds_ongoing = data %>%
+  # columns with the details of this question... can select multiple
+  select(all_of(level),
+         funds_ongoing, # Personal savings (from salary or other business initiatives)
+         X.45, #        Micro finance institution
+         X.46, #        Banks
+         X.47, #        Order finance companies
+         X.48, #        Rotating and savings groups
+         X.49, #        Internal Savings and Lending Group
+         X.50, #        Local NGOs
+         X.51, #        Loan sharks (chimbadzo)
+         X.52, #        Credit unions
+         X.53, #        Government of Zimbabwe
+         X.54, #        Remittances from family or friends outside Zimbabwe
+         X.55, #        International organization through a grant
+         X.56, #        Locally based Family and friends
+         X.57, #        Fellow business colleagues
+         X.58, #        Other
+         ) %>%
+  # section off informal, formal sources of funds
+  mutate(X.49 = as.character(X.49),
+         informal_ongoing = ifelse((funds_ongoing != "" | X.51 != "" | X.54 != "" | X.56 != ""), 1, 0),
+         formal_ongoing = ifelse((X.45 != "" | X.46 != "" | X.47 != "" | X.48 != "" | X.49 != "" | X.50 != "" | X.52 != "" | X.53 != "" | X.55 != "" | X.57 != ""), 1, 0),
+         informal_funds_ongoing = ifelse(informal_ongoing == 1 & formal_ongoing == 0, 1, 0),
+         formal_funds_ongoing = ifelse(formal_ongoing == 1 & informal_ongoing == 0, 1,0),
+         both_informal_formal_funds_ongoing = ifelse(informal_ongoing == 1 & formal_ongoing == 1, 1, 0),
+         not_answered = ifelse(informal_ongoing == 0 & formal_ongoing == 0, 1, 0)
+  ) %>%
+  # provincial aggregated results
+  group_by(across(all_of(level))) %>%
+  summarise(informal_funds_ongoing = sum(informal_funds_ongoing, na.rm = T),
+            formal_funds_ongoing = sum(formal_funds_ongoing, na.rm = T),
+            both_informal_formal_funds_ongoing = sum(both_informal_formal_funds_ongoing, na.rm =T),
+            no_answers_funds_ongoing = sum(not_answered, na.rm = T),
+            responses = n()) %>%
+  # final figure to use in the index
+  mutate(funds_ongoing = formal_funds_ongoing + both_informal_formal_funds_ongoing) %>%
+  # standardize as percentage of those answered
+  mutate(informal_funds_ongoing = informal_funds_ongoing / (responses - no_answers_funds_ongoing),
+         formal_funds_ongoing = formal_funds_ongoing / (responses - no_answers_funds_ongoing),
+         both_informal_formal_funds_ongoing = both_informal_formal_funds_ongoing / (responses - no_answers_funds_ongoing),
+         funds_ongoing_value = funds_ongoing / (responses - no_answers_funds_ongoing)) 
+
+funds_ongoing %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
+  kable() %>%
+  kable_styling()
+```
 
 ## Registration
 
@@ -188,6 +351,27 @@ successful_bids %>%
 Survey differentiates between 12 months and the previous 4 years... so this code asks for over the last five years but takes no consideration of the age of the business... 
 Will need to add that component!!!
 
+### Loan application in the past
+
+% applied for a loan in the past
+
+```{r echo=FALSE}
+commercial_loan_apply = data %>%
+  select(all_of(level),
+         commercial_loan_application, commercial_loan_application_past_logic) %>%
+  mutate(not_answered = ifelse(commercial_loan_application == "", 1, 0))%>%
+  group_by(province) %>%
+  summarise(commercial_loan_application = sum(commercial_loan_application_past_logic, na.rm = T),
+            responses = n(),
+            not_answered_commercial_loan = sum(not_answered, na.rm = T)) %>%
+  mutate(commercial_loan_apply_value = commercial_loan_application / (responses - not_answered_commercial_loan)) 
+
+commercial_loan_apply %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
+  kable() %>%
+  kable_styling()
+```
+
 ### Number loan applications in 5 years
 
 - number_commercial_loan_applications_12months == "Never" ~ 0,
@@ -270,12 +454,12 @@ success_loan_4years = data %>%
 
 # combine
 
-success_loan = success_loan_12months %>%
+success_loan_commercial = success_loan_12months %>%
   full_join((success_loan_4years), by = all_of(level))
 
-success_loan$success_loan_value = rowMeans(success_loan[, c("success_12months", "success_4years")])
+success_loan_commercial$success_loan_commercial_value = rowMeans(success_loan_commercial[, c("success_12months", "success_4years")])
 
-success_loan %>%
+success_loan_commercial %>%
   bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
   kable() %>%
   kable_styling()
@@ -318,12 +502,12 @@ service_loan_4years = data %>%
 
 # combine
 
-service_loan = service_loan_12months %>%
+service_loan_commercial = service_loan_12months %>%
   full_join((service_loan_4years), by = all_of(level))
 
-service_loan$service_loan_value = rowMeans(service_loan[, c("service_12months", "service_4years")])
+service_loan_commercial$service_loan_commercial_value = rowMeans(service_loan_commercial[, c("service_12months", "service_4years")])
 
-service_loan %>%
+service_loan_commercial %>%
   bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
   kable() %>%
   kable_styling()
@@ -486,7 +670,7 @@ Scoring
 - number_services == 1 ~ 1
 
 ```{r echo=FALSE}
-number_services = data %>%
+number_services_other = data %>%
   select(all_of(level),
          other_finance_institutions, 
          services_other_financial_institutions, X.88, X.89, X.90, X.91, X.92, X.93, X.94, X.95, X.96) %>%
@@ -508,15 +692,15 @@ number_services = data %>%
            number_services >= 2 ~ 2,
            number_services == 1 ~ 1,
            TRUE ~ as.double(0)
-         ))
+         )) %>%
   filter(not_answered == 0) %>%
   group_by(across(all_of(level))) %>%
-  summarise(number_services = mean(number_services_score),
+  summarise(number_services_other = mean(number_services_score),
             responses = n(),
             not_answered_services_other = sum(not_answered)) %>%
-  mutate(number_services_value = number_services / 3)
+  mutate(number_services_other_value = number_services_other / 3)
 
-number_services %>%
+number_services_other %>%
   bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
   kable() %>%
   kable_styling()
@@ -543,7 +727,7 @@ Informal
 - Remittances from family and friends outside Zimbabwe (X.106)
 
 ```{r echo=FALSE}
-formal_loan = data %>% select(all_of(level),
+other_formal_loan = data %>% select(all_of(level),
                 other_finance_institutions, 
                 loan_other_5years, X.97, X.98, X.99, X.100, X.101, X.102, X.103, X.104, X.105, X.106, X.107, X.108) %>%
   mutate(not_answered = ifelse(
@@ -553,13 +737,13 @@ formal_loan = data %>% select(all_of(level),
     informal_loan = ifelse(X.99 != "" | X.105 != "" | X.106 != "", 1, 0)
   ) %>%
   group_by(across(all_of(level))) %>%
-  summarise(formal_loan = sum(formal_loan),
+  summarise(other_formal_loan = sum(formal_loan),
             informal_loan = sum(informal_loan),
             responses = n(),
             not_answered_loan_other = sum(not_answered)) %>%
-  mutate(formal_loan_value = formal_loan / (responses - not_answered_loan_other))
+  mutate(other_formal_loan_value = other_formal_loan / (responses - not_answered_loan_other))
 
-formal_loan %>%
+other_formal_loan %>%
   bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
   kable() %>%
   kable_styling()
@@ -781,7 +965,7 @@ loan_mm = data %>%
   summarise(loan_MM = sum(loan_MM_logic),
             responses = n(),
             not_answered_loan_MM = sum(not_answered)) %>%
-  mutate(loan_MM_value = loan_MM / (responses - not_answered_loan_MM))
+  mutate(loan_mm_value = loan_MM / (responses - not_answered_loan_MM))
 
 loan_mm %>%
   bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
@@ -811,4 +995,53 @@ investments %>%
 ## Access to Information
 
 No information from the survey
+
+## Final Table
+
+```{r echo=FALSE}
+# 
+usage_critera = data %>%
+  group_by(across(all_of(level))) %>%
+  summarise(n=n()) %>%
+  full_join(y = (funds_start %>% select(all_of(level), funds_start_value)), by = all_of(level)) %>%
+  full_join(y = (funds_ongoing %>% select(all_of(level), funds_ongoing_value)), by = all_of(level)) %>%
+  full_join(y = (frequency_bank_account %>% select(all_of(level), frequency_bank_account_value)), by = all_of(level)) %>%
+  full_join(y = (number_bank_services %>% select(all_of(level), number_bank_services_value)), by = all_of(level)) %>%
+  full_join(y = (successful_bids %>% select(all_of(level), successful_bids_value)), by = all_of(level)) %>%
+  full_join(y = (commercial_loan_apply %>% select(all_of(level), commercial_loan_apply_value)), by = all_of(level)) %>%
+  full_join(y = (Number_commercial_loan_application %>% select(all_of(level), Number_commercial_loan_application_value)), by = all_of(level)) %>%
+  full_join(y = (success_loan_commercial %>% select(all_of(level), success_loan_commercial_value)), by = all_of(level)) %>%
+  full_join(y = (service_loan_commercial %>% select(all_of(level), service_loan_commercial_value)), by = all_of(level)) %>%
+  full_join(y = (interest_commercial %>% select(all_of(level), interest_commercial_value)), by = all_of(level)) %>%
+  full_join(y = (payback_commercial %>% select(all_of(level), payback_commercial_value)), by = all_of(level)) %>%
+  full_join(y = (number_services_other %>% select(all_of(level), number_services_other_value)), by = all_of(level)) %>%
+  full_join(y = (other_formal_loan %>% select(all_of(level), other_formal_loan_value)), by = all_of(level)) %>%
+  full_join(y = (service_loan_other %>% select(all_of(level), service_loan_other_value)), by = all_of(level)) %>%
+  full_join(y = (interest_rate_loan_other_5years %>% select(all_of(level), interest_rate_loan_other_5years_value)), by = all_of(level)) %>%
+  full_join(y = (payback_loan_other_5years %>% select(all_of(level), payback_loan_other_5years_value)), by = all_of(level)) %>%
+  full_join(y = (insurance_5years %>% select(all_of(level), comprehensive_value, product_value, staff_value)), by = all_of(level)) %>%
+  full_join(y = (frequency_mobile_money %>% select(all_of(level), frequency_mobile_money_value)), by = all_of(level)) %>%
+  full_join(y = (loan_mm %>% select(all_of(level), loan_mm_value)), by = all_of(level)) %>%
+  full_join(y = (investments %>% select(all_of(level), investments_value)), by = all_of(level)) %>%
+
+  mutate_if(is.numeric, replace_na, 0.5)
+
+
+
+usage_critera$usage_score = rowSums(usage_critera[, c(
+  all_of(criteria))])
+
+usage_critera$usage_normalise = (usage_critera$usage_score / ncriteria)
+
+usage_critera$usage_percentage = round((usage_critera$usage_normalise * 100),2)
+
+usage_critera %>%
+  kable() %>%
+  kable_styling()
+```
+
+```{r}
+write.csv(usage_critera, file = "~/SIVIOgit/usage_criteria.csv")
+```
+
 
