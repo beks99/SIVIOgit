@@ -63,7 +63,7 @@ Nothing from this section of the survey
 - frequency_bank_account == "I have never used it." ~ 0
 
 ```{r echo=FALSE}
-data %>%
+frequency_bank_account = data %>%
   select(all_of(level), 
          bank_account, frequency_bank_account) %>%
   filter(bank_account == "Yes") %>%
@@ -84,6 +84,11 @@ data %>%
             responses = n(),
             not_answered_frequency_bank = sum(not_answered)) %>%
   mutate(frequency_bank_account_value = frequency_bank_account / 5)
+
+frequency_bank_account %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
+  kable() %>%
+  kable_styling()
 ```
 
 ### bank services
@@ -119,7 +124,7 @@ Scoring
 - number_services == 1 ~ 1
 
 ```{r echo=FALSE}
-data %>%
+ number_bank_services = data %>%
   select(all_of(level), 
          bank_account, 
          bank_services, X.69, X.70, X.71, X.72, X.73, X.74, X.75, X.76, X.77, X.78) %>%
@@ -149,13 +154,17 @@ data %>%
             responses = n(),
             not_answered_bank_services = sum(not_answered)) %>%
   mutate(number_bank_services_value = number_bank_services / 3)
-  
+ 
+number_bank_services %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
+  kable() %>%
+  kable_styling()
 ```
 
 ### successful bids on sme auction
 
 ```{r echo=FALSE}
-data %>%
+successful_bids = data %>%
   select(all_of(level), 
          foreign_currency, sme_foreign_exchange_auction, successful_bids) %>%
   filter(foreign_currency == "Yes") %>%
@@ -167,6 +176,11 @@ data %>%
             responses = n(),
             not_answered_bids = sum(not_answered)) %>%
   mutate(successful_bids_value = successful_bids / (responses - not_answered_bids))
+
+successful_bids %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
+  kable() %>%
+  kable_styling()
 ```
 
 ## Loans
@@ -187,7 +201,7 @@ Will need to add that component!!!
 Can discriminates against a newer business
 
 ```{r echo=FALSE}
-data %>%
+Number_commercial_loan_application = data %>%
   select(all_of(level), 
          commercial_loan_application, number_commercial_loan_applications_12months, number_commercial_loan_applications_4years) %>%
   filter(commercial_loan_application == "Yes") %>%
@@ -214,6 +228,11 @@ data %>%
             responses = n(),
             not_answered_number_application = sum(not_answered)) %>%
   mutate(Number_commercial_loan_application_value = Number_commercial_loan_application / 2)
+
+Number_commercial_loan_application %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
+  kable() %>%
+  kable_styling()
 ```
 
 ### Successful loan application
@@ -252,11 +271,12 @@ success_loan_4years = data %>%
 # combine
 
 success_loan = success_loan_12months %>%
-  select(all_of(level), success_12months) %>%
-  full_join((success_loan_4years %>% select(province, success_4years)), by = all_of(level))
+  full_join((success_loan_4years), by = all_of(level))
+
+success_loan$success_loan_value = rowMeans(success_loan[, c("success_12months", "success_4years")])
 
 success_loan %>%
-  mutate(success_loan_value = rowMeans(success_loan[, c("success_12months", "success_4years")])) %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
   kable() %>%
   kable_styling()
 ```
@@ -299,11 +319,12 @@ service_loan_4years = data %>%
 # combine
 
 service_loan = service_loan_12months %>%
-  select(all_of(level), service_12months) %>%
-  full_join((service_loan_4years %>% select(all_of(level), service_4years)), by = all_of(level))
+  full_join((service_loan_4years), by = all_of(level))
+
+service_loan$service_loan_value = rowMeans(service_loan[, c("service_12months", "service_4years")])
 
 service_loan %>%
-  mutate(service_loan_value = rowMeans(service_loan[, c("service_12months", "service_4years")])) %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
   kable() %>%
   kable_styling()
 ```
@@ -362,11 +383,12 @@ interest_4years = data %>%
 # combine
 
 interest_commercial = interest_12months %>%
-  select(all_of(level), interest_rate_commercial_loan_12months) %>%
-  full_join((interest_4years %>% select(all_of(level), interest_rate_commercial_loan_4years)), by = all_of(level))
+  full_join((interest_4years), by = all_of(level))
+
+interest_commercial$interest_commercial_value = rowMeans(interest_commercial[, c("interest_rate_commercial_loan_12months", "interest_rate_commercial_loan_4years")])
 
 interest_commercial %>%
-  mutate(interest_commercial_value = rowMeans(interest_commercial[, c("interest_rate_commercial_loan_12months", "interest_rate_commercial_loan_4years")])) %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
   kable() %>%
   kable_styling()
 ```
@@ -421,11 +443,12 @@ payback_4years = data %>%
 # combine
 
 payback_commercial = payback_12months %>%
-  select(all_of(level), payback_commercial_loan_12months_months) %>%
-  full_join((payback_4years %>% select(all_of(level), payback_commercial_loan_4years_months)), by = all_of(level))
+  full_join((payback_4years), by = all_of(level))
+
+payback_commercial$payback_commercial_value = rowMeans(payback_commercial[, c("payback_commercial_loan_12months_months", "payback_commercial_loan_4years_months")], na.rm =T)
 
 payback_commercial %>%
-  mutate(payback_commercial_value = rowMeans(payback_commercial[, c("payback_commercial_loan_12months_months", "payback_commercial_loan_4years_months")], na.rm =T)) %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
   kable() %>%
   kable_styling()
 ```
@@ -463,7 +486,7 @@ Scoring
 - number_services == 1 ~ 1
 
 ```{r echo=FALSE}
-data %>%
+number_services = data %>%
   select(all_of(level),
          other_finance_institutions, 
          services_other_financial_institutions, X.88, X.89, X.90, X.91, X.92, X.93, X.94, X.95, X.96) %>%
@@ -485,13 +508,18 @@ data %>%
            number_services >= 2 ~ 2,
            number_services == 1 ~ 1,
            TRUE ~ as.double(0)
-         )) %>%
+         ))
   filter(not_answered == 0) %>%
   group_by(across(all_of(level))) %>%
   summarise(number_services = mean(number_services_score),
             responses = n(),
             not_answered_services_other = sum(not_answered)) %>%
   mutate(number_services_value = number_services / 3)
+
+number_services %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
+  kable() %>%
+  kable_styling()
 ```
 
 ### Received a loan
@@ -515,7 +543,7 @@ Informal
 - Remittances from family and friends outside Zimbabwe (X.106)
 
 ```{r echo=FALSE}
-data %>% select(all_of(level),
+formal_loan = data %>% select(all_of(level),
                 other_finance_institutions, 
                 loan_other_5years, X.97, X.98, X.99, X.100, X.101, X.102, X.103, X.104, X.105, X.106, X.107, X.108) %>%
   mutate(not_answered = ifelse(
@@ -530,6 +558,11 @@ data %>% select(all_of(level),
             responses = n(),
             not_answered_loan_other = sum(not_answered)) %>%
   mutate(formal_loan_value = formal_loan / (responses - not_answered_loan_other))
+
+formal_loan %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
+  kable() %>%
+  kable_styling()
 ```
 
 ### Service loan
@@ -537,7 +570,7 @@ data %>% select(all_of(level),
 Of those who received a loan from another financial institution, were they able to service it
 
 ```{r}
-data %>%
+service_loan_other = data %>%
   select(all_of(level), 
          X.108, service_loan_other_5years) %>%
   filter(X.108 != "None of the above") %>%
@@ -548,6 +581,11 @@ data %>%
             responses = n(),
             not_answered_loan_ther = sum(not_answered)) %>%
   mutate(service_loan_other_value = service_loan_other / (responses - not_answered_loan_ther))
+
+service_loan_other %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
+  kable() %>%
+  kable_styling()
 ```
 
 ### Interest Rate
@@ -555,7 +593,7 @@ data %>%
 ```{r echo=FALSE}
 # clean up as characters with %
 
-data %>%
+interest_rate_loan_other_5years = data %>%
   select(all_of(level),
          X.108, interest_rate_loan_other_5years) %>%
   mutate(interest_rate_loan_other_5years = gsub("%", "", interest_rate_loan_other_5years, fixed = T),
@@ -575,12 +613,17 @@ data %>%
             responses = n(),
             not_answered_interest_5years = sum(not_answered)) %>%
   mutate(interest_rate_loan_other_5years_value = interest_rate_loan_other_5years / 3)
+
+interest_rate_loan_other_5years %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
+  kable() %>%
+  kable_styling()
 ```
 
 ### Payback Period
 
 ```{r echo=FALSE}
-data %>%
+payback_loan_other_5years = data %>%
   select(all_of(level),
          X.108, payback_loan_other_5years) %>%
   filter(X.108 != "None of the above") %>%
@@ -597,6 +640,11 @@ data %>%
             responses = n(),
             not_answered_payback_5years = sum(not_answered)) %>%
   mutate(payback_loan_other_5years_value = payback_loan_other_5years / 3)
+
+payback_loan_other_5years %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
+  kable() %>%
+  kable_styling()
 ```
 
 ## Insurance
@@ -655,13 +703,14 @@ insurance_4years = data %>%
 # combine
 
 insurance_5years = insurance_12months %>%
-  select(all_of(level), comprehesive_12months, product_12months, staff_12months) %>%
-  full_join((insurance_4years %>% select(all_of(level), comprehesive_4years, product_4years, staff_4years)), by = all_of(level))
+  full_join((insurance_4years), by = all_of(level))
+
+insurance_5years$comprehensive_value = rowMeans(insurance_5years[, c("comprehesive_12months", "comprehesive_4years")])
+insurance_5years$product_value = rowMeans(insurance_5years[, c("product_12months", "product_4years")])
+insurance_5years$staff_value = rowMeans(insurance_5years[, c("staff_12months", "staff_4years")])
 
 insurance_5years %>%
-  mutate(comprehensive_value = rowMeans(insurance_5years[, c("comprehesive_12months", "comprehesive_4years")]),
-         product_value = rowMeans(insurance_5years[, c("product_12months", "product_4years")]),
-         staff_value = rowMeans(insurance_5years[, c("staff_12months", "staff_4years")])) %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
   kable() %>%
   kable_styling()
 ```
@@ -691,7 +740,7 @@ Nothing in this section
 - frequency_mobile_money == "Never" ~ 0,
 
 ```{r echo=FALSE}
-data %>%
+frequency_mobile_money = data %>%
   select(all_of(level), 
          mobile_money_account, frequency_mobile_money) %>%
   filter(mobile_money_account == "Yes") %>%
@@ -712,6 +761,11 @@ data %>%
             responses = n(),
             not_answered_frequency_bank = sum(not_answered)) %>%
   mutate(frequency_mobile_money_value = frequency_mobile_money / 5)
+
+frequency_mobile_money %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
+  kable() %>%
+  kable_styling()
 ```
 
 ### loan through MM
@@ -730,6 +784,7 @@ loan_mm = data %>%
   mutate(loan_MM_value = loan_MM / (responses - not_answered_loan_MM))
 
 loan_mm %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
   kable() %>%
   kable_styling()
 ```
@@ -748,6 +803,7 @@ investments = data %>%
   mutate(investments_value = investments / (responses - not_answered_invest))
 
 investments %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
   kable() %>%
   kable_styling()
 ```

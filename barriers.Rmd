@@ -74,6 +74,7 @@ register = data %>%
          bureaucracy_register = bureaucracy / (responses - not_answered_reason))
 
 register %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
   kable() %>%
   kable_styling()
 ```
@@ -113,6 +114,7 @@ zimra = data %>%
          )
 
 zimra %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
   kable() %>%
   kable_styling()
 ```
@@ -171,6 +173,7 @@ bank_account = data %>%
          )
 
 bank_account %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
   kable() %>%
   kable_styling()
 ```
@@ -214,6 +217,7 @@ sme_auction = data %>%
          )
 
 sme_auction %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
   kable() %>%
   kable_styling()
 ```
@@ -261,6 +265,7 @@ commercial_loan = data %>%
          )
 
 commercial_loan %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
   kable() %>%
   kable_styling()
 ```
@@ -314,6 +319,7 @@ business_insurance = data %>%
          )
 
 business_insurance %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
   kable() %>%
   kable_styling()
 ```
@@ -365,6 +371,7 @@ pension = data %>%
          )
 
 pension %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
   kable() %>%
   kable_styling()
 ```
@@ -410,6 +417,7 @@ mobile_money = data %>%
          )
 
 mobile_money %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
   kable() %>%
   kable_styling()
 ```
@@ -455,6 +463,7 @@ investments = data %>%
          )
 
 investments %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
   kable() %>%
   kable_styling()
 ```
@@ -640,6 +649,7 @@ knowledge_score_final = knowledge_score %>%
          )
 
 knowledge_score_final %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
   kable() %>%
   kable_styling()
 ```

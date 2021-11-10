@@ -139,6 +139,7 @@ funds_start = data %>%
          funds_start_value = funds_start / (responses - no_answers_funds_start)) 
 
 funds_start %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
   kable() %>%
   kable_styling()
 ```
@@ -202,6 +203,7 @@ funds_ongoing = data %>%
          funds_ongoing_value = funds_ongoing / (responses - no_answers_funds_ongoing)) 
 
 funds_ongoing %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
   kable() %>%
   kable_styling()
 ```
@@ -223,6 +225,7 @@ bank_account = data %>%
 
 
 bank_account %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
   kable() %>%
   kable_styling()
 ```
@@ -266,6 +269,7 @@ time_open_bank = data %>%
   mutate(time_open_bank_value = time_open_value / 5) 
 
 time_open_bank %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
   kable() %>%
   kable_styling()
 ```
@@ -287,6 +291,7 @@ sme_auction = data %>%
   mutate(sme_auction_value = sme_foreign_exchange_auction / (responses - not_answered_sme)) 
 
 sme_auction %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
   kable() %>%
   kable_styling()
 ```
@@ -309,6 +314,7 @@ commercial_loan_apply = data %>%
   mutate(commercial_loan_apply_value = commercial_loan_application / (responses - not_answered_commercial_loan)) 
 
 commercial_loan_apply %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
   kable() %>%
   kable_styling()
 ```
@@ -360,10 +366,10 @@ time_12months = data %>%
          ))%>%
   filter(time_approval != 0) %>%
   group_by(across(all_of(level))) %>%
-  summarise(time_approval_12months = mean(time_approval, na.rm = T),
+  summarise(time_approval_12months_full = mean(time_approval, na.rm = T),
               not_answered_time_12months = sum(not_answered, na.rm = T),
-            responses = n()) %>%
-  mutate(time_approval_12months = time_approval_12months/5)
+            responses_time_12months = n()) %>%
+  mutate(time_approval_12months = time_approval_12months_full / 5)
 
 # 4 years
 time_4years = data %>%
@@ -387,20 +393,19 @@ time_4years = data %>%
          ))%>%
   filter(time_approval != 0) %>%
   group_by(across(all_of(level))) %>%
-  summarise(time_approval_4years = mean(time_approval),
-              not_answered_time_4years = sum(not_answered),
-            responses = n()) %>%
-  mutate(time_approval_4years = time_approval_4years / 5)
+  summarise(time_approval_4years_full = mean(time_approval),
+            not_answered_time_4years = sum(not_answered),
+            responses_time_4years = n()) %>%
+  mutate(time_approval_4years = time_approval_4years_full / 5)
 
 # combine
 time_approval_commercial = time_12months %>%
-  select(all_of(level), 
-         time_approval_12months) %>%
-  full_join((time_4years %>% select(all_of(level), time_approval_4years)), by = (all_of(level)))
+  full_join((time_4years), by = (all_of(level)))
 
 time_approval_commercial$time_approval_commercial_value = rowMeans(time_approval_commercial[, c( "time_approval_12months" , "time_approval_4years" )])
 
 time_approval_commercial %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
   kable() %>%
   kable_styling()
 ```
@@ -421,8 +426,8 @@ collateral_12months = data %>%
   group_by(across(all_of(level))) %>%
   summarise(collateral_commercial_loan_12months = sum(collateral_commercial_loan_12months_logic, na.rm = T),
             not_answered_collateral_12months = sum(not_answered),
-            responses = n()) %>%
-  mutate(collateral_commercial_loan_12months = collateral_commercial_loan_12months / (responses - not_answered_collateral_12months))
+            responses_collateral_12months = n()) %>%
+  mutate(collateral_commercial_loan_12months = collateral_commercial_loan_12months / (responses_collateral_12months - not_answered_collateral_12months))
 
 # 4 years
 collateral_4years = data %>%
@@ -434,19 +439,18 @@ collateral_4years = data %>%
   mutate(not_answered = ifelse(collateral_commercial_loan_4years == "", 1, 0)) %>%
   group_by(across(all_of(level))) %>%
   summarise(collateral_commercial_loan_4years = sum(collateral_commercial_loan_4years_logic, na.rm = T),
-            not_answered_collateral_12months = sum(not_answered),
-            responses = n()) %>%
-  mutate(collateral_commercial_loan_4years = collateral_commercial_loan_4years / (responses - not_answered_collateral_12months))
+            not_answered_collateral_4years = sum(not_answered),
+            responses_collateral_4years = n()) %>%
+  mutate(collateral_commercial_loan_4years = collateral_commercial_loan_4years / (responses_collateral_4years - not_answered_collateral_4years))
 
 # combine
 collateral_commercial = collateral_12months %>%
-  select(all_of(level),
-         collateral_commercial_loan_12months) %>%
-  full_join((collateral_4years %>% select(all_of(level), collateral_commercial_loan_4years)), by = (all_of(level)))
+  full_join((collateral_4years), by = (all_of(level)))
 
 collateral_commercial$collateral_commercial_value = rowMeans(collateral_commercial[, c("collateral_commercial_loan_12months", "collateral_commercial_loan_4years")], na.rm = T)
 
 collateral_commercial %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
   kable() %>%
   kable_styling()
 ```
@@ -469,6 +473,7 @@ other_financial = data %>%
   mutate(other_financial_value = other_finance_institutions / (responses - not_answered_other_financial)) 
 
 other_financial %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
   kable() %>%
   kable_styling()
 ```
@@ -542,6 +547,7 @@ time_approval_other = data %>%
   mutate(time_approval_other_value = time_approval_loan_other_5years / 5) 
 
 time_approval_other %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
   kable() %>%
   kable_styling()
 ```
@@ -671,6 +677,7 @@ collateral_other = data %>%
   mutate(collateral_other_value = collateral_loan_other_5years / (responses - not_answered_collateral)) 
 
 collateral_other %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
   kable() %>%
   kable_styling()
 
@@ -692,6 +699,7 @@ insurance = data %>%
   mutate(insurance_value = has_insurance / (responses - not_answered_insurance)) 
 
 insurance %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
   kable() %>%
   kable_styling()
 ```
@@ -712,6 +720,7 @@ pension = data %>%
   mutate(pension_value = has_pension_policy / (responses - not_answered_pension)) 
 
 pension %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
   kable() %>%
   kable_styling()
 ```
@@ -734,6 +743,7 @@ mm_account = data %>%
   mutate(mm_account_value = mobile_money_account / (responses - not_answered_mobile_account)) 
 
 mm_account %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
   kable() %>%
   kable_styling()
 ```
@@ -772,6 +782,7 @@ time_open_mm = data %>%
             time_open_mm_value = mean(time_open) / 5) 
 
 time_open_mm %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
   kable() %>%
   kable_styling()
 ```
@@ -793,6 +804,7 @@ insurance_mm = data %>%
   mutate(insurance_mm_value = insurance_mobile_awareness / (responses - not_answered_mobile_insurance_aware)) 
 
 insurance_mm %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
   kable() %>%
   kable_styling()
 ```
@@ -814,6 +826,7 @@ savings_facility = data %>%
   mutate(savings_facility_value = access_savings_facility / (responses - not_answered_savings)) 
 
 savings_facility %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
   kable() %>%
   kable_styling()
 ```
@@ -846,6 +859,7 @@ advice_sources = data %>%
   mutate(advice_sources_value = business_advice / (responses - not_answered_advice))
 
 advice_sources %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
   kable() %>%
   kable_styling()
 ```
