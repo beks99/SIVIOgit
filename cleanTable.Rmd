@@ -199,32 +199,32 @@ financial_inclusion_survey = read_complete %>%
          ) %>%
   select(-(survey_funds_ongoing)) %>%
   mutate(single_count2 = 1) %>%
-  mutate(funds_ongoing = case_when(
-      funds_ongoing == "Business funds" |
-      funds_ongoing == "Business is self sponsored" |
-      # funds_ongoing == "Business profits" |
-      # funds_ongoing == "Business returns" |
-      # funds_ongoing == "Clients pay deposit to fund initial project implementation costs" |
-      funds_ongoing == "From business" |
-      funds_ongoing == "From my profits" |
-      funds_ongoing == "From the profits" |
-      funds_ongoing == "From the takeaway" |
-      funds_ongoing == "I use profit from last batch" |
-      funds_ongoing == "My profits" |
-      # funds_ongoing == "Personal savings" |
-      # funds_ongoing == "Profit" |
-      # funds_ongoing == "Profit from farming" |
-      funds_ongoing == "Reimbursement of profits" |
-      funds_ongoing == "Salon" |
-      # funds_ongoing == "Self financing projects" |
-      funds_ongoing == "The business" |
-      funds_ongoing == "The business itself" |
-      funds_ongoing == "Trade" |
-      # funds_ongoing == "We get deposit when starting a project which we use to meet the project costs" ~ "Personal savings (from salary or other business initiatives)",
-      funds_ongoing == "Mikando" ~ "",
-      funds_ongoing == "Mukando" ~ "",
-      TRUE ~ as.character(funds_ongoing),
-    )) %>%
+  # mutate(funds_ongoing = case_when(
+  #     funds_ongoing == "Business funds" |
+  #     funds_ongoing == "Business is self sponsored" |
+  #     # funds_ongoing == "Business profits" |
+  #     # funds_ongoing == "Business returns" |
+  #     # funds_ongoing == "Clients pay deposit to fund initial project implementation costs" |
+  #     funds_ongoing == "From business" |
+  #     funds_ongoing == "From my profits" |
+  #     funds_ongoing == "From the profits" |
+  #     funds_ongoing == "From the takeaway" |
+  #     funds_ongoing == "I use profit from last batch" |
+  #     funds_ongoing == "My profits" |
+  #     # funds_ongoing == "Personal savings" |
+  #     # funds_ongoing == "Profit" |
+  #     # funds_ongoing == "Profit from farming" |
+  #     funds_ongoing == "Reimbursement of profits" |
+  #     funds_ongoing == "Salon" |
+  #     # funds_ongoing == "Self financing projects" |
+  #     funds_ongoing == "The business" |
+  #     funds_ongoing == "The business itself" |
+  #     funds_ongoing == "Trade" |
+  #     # funds_ongoing == "We get deposit when starting a project which we use to meet the project costs" ~ "Personal savings (from salary or other business initiatives)",
+  #     funds_ongoing == "Mikando" ~ "",
+  #     funds_ongoing == "Mukando" ~ "",
+  #     TRUE ~ as.character(funds_ongoing),
+  #   )) %>%
   filter(funds_ongoing != "")  %>%
   pivot_wider(names_from = funds_ongoing,
               values_from = single_count2) %>%
@@ -242,7 +242,6 @@ financial_inclusion_survey = read_complete %>%
          ongoing_creditunion = `Credit unions`,
          ongoing_orderfinance = `Order finance companies`,
          ) %>%
-  
   mutate(total_responses = 1)
 ```
 
