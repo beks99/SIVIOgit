@@ -12,7 +12,7 @@ library(tidyverse)
 ```
 
 ```{r}
-read_completedata = read.csv(file = '~/SIVIOgit/10_11_2021_complete.csv',
+read_completedata = read.csv(file = '~/SIVIOgit/11_11_2021_complete.csv',
                           header = T, sep = ',')
 ```
 
@@ -265,7 +265,7 @@ survey_completedata = read_completedata %>%
          # logic for counting purposes
          urban = ifelse(urbanrural=="Urban", 1, 0),
          rural = ifelse(urbanrural=="Rural", 1, 0),
-         primary = ifelse(education_owner == "Primary" | X.1 == "Adult literacy grade 4", 1, 0),
+         primary = ifelse(education_owner == "Primary", 1, 0),
          secondary = ifelse(education_owner == "Secondary O Level" | education_owner == "Secondary A Level", 1, 0),
          tertiary = ifelse(education_owner == "First Degree" | education_owner == "Masters" | education_owner == "PHD", 1, 0),
          vocational = ifelse(education_owner == "Vocational Training" | education_owner == "Diploma", 1, 0),

@@ -1,0 +1,100 @@
+---
+title: "provincial select"
+author: "Beks"
+date: "11/12/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+```
+
+```{r}
+data_all = read.csv(file = "~/SIVIOgit/clean_financial_inclusion.csv")
+```
+
+```{r}
+level = c("province")
+```
+
+
+```{r}
+totals = data_all %>%
+  group_by(across(all_of(level))) %>%
+  summarise(n=n())
+
+min_total = min(totals$n)
+```
+
+
+
+```{r}
+bulawayo = data_all %>%
+  filter(province == "Bulawayo") %>%
+  sample_n(min_total)
+```
+
+```{r}
+harare = data_all %>%
+  filter(province == "Harare") %>%
+  sample_n(min_total)
+```
+
+```{r}
+manicaland = data_all %>%
+  filter(province == "Manicaland") %>%
+  sample_n(min_total)
+```
+
+```{r}
+mashCentral = data_all %>%
+  filter(province == "Mashonaland Central") %>%
+  sample_n(min_total)
+```
+
+```{r}
+mashEast = data_all %>%
+  filter(province == "Mashonaland East") %>%
+  sample_n(min_total)
+```
+
+```{r}
+mashWest = data_all %>%
+  filter(province == "Mashonaland West") %>%
+  sample_n(min_total)
+```
+
+```{r}
+masvingo = data_all %>%
+  filter(province == "Masvingo") %>%
+  sample_n(min_total)
+```
+
+```{r}
+matNorth = data_all %>%
+  filter(province == "Matabeleland North") %>%
+  sample_n(min_total)
+```
+
+```{r}
+matSouth = data_all %>%
+  filter(province == "Matabeleland South") %>%
+  sample_n(min_total)
+```
+
+```{r}
+midlands = data_all %>%
+  filter(province == "Midlands") %>%
+  sample_n(min_total)
+```
+
+```{r}
+equal_total = bind_rows(bulawayo, harare, manicaland, mashCentral, mashEast, mashWest, masvingo, matNorth, matSouth, midlands)
+```
+
+```{r}
+write.csv(equal_total, file = "~/SIVIOgit/data_equal_comparisons.csv")
+```
+

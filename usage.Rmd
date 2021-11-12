@@ -13,7 +13,7 @@ library(kableExtra)
 ```
 
 ```{r}
-data = read.csv(file = "~/SIVIOgit/clean_financial_inclusion.csv")
+data = read.csv(file = "~/SIVIOgit/data_equal_comparisons.csv")
 ```
 
 # levels of inclusion.
@@ -44,16 +44,16 @@ criteria = c(
   "number_bank_services_value",
   "successful_bids_value",
   "commercial_loan_apply_value",
-  "Number_commercial_loan_application_value",
-  "success_loan_commercial_value",
-  "service_loan_commercial_value",
-  "interest_commercial_value",
-  "payback_commercial_value",
-  "number_services_other_value",
-  "other_formal_loan_value",
-  "service_loan_other_value",
-  "interest_rate_loan_other_5years_value",
-  "payback_loan_other_5years_value",
+  # "Number_commercial_loan_application_value",
+  # "success_loan_commercial_value",
+  # "service_loan_commercial_value",
+  # "interest_commercial_value",
+  # "payback_commercial_value",
+  # "number_services_other_value",
+  # "other_formal_loan_value",
+  # "service_loan_other_value",
+  # "interest_rate_loan_other_5years_value",
+  # "payback_loan_other_5years_value",
   "comprehensive_value",
   "staff_value",
   "product_value",
