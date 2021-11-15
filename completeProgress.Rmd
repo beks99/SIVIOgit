@@ -15,8 +15,16 @@ library(kableExtra)
 
 # date: `r date()`
 
+This report generates some tables to track progress over the required expectations that we held to our enumerators to in their contracts
+
+- enterprise size
+
+- province location
+
+- urban/rural distribution.
+
 ```{r include=FALSE}
-completedata = read.csv(file = "~/SIVIOgit/survey_financial_inclusion.csv", header = T, sep = ",")
+completedata = read.csv(file = "~/SIVIOgit/survey_FI_2021.csv", header = T, sep = ",")
 ```
 
 ```{r include=FALSE}

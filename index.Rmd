@@ -1,0 +1,49 @@
+---
+title: "index"
+author: "Beks"
+date: "11/15/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+level = c("province")
+```
+
+
+# Barriers
+
+```{r}
+barriers_data = read.csv(file = "~/SIVIOgit/barriers_criteria.csv")
+
+
+```
+
+# Compliance
+
+```{r}
+compliance_data = read.csv(file = "~/SIVIOgit/compliance_criteria.csv")
+```
+
+# Availability
+
+```{r}
+availability_data = read.csv(file = "~/SIVIOgit/availability_criteria.csv")
+```
+
+
+# Usage
+
+```{r}
+usage_data = read.csv(file = "~/SIVIOgit/usage_criteria.csv")
+```
+
+# Index
+
+```{r}
+
+```
+

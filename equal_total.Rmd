@@ -12,7 +12,7 @@ library(tidyverse)
 ```
 
 ```{r}
-data_all = read.csv(file = "~/SIVIOgit/clean_financial_inclusion.csv")
+data_all = read.csv(file = "~/SIVIOgit/clean_FI_2021.csv")
 ```
 
 ```{r}

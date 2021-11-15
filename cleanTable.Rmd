@@ -12,8 +12,10 @@ library(tidyverse)
 library(kableExtra)
 ```
 
+The code below generates a table on percentages across several key measures. This table was one that was used alongside the lit review to understand the current standing in Zimbabwe, SADC, Africa and the world. This gave some insight into the interactions between MSMEs and the financial sector. The collected data can be compared to other baseline measures. This data is done on the national level so **not** aggregated across provinces.
+
 ```{r include=FALSE}
-read_complete = read.csv(file = "~/SIVIOgit/clean_financial_inclusion.csv")
+read_complete = read.csv(file = "~/SIVIOgit/clean_FI_2021.csv")
 ```
 
 ```{r}
@@ -50,80 +52,21 @@ read_complete %>%
 
 ```{r}
 financial_inclusion_survey = read_complete %>%
+  mutate(total_responses = 1) %>%
   
   # business sector/industry
-  mutate(X.20 = trimws(X.20)) %>%
+  mutate(industry_not_specified = ifelse(
+    (industry == "" & X.2 == "" &  X.3 == "" & X.4 == "" & X.5 == "" & X.6 == "" & X.7 == "" & X.8 == "" & X.9 == "" & X.10 == "" & X.11 == "" & X.12 == "" & X.13 == "" & X.14 == "" & X.15 == "" & X.16 == "" & X.17 == "" & X.18 == "" & X.19 == "" & X.20 == ""), "industry_not_specified", "" ),
+    X.20 = trimws(X.20)
+    ) %>%
   pivot_longer(cols = c(industry, 
-                        X.2, X.3, X.4, X.5, X.6, X.7, X.8, X.9, X.10, X.11, X.12, X.13, X.14, X.15, X.16, X.17, X.18, X.19, X.20),
+                        X.2, X.3, X.4, X.5, X.6, X.7, X.8, X.9, X.10, X.11, X.12, X.13, X.14, X.15, X.16, X.17, X.18, X.19, X.20, industry_not_specified),
                names_to = "survey_industry",
                values_to = "industry_sector") %>%
   filter(industry_sector != "Other (please specify)",
          industry_sector != "") %>%
   select(-(survey_industry)) %>%
   mutate(single_count = 1) %>%
-  # categorize the other sectors under our labels
-  # mutate(industry_sector = case_when(
-  #   industry_sector == "Welding" ~ "Construction Energy, Water and Architecture",
-  #   industry_sector == "Waste recycling" ~ "Construction Energy, Water and Architecture",
-  #   industry_sector == "Small farmer" ~ "Agriculture, hunting , forestry and fishing.",
-  #   industry_sector == "Selling cellphones and repairing cellphones" ~ "-",
-  #   industry_sector == "Security Services" ~ "",
-  #   industry_sector == "Satellite and visuals" ~ "Information and Communication Technology",
-  #   industry_sector == "Saloon and barber" ~ "Trichology and cosmetology (hair, makeup, nails and beauty therapy)",
-  #   industry_sector == "Running a bar" ~ "Tourism accommodation and Restaurants",
-  #   industry_sector == "REAL ESTATE VALUATIONS" ~ "",
-  #   industry_sector == "PRINTING" ~ "Graphics, Technical design, computer software and Printing",
-  #   industry_sector == "Poultry and baking cream dorghnuts" ~ "Catering, baking and culinary arts", 
-  #   # industry_sector == "Poultry" ~ "Agriculture, hunting , forestry and fishing.", 
-  #   industry_sector == "PHONES" ~ "", 
-  #   industry_sector == "Motor Spares and Accessories" ~ "", 
-  #   industry_sector == "motor mechanic" ~ "", 
-  #   industry_sector == "Mechanics" ~ "", 
-  #   industry_sector == "Lodge bed only" ~ "Tourism accommodation and Restaurants", 
-  #   industry_sector == "Liqour outlet" ~ "Retail and wholesale", 
-  #   industry_sector == "Importing services shipping" ~ "", 
-  #   industry_sector == "ICE CREAM COURTENIER RESALER" ~ "", 
-  #   industry_sector == "Hydraulics and pneumatics and diesel tech" ~ "", 
-  #   industry_sector == "Hardware stores" ~ "Retail and wholesale", 
-  #   industry_sector == "Hardware store" ~ "Retail and wholesale", 
-  #   industry_sector == "Hardware and construction" ~ "Construction Energy, Water and Architecture", 
-  #   industry_sector == "Hardware and butchery" ~ "", 
-  #   industry_sector == "Hardware" ~ "", 
-  #   industry_sector == "Grocery shop" ~ "Retail and wholesale", 
-  #   industry_sector == "Grocery and cooking sadza" ~ "Catering, baking and culinary arts", 
-  #   industry_sector == "Grinding meal" ~ "Catering, baking and culinary arts", 
-  #   industry_sector == "General dealer" ~ "Retail and wholesale", 
-  #   # industry_sector == "Furniture" ~ "Manufacturing", 
-  #   industry_sector == "Fruits, airtime and selling money" ~ "", 
-  #   industry_sector == "Fruits and vegetables" ~ "Agriculture, hunting , forestry and fishing.", 
-  #   industry_sector == "FASHION" ~ "Textile, apparel, leather", 
-  #   industry_sector == "Engineering" ~ "Construction Energy, Water and Architecture", 
-  #   industry_sector == "Energy" ~ "Construction Energy, Water and Architecture", 
-  #   industry_sector == "electrician" ~ "Construction Energy, Water and Architecture", 
-  #   industry_sector == "Electrical hardware" ~ "", 
-  #   industry_sector == "Earthmoving" ~ "Construction Energy, Water and Architecture", 
-  #   industry_sector == "Driving school" ~ "", 
-  #   industry_sector == "Croos boarder trading" ~ "", 
-  #   industry_sector == "Cooking sadza" ~ "Catering, baking and culinary arts", 
-  #   industry_sector == "Construction" ~ "Construction Energy, Water and Architecture", 
-  #   industry_sector == "CLOTHING SHOP" ~ "Retail and wholesale", 
-  #   industry_sector == "Clothing" ~ "Textile, apparel, leather", 
-  #   industry_sector == "Chicken poultry" ~ "Agriculture, hunting , forestry and fishing.", 
-  #   industry_sector == "Cell phones and accessories" ~ "Retail and wholesale", 
-  #   # industry_sector == "Carpentry" ~ "Manufacturing", 
-  #   industry_sector == "Car sales" ~ "Retail and wholesale", 
-  #   industry_sector == "Cake making" ~ "Catering, baking and culinary arts", 
-  #   industry_sector == "Butchery" ~ "", 
-  #   industry_sector == "Butcher" ~ "",
-  #   industry_sector == "Bottle store" ~ "Retail and wholesale", 
-  #   industry_sector == "Beerhall" ~ "Tourism accommodation and Restaurants", 
-  #   industry_sector == "Beer hall" ~ "Tourism accommodation and Restaurants", 
-  #   industry_sector == "Barbershop" ~ "Trichology and cosmetology (hair, makeup, nails and beauty therapy)", 
-  #   industry_sector == "Bar" ~ "Tourism accommodation and Restaurants", 
-  #   industry_sector == "Automotive" ~ "",
-  #   TRUE ~ as.character(industry_sector),
-  # )) %>%
-  filter(industry_sector != "") %>%
   pivot_wider(names_from = industry_sector,
               values_from = single_count) %>%
   rename(sector_manufacturing = Manufacturing,
@@ -148,26 +91,17 @@ financial_inclusion_survey = read_complete %>%
          ) %>%
   
   # funds to start
-  mutate(X.20 = trimws(X.37)) %>%
-  pivot_longer(cols = c(funds_start, X.25, X.26, X.27, X.28, X.29, X.30, X.31, X.32, X.33, X.34, X.35, X.36, X.37),
+  mutate(funds_start_not_specified = ifelse(
+    (funds_start == "" & X.25 == "" &  X.26 == "" & X.27 == "" & X.28 == "" & X.29 == "" & X.30 == "" & X.31 == "" & X.32 == "" & X.33 == "" & X.34 == "" & X.35 == "" & X.36 == "" & X.37 == "" ), "funds_start_not_specified", "" ),
+    X.20 = trimws(X.37)
+    ) %>%
+  pivot_longer(cols = c(funds_start, X.25, X.26, X.27, X.28, X.29, X.30, X.31, X.32, X.33, X.34, X.35, X.36, X.37, funds_start_not_specified),
                names_to = "survey_funds_start",
                values_to = "funds_start") %>%
   filter(funds_start != "Other (please specify)",
          funds_start != "") %>%
   select(-(survey_funds_start)) %>%
   mutate(single_count1 = 1) %>%
-  # mutate(funds_start = case_when(
-  #   funds_start == "Sold property" |
-  #   # funds_start == "Political party funds" |
-  #   # funds_start == "Pension funds" |
-  #   funds_start == "pension benefits" |
-  #   funds_start == "No funds were needed since I just used my hands to plait" ~ "Personal savings (from salary or other business initiatives)",
-  #   funds_start == "Mukando" ~ "",
-  #   funds_start == "Mikando" ~ "",
-  #   funds_start == "LOAN" ~ "",
-  #   TRUE ~ as.character(funds_start),
-  # )) %>%
-  filter(funds_start != "") %>%
   pivot_wider(names_from = funds_start,
               values_from = single_count1) %>% 
   rename(start_savings = `Personal savings (from salary or other business initiatives)`,
@@ -181,7 +115,8 @@ financial_inclusion_survey = read_complete %>%
          start_mfi = `Microfinance institution`,
          start_grant = `International organization through a grant`,
          start_govt = `Government assistance programs`,
-         start_creditunion = `Credit unions`) %>%
+         start_creditunion = `Credit unions`,
+         start_order_finance = `Order finance companies`) %>%
   
   
   # funds for ongoing business
@@ -198,36 +133,9 @@ financial_inclusion_survey = read_complete %>%
          funds_ongoing != ""
          ) %>%
   select(-(survey_funds_ongoing)) %>%
-  mutate(single_count2 = 1) %>%
-  # mutate(funds_ongoing = case_when(
-  #     funds_ongoing == "Business funds" |
-  #     funds_ongoing == "Business is self sponsored" |
-  #     # funds_ongoing == "Business profits" |
-  #     # funds_ongoing == "Business returns" |
-  #     # funds_ongoing == "Clients pay deposit to fund initial project implementation costs" |
-  #     funds_ongoing == "From business" |
-  #     funds_ongoing == "From my profits" |
-  #     funds_ongoing == "From the profits" |
-  #     funds_ongoing == "From the takeaway" |
-  #     funds_ongoing == "I use profit from last batch" |
-  #     funds_ongoing == "My profits" |
-  #     # funds_ongoing == "Personal savings" |
-  #     # funds_ongoing == "Profit" |
-  #     # funds_ongoing == "Profit from farming" |
-  #     funds_ongoing == "Reimbursement of profits" |
-  #     funds_ongoing == "Salon" |
-  #     # funds_ongoing == "Self financing projects" |
-  #     funds_ongoing == "The business" |
-  #     funds_ongoing == "The business itself" |
-  #     funds_ongoing == "Trade" |
-  #     # funds_ongoing == "We get deposit when starting a project which we use to meet the project costs" ~ "Personal savings (from salary or other business initiatives)",
-  #     funds_ongoing == "Mikando" ~ "",
-  #     funds_ongoing == "Mukando" ~ "",
-  #     TRUE ~ as.character(funds_ongoing),
-  #   )) %>%
-  filter(funds_ongoing != "")  %>%
+  mutate(count_single = 1) %>%
   pivot_wider(names_from = funds_ongoing,
-              values_from = single_count2) %>%
+              values_from = count_single, names_repair = "unique") %>% 
   rename(ongoing_savings = `Personal savings (from salary or other business initiatives)`,
          ongoing_chimbadzo = `Loan sharks (chimbadzo)`,
          ongoing_familylocal = `Locally based family and friends`,
@@ -241,8 +149,7 @@ financial_inclusion_survey = read_complete %>%
          ongoing_govt = `Government of Zimbabwe`,
          ongoing_creditunion = `Credit unions`,
          ongoing_orderfinance = `Order finance companies`,
-         ) %>%
-  mutate(total_responses = 1)
+         )
 ```
 
 # gather entries to rename and then fit into other categories
@@ -315,7 +222,7 @@ summed_percentages = financial_inclusion_survey %>%
             
             # mobile money
             percent_mobile_account = (mobile_account_logic/total_responses) *100,
-            percent_mobile_insurance = (mobile_insurance_logic/total_responses) *100,
+            percent_mobile_insurance = (insurance_mobile_awareness_logic/total_responses) *100,
             
             # registration
             percent_registered = (registration_logic/total_responses) * 100,
@@ -495,7 +402,7 @@ final_table = summed_percentages %>%
 ```
 
 ```{r}
-write.csv(final_table, file = "~/SIVIOgit/final_province_summary.csv")
+write.csv(final_table, file = "~/SIVIOgit/province_summary_2021.csv")
 ```
 
 ```{r}
