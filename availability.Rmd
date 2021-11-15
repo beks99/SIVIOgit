@@ -13,7 +13,8 @@ library(kableExtra)
 ```
 
 ```{r}
-data = read.csv(file = "~/SIVIOgit/data_equal_comparisons.csv")
+data = read.csv(file = "~/SIVIOgit/clean_FI_2021.csv")
+# data = read.csv(file = "~/SIVIOgit/data_equal_comparisons.csv")
 ```
 
 # levels of inclusion.
