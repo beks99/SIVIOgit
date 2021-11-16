@@ -21,7 +21,7 @@ A main portion of the code renames every column as Survey Monkey provides the co
 
 A couple columns were added to help in counting of pre-decided variables.
 
-And then collapse the other columns.... this is still a debated stage as this interfers with grouping
+And then collapse the other columns.... this is still a debated stage as this interferes with grouping
 
 **The most important section is the classification of enterprises by size**
 
@@ -500,7 +500,10 @@ survey_completedata = read_completedata %>%
          size_inclusion = enterprise, # calculated below reassign other...
          age_inclusion = ifelse(age_owner == "18 to 25" | age_owner == "26 to 35", "Youth", "35+"),
          formality_inclusion = ifelse(registered == "Yes" & zimra_registration != "None of the above", "Formal", "Informal"),
-         sector_inclusion = ifelse(industry != "", "Agriculture", "Other subsector"))
+         sector_inclusion = case_when(industry != "" ~ "Agriculture", 
+                                      X.2 != "" ~ "Mining",
+                                      X.3 != "" ~ "Retail",
+                                      TRUE ~ as.character("Other")))
 ```
 
 ```{r}

@@ -22,16 +22,37 @@ data = read.csv(file = "~/SIVIOgit/clean_FI_2021.csv")
 This can be used to compare across the different measures.
 
 ```{r}
-# province
-# gender_inclusion 
-# location_inclusion 
-# size_inclusion
-# age_inclusion
-# formality_inclusion
-# sector_inclusion
-
-level = c("province")
+level = c("province"
+          # ,"gender_inclusion"
+          # ,"location_inclusion"
+          # ,"size_inclusion"
+          # ,"age_inclusion"
+          # ,"formality_inclusion"
+          # ,"sector_inclusion"
+          )
 ```
+
+```{r include=FALSE}
+# Criteria
+criteria = c("knowledge",
+             "documentation",
+             "legal",
+             "finance",
+             "trust",
+             "inflation",
+             "bureaucracy",
+             "law",
+             "inappropriate", 
+             # "score_value",
+             "restrictions_bank_account_value",
+             "restrictions_mobile_money_value")
+
+ncriteria = length(criteria)
+```
+
+There are `r ncriteria` criteria
+
+The criteria are `r criteria`
 
 ```{r include=FALSE}
 provincial_totals = data %>% group_by(across(all_of(level))) %>% summarise(provincial_totals = n())
@@ -129,6 +150,8 @@ zimra %>%
 
 **Knowledge, legal standing, finance, Complicated law, trust**
 
+- faced restrictions in use of bank account
+
 ```{r echo=FALSE}
 bank_account = data %>%
   select(all_of(level), 
@@ -216,6 +239,26 @@ sme_auction = data %>%
          )
 
 sme_auction %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
+  kable() %>%
+  kable_styling()
+```
+
+```{r echo=FALSE}
+# restrictions in use of bank account
+restrictions_bank_account = data %>%
+  select(all_of(level),
+         bank_account, restrictions_bank_account) %>%
+  filter(bank_account == "Yes") %>%
+  mutate(not_answered = ifelse(restrictions_bank_account == "", 1, 0),
+         restrictions_bank_use_logic = ifelse(restrictions_bank_account == "Yes", 1, 0)) %>%
+  group_by(across(all_of(level))) %>%
+  summarise(restrictions_bank_account = sum(restrictions_bank_use_logic),
+            responses = n(),
+            not_answered_restrictions_bank = sum(not_answered)) %>%
+  mutate(restrictions_bank_account_value = restrictions_bank_account / (responses - not_answered_restrictions_bank))
+
+restrictions_bank_account %>%
   bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
   kable() %>%
   kable_styling()
@@ -393,6 +436,8 @@ pension %>%
 
 **documentation, finance, trust, bureaucracy**
 
+- faced restrictions in use of mobile money account
+
 ```{r echo=FALSE}
 mobile_money = data %>%
   select(all_of(level), 
@@ -432,6 +477,26 @@ mobile_money = data %>%
          )
 
 mobile_money %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
+  kable() %>%
+  kable_styling()
+```
+
+```{r echo=FALSE}
+# restrictions in use of mobile money account
+restrictions_mobile_money = data %>% 
+  select(all_of(level),
+         mobile_money_account, restrictions_use_mobile_money) %>%
+  filter(mobile_money_account == "Yes") %>%
+  mutate(not_answered = ifelse(restrictions_use_mobile_money == "", 1, 0),
+         restrictions_mobile_money_logic = ifelse(restrictions_use_mobile_money == "Yes", 1, 0)) %>%
+  group_by(across(all_of(level))) %>%
+  summarise(restrictions_mobile_money = sum(restrictions_mobile_money_logic),
+            responses = n(),
+            not_answered_restrictions_mobile = sum(not_answered)) %>%
+  mutate(restrictions_mobile_money_value = restrictions_mobile_money / (responses - not_answered_restrictions_mobile))
+
+restrictions_mobile_money %>%
   bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
   kable() %>%
   kable_styling()
@@ -527,27 +592,34 @@ reasons =
   full_join((investments %>% select(all_of(level),knowledge_investments, finance_investments, inflation_investments)),
             by = all_of(level))
 
+barrier_reasons = reasons
 
-barrier_reasons = reasons %>%
-  mutate(knowledge = rowMeans(reasons[, 
-                                      c("knowledge_register", "knowledge_zimra", "knowledge_sme", "knowledge_commercial_loan", "knowledge_insurance", "knowledge_pensions", "knowledge_investments")]),
-         documentation = rowMeans(reasons[, 
-                                          c("documentation_account", "documentation_commercial_loan", "documentation_mobile")]),
-         legal = rowMeans(reasons[, 
-                                  c("legal_account", "legal_sme", "legal_commercial_loan", "legal_insurance")]),
-         finance = rowMeans(reasons[, 
-                                    c("finance_register", "finance_zimra", "finance_account", "finance_commercial_loan", "finance_insurance", "finance_pensions", "finance_mobile", "finance_investments")]),
-         inflation = rowMeans(reasons[,
-                                      c("inflation_zimra", "inflation_insurance", "inflation_pensions", "inflation_investments")]),
-         law = rowMeans(reasons[, 
-                                c("law_register", "law_zimra", "law_sme", "law_insurance", "law_pensions")]),
-         trust = rowMeans(reasons[, 
-                                  c("trust_account", "trust_sme", "trust_insurance", "trust_pensions", "trust_mobile")]),
-         bureaucracy = rowMeans(reasons[, 
-                                        c("bureaucracy_register", "bureaucracy_zimra", "bureaucracy_account", "bureaucracy_mobile")]),
-         inappropraite = rowMeans(reasons[, 
-                                          c("inappropriate_account", "inappropriate_sme", "inappropriate_commercial_loan", "inappropriate_insurance", "inappropriate_pensions")]),
-         )
+barrier_reasons$knowledge = rowMeans(reasons[, 
+                                      c("knowledge_register", "knowledge_zimra", "knowledge_sme", "knowledge_commercial_loan", "knowledge_insurance", "knowledge_pensions", "knowledge_investments")], na.rm = T)
+
+barrier_reasons$documentation = rowMeans(reasons[, 
+                                          c("documentation_account", "documentation_commercial_loan", "documentation_mobile")],  na.rm = T)
+
+barrier_reasons$legal = rowMeans(reasons[, 
+                                  c("legal_account", "legal_sme", "legal_commercial_loan", "legal_insurance")],  na.rm = T)
+
+barrier_reasons$finance = rowMeans(reasons[, 
+                                    c("finance_register", "finance_zimra", "finance_account", "finance_commercial_loan", "finance_insurance", "finance_pensions", "finance_mobile", "finance_investments")],  na.rm = T)
+
+barrier_reasons$inflation = rowMeans(reasons[,
+                                      c("inflation_zimra", "inflation_insurance", "inflation_pensions", "inflation_investments")],  na.rm = T)
+
+barrier_reasons$law = rowMeans(reasons[, 
+                                c("law_register", "law_zimra", "law_sme", "law_insurance", "law_pensions")],  na.rm = T)
+
+barrier_reasons$trust = rowMeans(reasons[, 
+                                  c("trust_account", "trust_sme", "trust_insurance", "trust_pensions", "trust_mobile")],  na.rm = T)
+
+barrier_reasons$bureaucracy = rowMeans(reasons[, 
+                                        c("bureaucracy_register", "bureaucracy_zimra", "bureaucracy_account", "bureaucracy_mobile")],  na.rm = T)
+
+barrier_reasons$inappropriate = rowMeans(reasons[, 
+                                          c("inappropriate_account", "inappropriate_sme", "inappropriate_commercial_loan", "inappropriate_insurance", "inappropriate_pensions")],  na.rm = T)
 
 ```
 
@@ -692,9 +764,20 @@ knowledge_score_final %>%
 barriers_critera = data %>%
   group_by(across(all_of(level))) %>%
   summarise(n=n()) %>%
-  full_join(y = (barrier_reasons %>% select(all_of(level), knowledge, documentation, legal, finance, inflation, law, trust, bureaucracy, inappropraite)), by = all_of(level)) %>%
-  full_join(y = (knowledge_score_final %>% select(all_of(level), score_value))) 
+  full_join(y = (barrier_reasons %>% select(all_of(level), knowledge, documentation, legal, finance, inflation, law, trust, bureaucracy, inappropriate)), 
+            by = all_of(level)) %>%
+  full_join(y = (knowledge_score_final %>% select(all_of(level), score_value))) %>%
+  full_join(y = (restrictions_bank_account %>% select(all_of(level), restrictions_bank_account_value))) %>%
+  full_join(y = (restrictions_mobile_money %>% select(all_of(level), restrictions_mobile_money_value))) %>%
+  select(all_of(level), n, all_of(criteria))
 
+barriers_critera$barriers_score = rowSums(barriers_critera[, c(
+  all_of(criteria))],  na.rm = T)
+
+barriers_critera$barriers_normalise = (barriers_critera$barriers_score / ncriteria)
+
+barriers_critera$barriers_percentage = round((barriers_critera$barriers_normalise * 100), 2)
+  
 barriers_critera %>%
   kable() %>%
   kable_styling()

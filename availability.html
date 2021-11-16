@@ -179,15 +179,14 @@ pre code {
 <div id="levels-of-inclusion." class="section level1">
 <h1>levels of inclusion.</h1>
 <p>This can be used to compare across the different measures.</p>
-<pre class="r"><code># &quot;province&quot;,
-# &quot;gender_inclusion&quot;, 
-# &quot;location_inclusion&quot;, 
-# &quot;size_inclusion&quot;,
-# &quot;age_inclusion&quot;,
-# &quot;formality_inclusion&quot;,
-# &quot;sector_inclusion&quot;
-
-level = c(&quot;province&quot;)</code></pre>
+<pre class="r"><code>level = c(&quot;province&quot;
+          # ,&quot;gender_inclusion&quot;
+          # ,&quot;location_inclusion&quot;
+          # ,&quot;size_inclusion&quot;
+          # ,&quot;age_inclusion&quot;
+          # ,&quot;formality_inclusion&quot;
+          # ,&quot;sector_inclusion&quot;
+          )</code></pre>
 <div id="criteria" class="section level2">
 <h2>Criteria</h2>
 <p>There are 9 criteria</p>
@@ -3579,24 +3578,6 @@ time_open_bank_value
 sme_auction_value
 </th>
 <th style="text-align:right;">
-time_approval_commercial_value
-</th>
-<th style="text-align:right;">
-collateral_commercial_value
-</th>
-<th style="text-align:right;">
-other_financial_value
-</th>
-<th style="text-align:right;">
-time_approval_other_value
-</th>
-<th style="text-align:right;">
-collateral_other_value
-</th>
-<th style="text-align:right;">
-insurance_value
-</th>
-<th style="text-align:right;">
 pension_value
 </th>
 <th style="text-align:right;">
@@ -3643,24 +3624,6 @@ Bulawayo
 0.0845070
 </td>
 <td style="text-align:right;">
-0.7770833
-</td>
-<td style="text-align:right;">
-0.2916667
-</td>
-<td style="text-align:right;">
-0.6666667
-</td>
-<td style="text-align:right;">
-0.8266667
-</td>
-<td style="text-align:right;">
-0.5
-</td>
-<td style="text-align:right;">
-0.1796875
-</td>
-<td style="text-align:right;">
 0.0234375
 </td>
 <td style="text-align:right;">
@@ -3703,24 +3666,6 @@ Harare
 </td>
 <td style="text-align:right;">
 0.1204819
-</td>
-<td style="text-align:right;">
-0.5733333
-</td>
-<td style="text-align:right;">
-0.2916667
-</td>
-<td style="text-align:right;">
-0.4074074
-</td>
-<td style="text-align:right;">
-0.7818182
-</td>
-<td style="text-align:right;">
-0.5
-</td>
-<td style="text-align:right;">
-0.1741935
 </td>
 <td style="text-align:right;">
 0.0967742
@@ -3767,24 +3712,6 @@ Manicaland
 0.0972222
 </td>
 <td style="text-align:right;">
-0.6958333
-</td>
-<td style="text-align:right;">
-0.4375000
-</td>
-<td style="text-align:right;">
-0.6250000
-</td>
-<td style="text-align:right;">
-0.8600000
-</td>
-<td style="text-align:right;">
-0.5
-</td>
-<td style="text-align:right;">
-0.1920530
-</td>
-<td style="text-align:right;">
 0.0860927
 </td>
 <td style="text-align:right;">
@@ -3827,24 +3754,6 @@ Mashonaland Central
 </td>
 <td style="text-align:right;">
 0.0243902
-</td>
-<td style="text-align:right;">
-0.7600000
-</td>
-<td style="text-align:right;">
-0.3333333
-</td>
-<td style="text-align:right;">
-0.4500000
-</td>
-<td style="text-align:right;">
-1.0000000
-</td>
-<td style="text-align:right;">
-0.5
-</td>
-<td style="text-align:right;">
-0.1441441
 </td>
 <td style="text-align:right;">
 0.0540541
@@ -3891,24 +3800,6 @@ Mashonaland East
 0.3030303
 </td>
 <td style="text-align:right;">
-0.8333333
-</td>
-<td style="text-align:right;">
-0.8333333
-</td>
-<td style="text-align:right;">
-0.3571429
-</td>
-<td style="text-align:right;">
-0.8000000
-</td>
-<td style="text-align:right;">
-1.0
-</td>
-<td style="text-align:right;">
-0.1515152
-</td>
-<td style="text-align:right;">
 0.1212121
 </td>
 <td style="text-align:right;">
@@ -3951,24 +3842,6 @@ Mashonaland West
 </td>
 <td style="text-align:right;">
 0.0588235
-</td>
-<td style="text-align:right;">
-0.7333333
-</td>
-<td style="text-align:right;">
-0.6666667
-</td>
-<td style="text-align:right;">
-0.8000000
-</td>
-<td style="text-align:right;">
-0.8222222
-</td>
-<td style="text-align:right;">
-1.0
-</td>
-<td style="text-align:right;">
-0.3148148
 </td>
 <td style="text-align:right;">
 0.0555556
@@ -4015,24 +3888,6 @@ Masvingo
 0.0526316
 </td>
 <td style="text-align:right;">
-0.6000000
-</td>
-<td style="text-align:right;">
-0.1250000
-</td>
-<td style="text-align:right;">
-0.7222222
-</td>
-<td style="text-align:right;">
-0.9000000
-</td>
-<td style="text-align:right;">
-1.0
-</td>
-<td style="text-align:right;">
-0.2467532
-</td>
-<td style="text-align:right;">
 0.0129870
 </td>
 <td style="text-align:right;">
@@ -4075,24 +3930,6 @@ Matabeleland North
 </td>
 <td style="text-align:right;">
 0.0000000
-</td>
-<td style="text-align:right;">
-0.8348485
-</td>
-<td style="text-align:right;">
-0.3671329
-</td>
-<td style="text-align:right;">
-0.2500000
-</td>
-<td style="text-align:right;">
-0.7333333
-</td>
-<td style="text-align:right;">
-0.5
-</td>
-<td style="text-align:right;">
-0.1388889
 </td>
 <td style="text-align:right;">
 0.1180556
@@ -4139,24 +3976,6 @@ Matabeleland South
 0.0892857
 </td>
 <td style="text-align:right;">
-0.5000000
-</td>
-<td style="text-align:right;">
-0.2500000
-</td>
-<td style="text-align:right;">
-0.3333333
-</td>
-<td style="text-align:right;">
-0.7333333
-</td>
-<td style="text-align:right;">
-0.5
-</td>
-<td style="text-align:right;">
-0.2589928
-</td>
-<td style="text-align:right;">
 0.1223022
 </td>
 <td style="text-align:right;">
@@ -4199,24 +4018,6 @@ Midlands
 </td>
 <td style="text-align:right;">
 0.0277778
-</td>
-<td style="text-align:right;">
-0.6000000
-</td>
-<td style="text-align:right;">
-0.7500000
-</td>
-<td style="text-align:right;">
-0.4000000
-</td>
-<td style="text-align:right;">
-0.9000000
-</td>
-<td style="text-align:right;">
-0.5
-</td>
-<td style="text-align:right;">
-0.0952381
 </td>
 <td style="text-align:right;">
 0.0555556

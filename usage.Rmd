@@ -22,15 +22,14 @@ data = read.csv(file = "~/SIVIOgit/clean_FI_2021.csv")
 This can be used to compare across the different measures.
 
 ```{r}
-# province
-# gender_inclusion 
-# location_inclusion 
-# size_inclusion
-# age_inclusion
-# formality_inclusion
-# sector_inclusion
-
-level = c("province")
+level = c("province"
+          # ,"gender_inclusion"
+          # ,"location_inclusion"
+          # ,"size_inclusion"
+          # ,"age_inclusion"
+          # ,"formality_inclusion"
+          # ,"sector_inclusion"
+          )
 ```
 
 # Usage
@@ -361,7 +360,7 @@ commercial_loan_apply = data %>%
   select(all_of(level),
          commercial_loan_application, commercial_loan_application_past_logic) %>%
   mutate(not_answered = ifelse(commercial_loan_application == "", 1, 0))%>%
-  group_by(province) %>%
+  group_by(across(all_of(level))) %>%
   summarise(commercial_loan_application = sum(commercial_loan_application_past_logic, na.rm = T),
             responses = n(),
             not_answered_commercial_loan = sum(not_answered, na.rm = T)) %>%
@@ -1024,10 +1023,7 @@ usage_critera = data %>%
   full_join(y = (frequency_mobile_money %>% select(all_of(level), frequency_mobile_money_value)), by = all_of(level)) %>%
   full_join(y = (loan_mm %>% select(all_of(level), loan_mm_value)), by = all_of(level)) %>%
   full_join(y = (investments %>% select(all_of(level), investments_value)), by = all_of(level)) %>%
-
-  mutate_if(is.numeric, replace_na, 0.5)
-
-
+  select(all_of(level), n, all_of(criteria)) 
 
 usage_critera$usage_score = rowSums(usage_critera[, c(
   all_of(criteria))])

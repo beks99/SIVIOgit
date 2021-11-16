@@ -1,0 +1,30 @@
+---
+title: "formality"
+author: "Beks"
+date: "11/16/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+```
+
+```{r}
+# index = read.csv(file = "~/SIVIOgit/index_dimensions.csv")
+# 
+# write.csv(index, file = "~/SIVIOgit/index_formality.csv")
+```
+
+```{r}
+index_formality = read.csv(file = "~/SIVIOgit/index_formality.csv")
+index_formality %>%
+  head()
+```
+
+```{r}
+index_formality %>%
+  ggplot(mapping = aes(x=province, y=index_percentage, fill=formality_inclusion)) +
+  geom_col(position = "dodge")
+```

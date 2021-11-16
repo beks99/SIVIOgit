@@ -1,0 +1,30 @@
+---
+title: "Final Index Scores"
+author: "Beks"
+date: "11/16/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+```
+
+```{r}
+# index = read.csv(file = "~/SIVIOgit/index_dimensions.csv")
+# 
+# write.csv(index, file = "~/SIVIOgit/index_provinces.csv")
+```
+
+```{r}
+index_provinces = read.csv(file = "~/SIVIOgit/index_provinces.csv")
+index_provinces %>%
+  head()
+```
+
+```{r}
+index_provinces %>%
+  ggplot(mapping = aes(x=province, y=index_percentage)) +
+  geom_col()
+```

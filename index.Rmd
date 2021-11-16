@@ -7,35 +7,49 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(kableExtra)
 ```
 
 ```{r}
-level = c("province")
+data = read.csv(file = "~/SIVIOgit/clean_FI_2021.csv")
+# data = read.csv(file = "~/SIVIOgit/data_equal_comparisons.csv")
+```
+
+```{r}
+level = c("province"
+          # ,"gender_inclusion"
+          # ,"location_inclusion"
+          # ,"size_inclusion"
+          # ,"age_inclusion"
+          # ,"formality_inclusion"
+          # ,"sector_inclusion"
+          )
 ```
 
 
-# Barriers
+# Dimensions
+
+- barriers
+
+- compliance
+
+- usage
+
+- availability
 
 ```{r}
 barriers_data = read.csv(file = "~/SIVIOgit/barriers_criteria.csv")
-
-
 ```
-
-# Compliance
 
 ```{r}
 compliance_data = read.csv(file = "~/SIVIOgit/compliance_criteria.csv")
 ```
 
-# Availability
-
 ```{r}
 availability_data = read.csv(file = "~/SIVIOgit/availability_criteria.csv")
 ```
-
-
-# Usage
 
 ```{r}
 usage_data = read.csv(file = "~/SIVIOgit/usage_criteria.csv")
@@ -44,6 +58,57 @@ usage_data = read.csv(file = "~/SIVIOgit/usage_criteria.csv")
 # Index
 
 ```{r}
+index = data %>%
+  group_by(across(all_of(level))) %>%
+  summarise(n=n()) %>%
+  full_join(y = (barriers_data %>% select(all_of(level), barriers_score, barriers_normalise)), by = all_of(level)) %>%
+  full_join(y = (compliance_data %>% select(all_of(level), compliance_score, compliance_normalise)), by = all_of(level)) %>%
+  full_join(y = (availability_data %>% select(all_of(level), availability_score, availability_normalise)), by = all_of(level)) %>%
+  full_join(y = (usage_data %>% select(all_of(level), usage_score, usage_normalise)), by = all_of(level)) %>%
+  mutate(barriers_inclusion = 1 - barriers_normalise,
+         barriers_exclusion = barriers_normalise,
+         compliance_inclusion = compliance_normalise,
+         compliance_exclusion = 1 - compliance_normalise,
+         availability_inclusion = availability_normalise,
+         availability_exclusion = 1 - availability_normalise,
+         usage_inclusion = usage_normalise,
+         usage_exclusion = 1 - usage_normalise)
+  
+index$index_score = rowSums(index[, c("barriers_inclusion", "compliance_inclusion", "availability_inclusion", "usage_inclusion")], na.rm = T)
 
+index$index_normalise = index$index_score / 4
+
+index$index_percentage = round((index$index_normalise * 100), 2)
+
+index %>%
+  kable() %>%
+  kable_styling()
+```
+
+```{r}
+write.csv(index, file = "~/SIVIOgit/index_dimensions.csv")
+```
+
+```{r}
+index_pie_charts = index %>%
+  mutate(index_inclusion = index_normalise,
+         index_exclusion = 1 - index_normalise) %>%
+  pivot_longer(cols = c("barriers_inclusion", "barriers_exclusion"), names_to = "barriers_type", values_to = "barriers_scores") %>%
+  pivot_longer(cols = c("compliance_inclusion", "compliance_exclusion"), names_to = "compliance_type", values_to = "compliance_scores") %>%
+  pivot_longer(cols = c("availability_inclusion", "availability_exclusion"), names_to = "availability_type", values_to = "availability_scores") %>%
+  pivot_longer(cols = c("usage_inclusion", "usage_exclusion"), names_to = "usage_type", values_to = "usage_scores") %>%
+  pivot_longer(cols = c("index_inclusion", "index_exclusion"), names_to = "index_type", values_to = "index_scores") %>%
+  select(all_of(level), n, 
+         barriers_type, barriers_scores, compliance_type, compliance_scores, 
+         availability_type, availability_scores, usage_type, usage_scores, 
+         index_type, index_scores)
+
+index_pie_charts %>% 
+  kable() %>%
+  kable_styling()
+```
+
+```{r}
+# write.csv(index_pie_charts, file = "~/SIVIOgit/index_pie_charts_data.csv")
 ```
 

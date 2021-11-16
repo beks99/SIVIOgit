@@ -1,0 +1,31 @@
+---
+title: "gender"
+author: "Beks"
+date: "11/16/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+```
+
+```{r}
+# index = read.csv(file = "~/SIVIOgit/index_dimensions.csv")
+# 
+# write.csv(index, file = "~/SIVIOgit/index_gender.csv")
+```
+
+```{r}
+index_gender = read.csv(file = "~/SIVIOgit/index_gender.csv")
+index_gender %>%
+  head()
+```
+
+```{r}
+index_gender %>%
+  ggplot(mapping = aes(x=province, y=index_percentage, fill=gender_inclusion)) +
+  geom_col(position = "dodge")
+```
+

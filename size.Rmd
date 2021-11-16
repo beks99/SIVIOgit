@@ -1,0 +1,30 @@
+---
+title: "size"
+author: "Beks"
+date: "11/16/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+```
+
+```{r}
+# index = read.csv(file = "~/SIVIOgit/index_dimensions.csv")
+# 
+# write.csv(index, file = "~/SIVIOgit/index_size.csv")
+```
+
+```{r}
+index_size = read.csv(file = "~/SIVIOgit/index_size.csv")
+index_size %>%
+  head()
+```
+
+```{r}
+index_size %>%
+  ggplot(mapping = aes(x=province, y=index_percentage, fill=size_inclusion)) +
+  geom_col(position = "dodge")
+```
