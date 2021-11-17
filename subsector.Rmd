@@ -14,18 +14,19 @@ library(tidyverse)
 ```{r}
 # index = read.csv(file = "~/SIVIOgit/index_dimensions.csv")
 # 
-# write.csv(index, file = "~/SIVIOgit/index_gender.csv")
+# write.csv(index, file = "~/SIVIOgit/index_sector.csv")
 ```
 
 ```{r}
-index_gender = read.csv(file = "~/SIVIOgit/index_gender.csv")
-index_gender %>%
+index_sector = read.csv(file = "~/SIVIOgit/index_sector.csv")
+index_sector %>%
   head()
 ```
 
 ```{r}
-index_gender %>%
-  ggplot(mapping = aes(x=province, y=index_percentage, fill=gender_inclusion)) +
-  geom_col(position = "dodge")
+index_sector %>%
+  ggplot(mapping = aes(x=province, y=index_percentage, fill=sector_inclusion)) +
+  geom_col(position = "dodge") +
+  facet_wrap(~province)
 ```
 
