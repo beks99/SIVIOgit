@@ -13,7 +13,7 @@ library(tidyverse)
 
 This Rmarkdown includes the code that was used to clean the data.
 
-This involved fixing codes and enumerator name: 
+This involved fixing codes and enumerator names: 
 
 - I chose to do this tidy up in code rather than in survey monkey so that there a record of the changes that were made and why. 
 
@@ -308,8 +308,14 @@ survey_completedata = read_completedata %>%
          loan_MM_logic = ifelse(loan_mobile_platform == "Yes", 1, 0),
          
          # set type of columns when no data
+         year_commence = as.numeric(year_commence),
+         year_established = as.numeric(year_established),
          X.27 = as.character(X.27),
          X.49 = as.character(X.49),
+         
+         # age of business from when it commenced
+         age_business = 2021 - year_commence,
+         time_btwn_establish_commence = year_established - year_commence,
          
          # add conditions to classify micro/small/medium size of enterprises
          num_employees = as.numeric(num_employees),
@@ -503,6 +509,7 @@ survey_completedata = read_completedata %>%
          sector_inclusion = case_when(industry != "" ~ "Agriculture", 
                                       X.2 != "" ~ "Mining",
                                       X.3 != "" ~ "Retail",
+                                      X.5 != "" ~ "Vending",
                                       TRUE ~ as.character("Other")))
 ```
 
