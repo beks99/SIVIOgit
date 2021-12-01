@@ -9,6 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 
 library(tidyverse)
+library(kableExtra)
 ```
 
 ```{r}
@@ -20,7 +21,8 @@ library(tidyverse)
 ```{r}
 index_provinces = read.csv(file = "~/SIVIOgit/index_provinces.csv")
 index_provinces %>%
-  head()
+  head() %>%
+  kable()
 ```
 
 ```{r}
