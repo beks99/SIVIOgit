@@ -9,6 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 
 library(tidyverse)
+library(kableExtra)
 ```
 
 ```{r}
@@ -20,11 +21,45 @@ library(tidyverse)
 ```{r}
 index_formality = read.csv(file = "~/SIVIOgit/index_formality.csv")
 index_formality %>%
-  head()
+  head() %>%
+  kable()
 ```
 
 ```{r}
 index_formality %>%
   ggplot(mapping = aes(x=province, y=index_percentage, fill=formality_inclusion)) +
-  geom_col(position = "dodge")
+  geom_col(position = "dodge") +
+  theme(axis.text.x = element_text(angle=90, ))
 ```
+
+```{r}
+index_formality %>%
+  ggplot(mapping = aes(x=province, y=barriers_percentage, fill=formality_inclusion)) +
+  geom_col(position = "dodge") +
+  theme(axis.text.x = element_text(angle=90, ))
+```
+
+```{r}
+index_formality %>%
+  ggplot(mapping = aes(x=province, y=compliance_percentage, fill=formality_inclusion)) +
+  geom_col(position = "dodge") +
+  theme(axis.text.x = element_text(angle=90, ))
+```
+
+```{r}
+index_formality %>%
+  ggplot(mapping = aes(x=province, y=availability_percentage, fill=formality_inclusion)) +
+  geom_col(position = "dodge") +
+  theme(axis.text.x = element_text(angle=90, ))
+```
+
+```{r}
+index_formality %>%
+  ggplot(mapping = aes(x=province, y=usage_percentage, fill=formality_inclusion)) +
+  geom_col(position = "dodge") +
+  theme(axis.text.x = element_text(angle=90, ))
+```
+
+
+
+
