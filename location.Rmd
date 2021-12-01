@@ -9,6 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 
 library(tidyverse)
+library(kableExtra)
 ```
 
 ```{r}
@@ -20,11 +21,14 @@ library(tidyverse)
 ```{r}
 index_location = read.csv(file = "~/SIVIOgit/index_location.csv")
 index_location %>%
-  head()
+  head() %>%
+  kable()
 ```
 
 ```{r}
 index_location %>%
+  filter(province != "Bulawayo" & province != "Harare") %>%
   ggplot(mapping = aes(x=province, y=index_percentage, fill=location_inclusion)) +
-  geom_col(position = "dodge")
+  geom_col(position = "dodge") +
+  theme(axis.text.x = element_text(angle=90, ))
 ```
