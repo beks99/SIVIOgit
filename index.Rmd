@@ -61,10 +61,10 @@ usage_data = read.csv(file = "~/SIVIOgit/usage_criteria.csv")
 index = data %>%
   group_by(across(all_of(level))) %>%
   summarise(n=n()) %>%
-  full_join(y = (barriers_data %>% select(all_of(level), barriers_score, barriers_normalise)), by = all_of(level)) %>%
-  full_join(y = (compliance_data %>% select(all_of(level), compliance_score, compliance_normalise)), by = all_of(level)) %>%
-  full_join(y = (availability_data %>% select(all_of(level), availability_score, availability_normalise)), by = all_of(level)) %>%
-  full_join(y = (usage_data %>% select(all_of(level), usage_score, usage_normalise)), by = all_of(level)) %>%
+  full_join(y = (barriers_data %>% select(all_of(level), barriers_percentage, barriers_normalise)), by = all_of(level)) %>%
+  full_join(y = (compliance_data %>% select(all_of(level), compliance_percentage, compliance_normalise)), by = all_of(level)) %>%
+  full_join(y = (availability_data %>% select(all_of(level), availability_percentage, availability_normalise)), by = all_of(level)) %>%
+  full_join(y = (usage_data %>% select(all_of(level), usage_percentage, usage_normalise)), by = all_of(level)) %>%
   mutate(barriers_inclusion = 1 - barriers_normalise,
          barriers_exclusion = barriers_normalise,
          compliance_inclusion = compliance_normalise,
@@ -72,9 +72,10 @@ index = data %>%
          availability_inclusion = availability_normalise,
          availability_exclusion = 1 - availability_normalise,
          usage_inclusion = usage_normalise,
-         usage_exclusion = 1 - usage_normalise)
+         usage_exclusion = 1 - usage_normalise) %>%
+  select(-c(barriers_normalise, compliance_normalise, availability_normalise, usage_normalise))
   
-index$index_score = rowSums(index[, c("barriers_inclusion", "compliance_inclusion", "availability_inclusion", "usage_inclusion")], na.rm = T)
+index$index_score = rowSums(index[, c("barriers_inclusion", "compliance_inclusion", "availability_inclusion", "usage_inclusion")])
 
 index$index_normalise = index$index_score / 4
 
