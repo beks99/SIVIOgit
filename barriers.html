@@ -6116,12 +6116,13 @@ total
   full_join(y = (knowledge_score_final %&gt;% select(all_of(level), score_value))) %&gt;%
   full_join(y = (restrictions_bank_account %&gt;% select(all_of(level), restrictions_bank_account_value))) %&gt;%
   full_join(y = (restrictions_mobile_money %&gt;% select(all_of(level), restrictions_mobile_money_value))) %&gt;%
-  select(all_of(level), n, all_of(criteria))</code></pre>
+  select(all_of(level), n, all_of(criteria)) %&gt;%
+  mutate_all(~replace(.,is.na(.), 0))</code></pre>
 <pre><code>## Joining, by = &quot;province&quot;
 ## Joining, by = &quot;province&quot;
 ## Joining, by = &quot;province&quot;</code></pre>
 <pre class="r"><code>barriers_critera$barriers_score = rowSums(barriers_critera[, c(
-  all_of(criteria))],  na.rm = T)
+  all_of(criteria))])
 
 barriers_critera$barriers_normalise = (barriers_critera$barriers_score / ncriteria)
 
