@@ -9,6 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 
 library(tidyverse)
+library(kableExtra)
 ```
 
 ```{r}
@@ -20,13 +21,15 @@ library(tidyverse)
 ```{r}
 index_sector = read.csv(file = "~/SIVIOgit/index_sector.csv")
 index_sector %>%
-  head()
+  head() %>%
+  kable()
 ```
 
-```{r}
+```{r fig.width=10, fig.height=5}
 index_sector %>%
-  ggplot(mapping = aes(x=province, y=index_percentage, fill=sector_inclusion)) +
+  ggplot(mapping = aes(x=sector_inclusion, y=index_percentage, fill=sector_inclusion)) +
   geom_col(position = "dodge") +
-  facet_wrap(~province)
+  facet_wrap(~province, nrow = 2, ncol = 5) +
+  theme(axis.text.x = element_text(angle=90, ))
 ```
 
