@@ -9,6 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 
 library(tidyverse)
+library(kableExtra)
 ```
 
 ```{r}
@@ -20,12 +21,14 @@ library(tidyverse)
 ```{r}
 index_gender = read.csv(file = "~/SIVIOgit/index_gender.csv")
 index_gender %>%
-  head()
+  head() %>%
+  kable()
 ```
 
 ```{r}
 index_gender %>%
   ggplot(mapping = aes(x=province, y=index_percentage, fill=gender_inclusion)) +
-  geom_col(position = "dodge")
+  geom_col(position = "dodge") +
+  theme(axis.text.x = element_text(angle=90, ))
 ```
 
