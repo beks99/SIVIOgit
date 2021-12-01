@@ -45,8 +45,8 @@ criteria = c(
   # "other_financial_value",
   # "time_approval_other_value",
   # "collateral_other_value",
-  # "insurance_value",
   
+  "insurance_value",
   "pension_value",
   "mm_account_value",
   "time_open_mm_value",
@@ -719,7 +719,8 @@ availability_critera = data %>%
   full_join(y = (insurance_mm %>% select(all_of(level), insurance_mm_value)), by = all_of(level)) %>%
   full_join(y = (savings_facility %>% select(all_of(level), savings_facility_value)), by = all_of(level)) %>%
   full_join(y = (advice_sources %>% select(all_of(level), advice_sources_value)), by = all_of(level)) %>%
-  select(all_of(level), n, all_of(criteria))
+  select(all_of(level), n, all_of(criteria)) %>%
+  mutate_all(~replace(.,is.na(.), 0))
 
 availability_critera$availability_score = rowSums(availability_critera[, c(
   all_of(criteria))])
