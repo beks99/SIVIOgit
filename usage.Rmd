@@ -44,6 +44,7 @@ criteria = c(
   "number_bank_services_value",
   "successful_bids_value",
   "commercial_loan_apply_value",
+  
   # "Number_commercial_loan_application_value",
   # "success_loan_commercial_value",
   # "service_loan_commercial_value",
@@ -54,6 +55,7 @@ criteria = c(
   # "service_loan_other_value",
   # "interest_rate_loan_other_5years_value",
   # "payback_loan_other_5years_value",
+  
   "comprehensive_value",
   "staff_value",
   "product_value",
@@ -1023,7 +1025,8 @@ usage_critera = data %>%
   full_join(y = (frequency_mobile_money %>% select(all_of(level), frequency_mobile_money_value)), by = all_of(level)) %>%
   full_join(y = (loan_mm %>% select(all_of(level), loan_mm_value)), by = all_of(level)) %>%
   full_join(y = (investments %>% select(all_of(level), investments_value)), by = all_of(level)) %>%
-  select(all_of(level), n, all_of(criteria)) 
+  select(all_of(level), n, all_of(criteria)) %>%
+  mutate_all(~replace(.,is.na(.), 0))
 
 usage_critera$usage_score = rowSums(usage_critera[, c(
   all_of(criteria))])
