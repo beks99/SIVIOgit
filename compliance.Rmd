@@ -43,9 +43,11 @@ level = c("province"
 criteria = c(
   "registered_value",
   "zimra_value")
+  
+ncriteria = length(criteria)
 ```
 
-There are **`r length(criteria)`** criteria
+There are **`r ncriteria`** criteria
 
 The criteria are `r criteria`
 
@@ -103,12 +105,13 @@ compliance_critera = data %>%
   summarise(n=n()) %>%
   full_join(y = (registered %>% select(all_of(level), registered_value)), by = all_of(level)) %>%
   full_join(y = (zimra %>% select(all_of(level), zimra_value)), by = all_of(level)) %>%
-  select(all_of(level), n, all_of(criteria))
+  select(all_of(level), n, all_of(criteria)) %>%
+  mutate_all(~replace(.,is.na(.), 0))
 
 compliance_critera$compliance_score = rowSums(compliance_critera[, c(
   all_of(criteria))])
 
-compliance_critera$compliance_normalise = (compliance_critera$compliance_score / 2)
+compliance_critera$compliance_normalise = (compliance_critera$compliance_score / ncriteria)
 
 compliance_critera$compliance_percentage = round((compliance_critera$compliance_normalise * 100),2)
 
