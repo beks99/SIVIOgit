@@ -34,7 +34,7 @@ level = c("province"
 
 ```{r include=FALSE}
 # Reasons
-reason = c("knowledge",
+reason_list = c("knowledge",
              "documentation",
              "legal",
              "finance",
@@ -50,13 +50,13 @@ criteria = c("reason",
              "restrictions_bank_account_value",
              "restrictions_mobile_money_value")
 
-nreason = length(reasons)
+nreason = length(reason_list)
 ncriteria = length(criteria)
 ```
 
 There are `r nreason` reasons for not having or using financial products/services
 
-These reasons are: `r reason`
+These reasons are: `r reason_list`
 
 There are `r ncriteria` criteria which are `r criteria`
 
@@ -772,7 +772,7 @@ barriers_critera = data %>%
   full_join(y = (knowledge_score_final %>% select(all_of(level), score_value))) %>%
   full_join(y = (restrictions_bank_account %>% select(all_of(level), restrictions_bank_account_value))) %>%
   full_join(y = (restrictions_mobile_money %>% select(all_of(level), restrictions_mobile_money_value))) %>%
-  select(all_of(level), n, all_of(criteria)) %>%
+  select(all_of(level), n, all_of(reason_list),all_of(criteria)) %>%
   mutate_all(~replace(.,is.na(.), 0))
 
 barriers_critera$barriers_score = rowSums(barriers_critera[, c(
