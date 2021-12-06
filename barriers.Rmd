@@ -767,7 +767,7 @@ knowledge_score_final %>%
 barriers_critera = data %>%
   group_by(across(all_of(level))) %>%
   summarise(n=n()) %>%
-  full_join(y = (barrier_reasons %>% select(all_of(level), knowledge, documentation, legal, finance, inflation, law, trust, bureaucracy, inappropriate, reason)), 
+  full_join(y = (barrier_reasons %>% select(all_of(level), all_of(reason_list), reason)), 
             by = all_of(level)) %>%
   full_join(y = (knowledge_score_final %>% select(all_of(level), score_value))) %>%
   full_join(y = (restrictions_bank_account %>% select(all_of(level), restrictions_bank_account_value))) %>%

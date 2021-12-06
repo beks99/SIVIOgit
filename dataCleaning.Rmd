@@ -36,7 +36,7 @@ read_completedata = read.csv(file = '~/SIVIOgit/12_11_2021_complete.csv',
 
 ```{r}
 survey_completedata = read_completedata %>%
-  select(-c(Email.Address, First.Name, Last.Name, Custom.Data.1)) %>%
+  select(-c(Email.Address, First.Name, Last.Name, Custom.Data.1, Collector.ID, Start.Date, End.Date, IP.Address)) %>%
   
   # give each question, referable variable names
   rename(enumerator_name = Enumerator.name,

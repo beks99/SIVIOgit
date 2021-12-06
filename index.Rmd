@@ -75,7 +75,10 @@ index = data %>%
          usage_exclusion = 1 - usage_normalise) %>%
   select(-c(barriers_normalise, compliance_normalise, availability_normalise, usage_normalise))
   
-index$index_score = rowSums(index[, c("barriers_inclusion", "compliance_inclusion", "availability_inclusion", "usage_inclusion")])
+index$index_score = rowSums(index[, c("barriers_inclusion", 
+                                      "compliance_inclusion",
+                                      "availability_inclusion", 
+                                      "usage_inclusion")])
 
 index$index_normalise = index$index_score / 4
 
