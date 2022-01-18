@@ -1,0 +1,34 @@
+---
+title: "CPE first look"
+author: "Beks"
+date: "1/14/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Qualifiers
+- gender
+- age
+- marital status
+- province
+- read/write
+- education
+- employed
+- sector
+- accomodation agreement
+- type of accomodation
+- monthly income bracket
+
+```{r}
+data = read.csv(file = "~/SIVIOgit/CPE study/SIVIO_CPE_Jan_11_22.csv")
+
+num_respondents = data %>%
+  unique(Respondent.ID) %>%
+  nrow()
+
+names(data)
+```
+
