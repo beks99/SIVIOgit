@@ -13,8 +13,7 @@ library(kableExtra)
 ```
 
 ```{r}
-data = read.csv(file = "~/SIVIOgit/clean_FI_2021.csv")
-# data = read.csv(file = "~/SIVIOgit/data_equal_comparisons.csv")
+data = read.csv(file = "~/SIVIOgit/FI_index/clean_FI_2021.csv")
 ```
 
 # levels of inclusion.
@@ -41,7 +40,7 @@ criteria = c(
   "funds_start_value",
   "funds_ongoing_value",
   "frequency_bank_account_value",
-  "number_bank_services_value",
+  # "number_bank_services_value",
   "successful_bids_value",
   "commercial_loan_apply_value",
   
@@ -61,6 +60,7 @@ criteria = c(
   "product_value",
   "frequency_mobile_money_value",
   "loan_mm_value",
+  "insurance_mm_value",
   "investments_value"
   )
 
@@ -209,21 +209,22 @@ Nothing from this section of the survey
 
 ## Banking services
 
+MSMEs who use their bank account once oer month
 ### frequency
 
-- frequency_bank_account == "Daily" ~ 5,
+- frequency_bank_account == "Daily" ~ 1,
 
-- frequency_bank_account == "Several times per week" ~ 5,
+- frequency_bank_account == "Several times per week" ~ 1,
 
-- frequency_bank_account == "Once a week" ~ 5,
+- frequency_bank_account == "Once a week" ~ 1,
 
-- frequency_bank_account == "Once per month" ~ 4,
+- frequency_bank_account == "Once per month" ~ 1,
 
-- frequency_bank_account == "Once per 3 months" ~ 3,
+- frequency_bank_account == "Once per 3 months" ~ 0,
 
-- frequency_bank_account == "Once per 6 months" ~ 2,
+- frequency_bank_account == "Once per 6 months" ~ 0,
 
-- frequency_bank_account == "Once per annum" ~ 1,
+- frequency_bank_account == "Once per annum" ~ 0,
 
 - frequency_bank_account == "I have never used it." ~ 0
 
@@ -233,22 +234,22 @@ frequency_bank_account = data %>%
          bank_account, frequency_bank_account) %>%
   filter(bank_account == "Yes") %>%
   mutate(frequency = case_when(
-    frequency_bank_account == "Daily" ~ 5,
-    frequency_bank_account == "Several times per week" ~ 5,
-    frequency_bank_account == "Once a week" ~ 5,
-    frequency_bank_account == "Once per month" ~ 4,
-    frequency_bank_account == "Once per 3 months" ~ 3,
-    frequency_bank_account == "Once per 6 months" ~ 2,
-    frequency_bank_account == "Once per annum" ~ 1,
+    frequency_bank_account == "Daily" ~ 1,
+    frequency_bank_account == "Several times per week" ~ 1,
+    frequency_bank_account == "Once a week" ~ 1,
+    frequency_bank_account == "Once per month" ~ 1,
+    frequency_bank_account == "Once per 3 months" ~ 0,
+    frequency_bank_account == "Once per 6 months" ~ 0,
+    frequency_bank_account == "Once per annum" ~ 0,
     frequency_bank_account == "I have never used it." ~ 0,
     TRUE ~ as.double(0)),
     not_answered = ifelse(frequency_bank_account == "", 1, 0)
     ) %>%
   group_by(across(all_of(level))) %>%
-  summarise(frequency_bank_account = mean(frequency),
+  summarise(frequency_bank_account = sum(frequency, na.rm = T),
             responses = n(),
             not_answered_frequency_bank = sum(not_answered)) %>%
-  mutate(frequency_bank_account_value = frequency_bank_account / 5)
+  mutate(frequency_bank_account_value = frequency_bank_account / (responses - not_answered_frequency_bank))
 
 frequency_bank_account %>%
   bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
@@ -280,13 +281,14 @@ Number of bank services
 
 - Deposit protection
 
+MSMEs accessing 3 or more of the services
 Scoring
 
-- number_services >= 5 ~ 3,
+- number_services >= 5 ~ 1,
 
-- number_services: 2-4 ~ 2,
+- number_services: 3-4 ~ 1,
 
-- number_services == 1 ~ 1
+- number_services <= 2 ~ 0
 
 ```{r echo=FALSE}
  number_bank_services = data %>%
@@ -308,17 +310,16 @@ Scoring
            # X.78 != "" ~ number_services +1, # Other 
          not_answered = ifelse(number_services == 0, 1, 0),
          number_services_score = case_when(
-           number_services >= 5 ~ 3,
-           number_services >= 2 ~ 2,
-           number_services == 1 ~ 1,
+           number_services >= 5 ~ 1,
+           number_services >= 3 ~ 1,
+           number_services <= 2 ~ 0,
            TRUE ~ as.double(0))
          ) %>%
-  filter(not_answered != 1) %>%
   group_by(across(all_of(level))) %>%
-  summarise(number_bank_services = mean(number_services_score),
+  summarise(number_bank_services = sum(number_services_score, na.rm = T),
             responses = n(),
             not_answered_bank_services = sum(not_answered)) %>%
-  mutate(number_bank_services_value = number_bank_services / 3)
+  mutate(number_bank_services_value = number_bank_services / (responses - not_answered_bank_services))
  
 number_bank_services %>%
   bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
@@ -663,13 +664,14 @@ payback_commercial %>%
 
 - Deposit protection
 
+MSMEs accessing 5 or more of the services about
 Scoring
 
-- number_services >= 5 ~ 3,
+- number_services >= 5 ~ 1,
 
-- number_services: 2-4 ~ 2,
+- number_services: 2-4 ~ 1,
 
-- number_services == 1 ~ 1
+- number_services == 1 ~ 0
 
 ```{r echo=FALSE}
 number_services_other = data %>%
@@ -690,9 +692,9 @@ number_services_other = data %>%
          number_services = ifelse(X.96 != "", number_services+1, number_services),
          not_answered = ifelse(number_services == 0, 1, 0),
          number_services_score = case_when(
-           number_services >= 5 ~ 3,
-           number_services >= 2 ~ 2,
-           number_services == 1 ~ 1,
+           number_services >= 5 ~ 1,
+           number_services >= 2 ~ 0,
+           number_services == 1 ~ 0,
            TRUE ~ as.double(0)
          )) %>%
   filter(not_answered == 0) %>%
@@ -909,19 +911,21 @@ Nothing in this section
 
 ### frequency
 
-- frequency_mobile_money == "Everyday" ~ 5,
+MSMEs who use mobile money account at least once a week
 
-- frequency_mobile_money == "Two to 3 times per week" ~ 5,
+- frequency_mobile_money == "Everyday" ~ 1,
 
-- frequency_mobile_money == "Once a week" ~ 4,
+- frequency_mobile_money == "Two to 3 times per week" ~ 1,
 
-- frequency_mobile_money == "Once per month" ~ 3,
+- frequency_mobile_money == "Once a week" ~ 1,
 
-- frequency_mobile_money == "Once every 3 months" ~ 3,
+- frequency_mobile_money == "Once per month" ~ 0,
 
-- frequency_mobile_money == "Once every 6 months" ~ 2,
+- frequency_mobile_money == "Once every 3 months" ~ 0,
 
-- frequency_mobile_money == "Once per annum" ~ 1,
+- frequency_mobile_money == "Once every 6 months" ~ 0,
+
+- frequency_mobile_money == "Once per annum" ~ 0,
 
 - frequency_mobile_money == "Never" ~ 0,
 
@@ -931,22 +935,22 @@ frequency_mobile_money = data %>%
          mobile_money_account, frequency_mobile_money) %>%
   filter(mobile_money_account == "Yes") %>%
   mutate(frequency = case_when(
-    frequency_mobile_money == "Everyday" ~ 5,
-    frequency_mobile_money == "Two to 3 times per week" ~ 5,
-    frequency_mobile_money == "Once a week" ~ 4,
-    frequency_mobile_money == "Once per month" ~ 3,
-    frequency_mobile_money == "Once every 3 months" ~ 3,
-    frequency_mobile_money == "Once every 6 months" ~ 2,
-    frequency_mobile_money == "Once per annum" ~ 1,
+    frequency_mobile_money == "Everyday" ~ 1,
+    frequency_mobile_money == "Two to 3 times per week" ~ 1,
+    frequency_mobile_money == "Once a week" ~ 1,
+    frequency_mobile_money == "Once per month" ~ 0,
+    frequency_mobile_money == "Once every 3 months" ~ 0,
+    frequency_mobile_money == "Once every 6 months" ~ 0,
+    frequency_mobile_money == "Once per annum" ~ 0,
     frequency_mobile_money == "Never" ~ 0,
     TRUE ~ as.double(0)),
     not_answered = ifelse(frequency_mobile_money == "", 1, 0)
     ) %>%
   group_by(across(all_of(level))) %>%
-  summarise(frequency_mobile_money = mean(frequency),
+  summarise(frequency_mobile_money = sum(frequency, na.rm = T),
             responses = n(),
             not_answered_frequency_bank = sum(not_answered)) %>%
-  mutate(frequency_mobile_money_value = frequency_mobile_money / 5)
+  mutate(frequency_mobile_money_value = frequency_mobile_money / (responses - not_answered_frequency_bank))
 
 frequency_mobile_money %>%
   bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
@@ -970,6 +974,28 @@ loan_mm = data %>%
   mutate(loan_mm_value = loan_MM / (responses - not_answered_loan_MM))
 
 loan_mm %>%
+  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
+  kable() %>%
+  kable_styling()
+```
+
+### insuracnce awareness
+
+Proportion aware of insurance products offered on mobile money account... for those who have a mobile money account
+
+```{r echo=FALSE}
+insurance_mm = data %>%
+  select(all_of(level),
+         mobile_money_account, insurance_mobile_awareness, insurance_mobile_awareness_logic) %>%
+  filter(mobile_money_account == "Yes") %>%
+  mutate(not_answered = ifelse(insurance_mobile_awareness == "", 1, 0)) %>%
+  group_by(across(all_of(level))) %>%
+  summarise(insurance_mobile_awareness = sum(insurance_mobile_awareness_logic),
+            responses = n(),
+            not_answered_mobile_insurance_aware = sum(not_answered)) %>%
+  mutate(insurance_mm_value = insurance_mobile_awareness / (responses - not_answered_mobile_insurance_aware)) 
+
+insurance_mm %>%
   bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
   kable() %>%
   kable_styling()
@@ -1024,6 +1050,7 @@ usage_critera = data %>%
   full_join(y = (insurance_5years %>% select(all_of(level), comprehensive_value, product_value, staff_value)), by = all_of(level)) %>%
   full_join(y = (frequency_mobile_money %>% select(all_of(level), frequency_mobile_money_value)), by = all_of(level)) %>%
   full_join(y = (loan_mm %>% select(all_of(level), loan_mm_value)), by = all_of(level)) %>%
+  full_join(y = (insurance_mm %>% select(all_of(level), insurance_mm_value)), by = all_of(level)) %>%
   full_join(y = (investments %>% select(all_of(level), investments_value)), by = all_of(level)) %>%
   select(all_of(level), n, all_of(criteria)) %>%
   mutate_all(~replace(.,is.na(.), 0))
@@ -1041,7 +1068,7 @@ usage_critera %>%
 ```
 
 ```{r}
-write.csv(usage_critera, file = "~/SIVIOgit/usage_criteria.csv")
+write.csv(usage_critera, file = "~/SIVIOgit/FI_index/usage_criteria.csv")
 ```
 
 

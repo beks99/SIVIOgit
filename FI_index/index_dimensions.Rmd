@@ -13,7 +13,7 @@ library(kableExtra)
 ```
 
 ```{r}
-data = read.csv(file = "~/SIVIOgit/clean_FI_2021.csv")
+data = read.csv(file = "~/SIVIOgit/FI_index/clean_FI_2021.csv")
 # data = read.csv(file = "~/SIVIOgit/data_equal_comparisons.csv")
 ```
 
@@ -40,19 +40,19 @@ level = c("province"
 - availability
 
 ```{r}
-barriers_data = read.csv(file = "~/SIVIOgit/barriers_criteria.csv")
+barriers_data = read.csv(file = "~/SIVIOgit/FI_index/barriers_criteria.csv")
 ```
 
 ```{r}
-compliance_data = read.csv(file = "~/SIVIOgit/compliance_criteria.csv")
+compliance_data = read.csv(file = "~/SIVIOgit/FI_index/compliance_criteria.csv")
 ```
 
 ```{r}
-availability_data = read.csv(file = "~/SIVIOgit/availability_criteria.csv")
+availability_data = read.csv(file = "~/SIVIOgit/FI_index/availability_criteria.csv")
 ```
 
 ```{r}
-usage_data = read.csv(file = "~/SIVIOgit/usage_criteria.csv")
+usage_data = read.csv(file = "~/SIVIOgit/FI_index/usage_criteria.csv")
 ```
 
 # Index
@@ -61,10 +61,10 @@ usage_data = read.csv(file = "~/SIVIOgit/usage_criteria.csv")
 index = data %>%
   group_by(across(all_of(level))) %>%
   summarise(n=n()) %>%
-  full_join(y = (barriers_data %>% select(all_of(level), barriers_percentage, barriers_normalise)), by = all_of(level)) %>%
-  full_join(y = (compliance_data %>% select(all_of(level), compliance_percentage, compliance_normalise)), by = all_of(level)) %>%
-  full_join(y = (availability_data %>% select(all_of(level), availability_percentage, availability_normalise)), by = all_of(level)) %>%
-  full_join(y = (usage_data %>% select(all_of(level), usage_percentage, usage_normalise)), by = all_of(level)) %>%
+  full_join(y = (barriers_data %>% select(-(barriers_score))), by = all_of(level)) %>%
+  full_join(y = (compliance_data %>% select(-c(compliance_score, n))), by = all_of(level)) %>%
+  full_join(y = (availability_data %>% select(-c(availability_score, n))), by = all_of(level)) %>%
+  full_join(y = (usage_data %>% select(-c(usage_score, n))), by = all_of(level)) %>%
   mutate(barriers_inclusion = 1 - barriers_normalise,
          barriers_exclusion = barriers_normalise,
          compliance_inclusion = compliance_normalise,
@@ -90,7 +90,7 @@ index %>%
 ```
 
 ```{r}
-write.csv(index, file = "~/SIVIOgit/index_dimensions.csv")
+write.csv(index, file = "~/SIVIOgit/FI_index/index_dimensions.csv")
 ```
 
 ```{r}

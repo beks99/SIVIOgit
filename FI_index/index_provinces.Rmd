@@ -13,13 +13,13 @@ library(kableExtra)
 ```
 
 ```{r}
-# index = read.csv(file = "~/SIVIOgit/index_dimensions.csv")
+# index = read.csv(file = "~/SIVIOgit/FI_index/index_dimensions.csv")
 # 
-# write.csv(index, file = "~/SIVIOgit/index_provinces.csv")
+# write.csv(index, file = "~/SIVIOgit/FI_index/index_provinces.csv")
 ```
 
 ```{r}
-index_provinces = read.csv(file = "~/SIVIOgit/index_provinces.csv")
+index_provinces = read.csv(file = "~/SIVIOgit/FI_index/index_provinces.csv")
 index_provinces %>%
   head() %>%
   kable()

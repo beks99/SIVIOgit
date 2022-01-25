@@ -13,8 +13,7 @@ library(kableExtra)
 ```
 
 ```{r}
-data = read.csv(file = "~/SIVIOgit/clean_FI_2021.csv")
-# data = read.csv(file = "~/SIVIOgit/data_equal_comparisons.csv")
+data = read.csv(file = "~/SIVIOgit/FI_index/clean_FI_2021.csv")
 ```
 
 # levels of inclusion.
@@ -121,6 +120,6 @@ compliance_critera %>%
 ```
 
 ```{r}
-write.csv(compliance_critera, file = "~/SIVIOgit/compliance_criteria.csv")
+write.csv(compliance_critera, file = "~/SIVIOgit/FI_index/compliance_criteria.csv")
 ```
 

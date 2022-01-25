@@ -30,7 +30,7 @@ This uses the ministry's classification by sub sector and then using a point sys
 
 
 ```{r}
-read_completedata = read.csv(file = '~/SIVIOgit/12_11_2021_complete.csv',
+read_completedata = read.csv(file = '~/SIVIOgit/FI_index/12_11_2021_complete.csv',
                           header = T, sep = ',')
 ```
 
@@ -520,13 +520,14 @@ provincecodes = c("hre", "bul", "msc", "msw", "mse", "mas", "mtn", "mts", "mid",
 clean_completedata = survey_completedata %>%
   filter(substr(standardcode, 1, 3) %in% provincecodes,
          substr(standardcode, 4, 4) %in% c("u", "r")
-         )
+         ) %>%
+  filter(!is.na(gross_assets))
 ```
 
 
 ```{r}
-write.csv(survey_completedata, file = "~/SIVIOgit/survey_FI_2021.csv")
+write.csv(survey_completedata, file = "~/SIVIOgit/FI_index/survey_FI_2021.csv")
 
-write.csv(clean_completedata, file = "~/SIVIOgit/clean_FI_2021.csv")
+write.csv(clean_completedata, file = "~/SIVIOgit/FI_index/clean_FI_2021.csv")
 ```
 

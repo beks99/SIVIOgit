@@ -13,8 +13,7 @@ library(kableExtra)
 ```
 
 ```{r}
-data = read.csv(file = "~/SIVIOgit/clean_FI_2021.csv")
-# data = read.csv(file = "~/SIVIOgit/data_equal_comparisons.csv")
+data = read.csv(file = "~/SIVIOgit/FI_index/clean_FI_2021.csv")
 ```
 
 # levels of inclusion.
@@ -164,7 +163,7 @@ zimra %>%
 
 - reason not registered on SME auction
 
-**Knowledge, legal standing, finance, Complicated law, trust**
+**Knowledge, legal standing, finance, complicated law, trust**
 
 - faced restrictions in use of bank account
 
@@ -789,5 +788,5 @@ barriers_critera %>%
 
 
 ```{r}
-write.csv(barriers_critera, file = "~/SIVIOgit/barriers_criteria.csv")
+write.csv(barriers_critera, file = "~/SIVIOgit/FI_index/barriers_criteria.csv")
 ```

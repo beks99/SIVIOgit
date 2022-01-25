@@ -13,8 +13,7 @@ library(kableExtra)
 ```
 
 ```{r}
-data = read.csv(file = "~/SIVIOgit/clean_FI_2021.csv")
-# data = read.csv(file = "~/SIVIOgit/data_equal_comparisons.csv")
+data = read.csv(file = "~/SIVIOgit/FI_index/clean_FI_2021.csv")
 ```
 
 # levels of inclusion.
@@ -50,7 +49,6 @@ criteria = c(
   "pension_value",
   "mm_account_value",
   "time_open_mm_value",
-  "insurance_mm_value",
   "savings_facility_value",
   "advice_sources_value")
 
@@ -87,21 +85,21 @@ bank_account %>%
 
 ### Time open bank account
 
-- time_open_bank_account == "1 day /same day service" ~ 5,
+Those able to open a business bank account in a week
 
-- time_open_bank_account == "2 to 3 days" ~ 5,
+- time_open_bank_account == "1 day /same day service" ~ 1,
 
-- time_open_bank_account == "4 to 6 days" ~ 4,
+- time_open_bank_account == "2 to 3 days" ~ 1,
 
-- time_open_bank_account == "7 to 10 days" ~ 3,
+- time_open_bank_account == "4 to 6 days" ~ 1,
 
-- time_open_bank_account == "11 to 30 days" ~ 2,
+- time_open_bank_account == "7 to 10 days" ~ 0,
 
-- time_open_bank_account == "31 days plus" ~ 1
+- time_open_bank_account == "11 to 30 days" ~ 0,
 
-Final value is calculated as the average score and then divided by 5 so as to normalize between 0-1
+- time_open_bank_account == "31 days plus" ~ 0
 
-When displayed, it will be rounded off so as to use categories so a 4.5 = "< 3 days" a 3.2 = "7 to 10 days"
+Final value is calculated as the number of enterprises open in under a week and then divided by number of people with a bank account
 
 ```{r echo=FALSE}
 time_open_bank = data %>%
@@ -109,19 +107,19 @@ time_open_bank = data %>%
          bank_account, time_open_bank_account) %>%
   filter(bank_account == "Yes") %>%
   mutate(time_open = case_when(
-    time_open_bank_account == "1 day /same day service" ~ 5,
-    time_open_bank_account == "2 to 3 days" ~ 5,
-    time_open_bank_account == "4 to 6 days" ~ 4,
-    time_open_bank_account == "7 to 10 days" ~ 3,
-    time_open_bank_account == "11 to 30 days" ~ 2,
-    time_open_bank_account == "31 days plus" ~ 1,
-    TRUE ~ as.double(0)
-  )) %>%
-  filter(time_open != 0) %>%
+    time_open_bank_account == "1 day /same day service" ~ 1,
+    time_open_bank_account == "2 to 3 days" ~ 1,
+    time_open_bank_account == "4 to 6 days" ~ 1,
+    time_open_bank_account == "7 to 10 days" ~ 0,
+    time_open_bank_account == "11 to 30 days" ~ 0,
+    time_open_bank_account == "31 days plus" ~ 0,
+    TRUE ~ as.double(0)),
+    not_answered_time_bank = ifelse(time_open_bank_account == "", 1, 0)) %>%
   group_by(across(all_of(level))) %>%
-  summarise(resposnes = n(),
-            time_open_value = mean(time_open)) %>%
-  mutate(time_open_bank_value = time_open_value / 5) 
+  summarise(responses = n(),
+            not_answered = sum(not_answered_time_bank),
+            time_open_bank = sum(time_open, na.rm = T),
+            time_open_bank_value = time_open_bank / (responses - not_answered))
 
 time_open_bank %>%
   bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
@@ -155,27 +153,27 @@ sme_auction %>%
 
 ### approval time
 
-- time_approval_commercial_loan == "1 day /same day service" ~ 5,
+Number of MSMEs who received approval in 30 days if they did receive a loan
 
-- time_approval_commercial_loan == "2 to 3 days" ~ 5,
+- time_approval_commercial_loan == "1 day /same day service" ~ 1,
 
-- time_approval_commercial_loan == "4 to 6 days" ~ 5,
+- time_approval_commercial_loan == "2 to 3 days" ~ 1,
 
-- time_approval_commercial_loan == "7 to 10 days" ~ 4,
+- time_approval_commercial_loan == "4 to 6 days" ~ 1,
 
-- time_approval_commercial_loan == "11 to 30 days" ~ 3,
+- time_approval_commercial_loan == "7 to 10 days" ~ 1,
 
-- time_approval_commercial_loan == "31 to 60 days" ~ 2,
+- time_approval_commercial_loan == "11 to 30 days" ~ 1,
 
-- time_approval_commercial_loan == "60 to 90 days" ~ 2,
+- time_approval_commercial_loan == "31 to 60 days" ~ 0,
 
-- time_approval_commercial_loan == "91 days plus" ~ 1
+- time_approval_commercial_loan == "60 to 90 days" ~ 0,
+
+- time_approval_commercial_loan == "91 days plus" ~ 0
 
 This is calculated for 12 months, then again for the previous four years. Then averaged across the 2 groups so as to find the average for the last five years
 
-The final value is the average of the scores then divided by 5 to normalize between 0 and 1
-
-The final displayed score will be rounded off so as to land in a category
+The final value is the average of the scores
 
 ```{r echo=FALSE}
 # 12 months
@@ -188,22 +186,21 @@ time_12months = data %>%
            number_commercial_loan_applications_12months != "") %>%
   mutate(not_answered = ifelse(time_approval_commercial_loan_12months == "", 1, 0),
          time_approval = case_when(
-           time_approval_commercial_loan_12months == "1 day /same day service" ~ 5,
-           time_approval_commercial_loan_12months == "2 to 3 days" ~ 5,
-           time_approval_commercial_loan_12months == "4 to 6 days" ~ 5,
-           time_approval_commercial_loan_12months == "7 to 10 days" ~ 4,
-           time_approval_commercial_loan_12months == "11 to 30 days" ~ 3,
-           time_approval_commercial_loan_12months == "31 to 60 days" ~ 2,
-           time_approval_commercial_loan_12months == "60 to 90 days" ~ 2,
-           time_approval_commercial_loan_12months == "91 days plus" ~ 1, 
-           TRUE ~ as.double(0)
-         ))%>%
-  filter(time_approval != 0) %>%
+           time_approval_commercial_loan_12months == "1 day /same day service" ~ 1,
+           time_approval_commercial_loan_12months == "2 to 3 days" ~ 1,
+           time_approval_commercial_loan_12months == "4 to 6 days" ~ 1,
+           time_approval_commercial_loan_12months == "7 to 10 days" ~ 1,
+           time_approval_commercial_loan_12months == "11 to 30 days" ~ 1,
+           time_approval_commercial_loan_12months == "31 to 60 days" ~ 0,
+           time_approval_commercial_loan_12months == "60 to 90 days" ~ 0,
+           time_approval_commercial_loan_12months == "91 days plus" ~ 0, 
+           TRUE ~ as.double(0))
+         )%>%
   group_by(across(all_of(level))) %>%
-  summarise(time_approval_12months_full = mean(time_approval, na.rm = T),
-              not_answered_time_12months = sum(not_answered, na.rm = T),
+  summarise(time_approval_12months_full = sum(time_approval, na.rm = T),
+            not_answered_time_12months = sum(not_answered, na.rm = T),
             responses_time_12months = n()) %>%
-  mutate(time_approval_12months = time_approval_12months_full / 5)
+  mutate(time_approval_12months = time_approval_12months_full / (responses_time_12months - not_answered_time_12months))
 
 # 4 years
 time_4years = data %>%
@@ -215,22 +212,21 @@ time_4years = data %>%
            number_commercial_loan_applications_4years != "") %>%
   mutate(not_answered = ifelse(time_approval_commercial_loan_4years == "", 1, 0),
          time_approval = case_when(
-           time_approval_commercial_loan_4years == "1 day /same day service" ~ 5,
-           time_approval_commercial_loan_4years == "2 to 3 days" ~ 5,
-           time_approval_commercial_loan_4years == "4 to 6 days" ~ 5,
-           time_approval_commercial_loan_4years == "7 to 10 days" ~ 4,
-           time_approval_commercial_loan_4years == "11 to 30 days" ~ 3,
-           time_approval_commercial_loan_4years == "31 to 60 days" ~ 2,
-           time_approval_commercial_loan_4years == "60 to 90 days" ~ 2,
-           time_approval_commercial_loan_4years == "91 days plus" ~ 1, 
+           time_approval_commercial_loan_4years == "1 day /same day service" ~ 1,
+           time_approval_commercial_loan_4years == "2 to 3 days" ~ 1,
+           time_approval_commercial_loan_4years == "4 to 6 days" ~ 1,
+           time_approval_commercial_loan_4years == "7 to 10 days" ~ 1,
+           time_approval_commercial_loan_4years == "11 to 30 days" ~ 1,
+           time_approval_commercial_loan_4years == "31 to 60 days" ~ 0,
+           time_approval_commercial_loan_4years == "60 to 90 days" ~ 0,
+           time_approval_commercial_loan_4years == "91 days plus" ~ 0, 
            TRUE ~ as.double(0)
          ))%>%
-  filter(time_approval != 0) %>%
   group_by(across(all_of(level))) %>%
-  summarise(time_approval_4years_full = mean(time_approval),
+  summarise(time_approval_4years_full = sum(time_approval, na.rm = T),
             not_answered_time_4years = sum(not_answered),
             responses_time_4years = n()) %>%
-  mutate(time_approval_4years = time_approval_4years_full / 5)
+  mutate(time_approval_4years = time_approval_4years_full / (responses_time_4years - not_answered_time_4years))
 
 # combine
 time_approval_commercial = time_12months %>%
@@ -314,21 +310,21 @@ other_financial %>%
 
 ### time approval for loan over last 5 years
 
-- time_approval_loan == "1 day /same day service" ~ 5,
+- time_approval_loan == "1 day /same day service" ~ 1,
 
-- time_approval_loan == "2 to 3 days" ~ 5,
+- time_approval_loan == "2 to 3 days" ~ 1,
 
-- time_approval_loan == "4 to 6 days" ~ 5,
+- time_approval_loan == "4 to 6 days" ~ 1,
 
-- time_approval_loan == "7 to 10 days" ~ 4,
+- time_approval_loan == "7 to 10 days" ~ 1,
 
-- time_approval_loan == "11 to 30 days" ~ 3,
+- time_approval_loan == "11 to 30 days" ~ 1,
 
-- time_approval_loan == "31 to 60 days" ~ 2,
+- time_approval_loan == "31 to 60 days" ~ 0,
 
-- time_approval_loan == "60 to 90 days" ~ 2,
+- time_approval_loan == "60 to 90 days" ~ 0,
 
-- time_approval_loan == "91 days plus" ~ 1
+- time_approval_loan == "91 days plus" ~ 0
 
 Averaged for 12 months and previous 4 years
 
@@ -362,23 +358,22 @@ time_approval_other = data %>%
            ),
          not_answered = ifelse(formal_loan_other == 0 & informal_loan_other == 0, 1, 0),
          time_approval = case_when(
-           time_approval_loan_other_5years == "1 day /same day service" ~ 5,
-           time_approval_loan_other_5years == "2 to 3 days" ~ 5,
-           time_approval_loan_other_5years == "4 to 6 days" ~ 5,
-           time_approval_loan_other_5years == "7 to 10 days" ~ 4,
-           time_approval_loan_other_5years == "11 to 30 days" ~ 3,
-           time_approval_loan_other_5years == "31 to 60 days" ~ 2,
-           time_approval_loan_other_5years == "60 to 90 days" ~ 2,
-           time_approval_loan_other_5years == "91 days plus" ~ 1, 
+           time_approval_loan_other_5years == "1 day /same day service" ~ 1,
+           time_approval_loan_other_5years == "2 to 3 days" ~ 1,
+           time_approval_loan_other_5years == "4 to 6 days" ~ 1,
+           time_approval_loan_other_5years == "7 to 10 days" ~ 1,
+           time_approval_loan_other_5years == "11 to 30 days" ~ 1,
+           time_approval_loan_other_5years == "31 to 60 days" ~ 0,
+           time_approval_loan_other_5years == "60 to 90 days" ~ 0,
+           time_approval_loan_other_5years == "91 days plus" ~ 0, 
            TRUE ~ as.double(0))
          ) %>%
   filter(not_answered == 0) %>%
-  filter(time_approval != 0) %>%
   group_by(across(all_of(level))) %>%
-  summarise(time_approval_loan_other_5years = mean(time_approval),
+  summarise(time_approval_loan_other_5years = sum(time_approval, na.rm = T),
             not_answered_time_other = sum(not_answered),
             responses = n()) %>%
-  mutate(time_approval_other_value = time_approval_loan_other_5years / 5) 
+  mutate(time_approval_other_value = time_approval_loan_other_5years / (responses - not_answered_time_other)) 
 
 time_approval_other %>%
   bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
@@ -584,17 +579,19 @@ mm_account %>%
 
 ### time open account
 
-- time_open_mobile_money_account == "1 day /same day service" ~ 5,
+MSMEs able to open a business mobile money account on the same day
 
-- time_open_mobile_money_account == "2 to 3 days" ~ 5,
+- time_open_mobile_money_account == "1 day /same day service" ~ 1,
 
-- time_open_mobile_money_account == "4 to 6 days" ~ 4,
+- time_open_mobile_money_account == "2 to 3 days" ~ 0,
 
-- time_open_mobile_money_account == "7 to 10 days" ~ 3,
+- time_open_mobile_money_account == "4 to 6 days" ~ 0,
 
-- time_open_mobile_money_account == "11 to 30 days" ~ 2,
+- time_open_mobile_money_account == "7 to 10 days" ~ 0,
 
-- time_open_mobile_money_account == "31 days plus" ~ 1,
+- time_open_mobile_money_account == "11 to 30 days" ~ 0,
+
+- time_open_mobile_money_account == "31 days plus" ~ 0,
 
 ```{r echo=FALSE}
 time_open_mm = data %>%
@@ -602,42 +599,21 @@ time_open_mm = data %>%
          mobile_money_account, time_open_mobile_money_account) %>%
   filter(mobile_money_account == "Yes") %>%
   mutate(time_open = case_when(
-    time_open_mobile_money_account == "1 day /same day service" ~ 5,
-    time_open_mobile_money_account == "2 to 3 days" ~ 5,
-    time_open_mobile_money_account == "4 to 6 days" ~ 4,
-    time_open_mobile_money_account == "7 to 10 days" ~ 3,
-    time_open_mobile_money_account == "11 to 30 days" ~ 2,
-    time_open_mobile_money_account == "31 days plus" ~ 1,
-    TRUE ~ as.double(0)
-  )) %>%
-  filter(time_open != 0) %>%
+    time_open_mobile_money_account == "1 day /same day service" ~ 1,
+    time_open_mobile_money_account == "2 to 3 days" ~ 0,
+    time_open_mobile_money_account == "4 to 6 days" ~ 0,
+    time_open_mobile_money_account == "7 to 10 days" ~ 0,
+    time_open_mobile_money_account == "11 to 30 days" ~ 0,
+    time_open_mobile_money_account == "31 days plus" ~ 0,
+    TRUE ~ as.double(0)),
+  not_answer_time_MM = ifelse(time_open_mobile_money_account == "", 1, 0)) %>%
   group_by(across(all_of(level))) %>%
   summarise(resposnes = n(),
-            time_open_mm_value = mean(time_open) / 5) 
+            not_answered = sum(not_answer_time_MM),
+            time_open_mm = sum(time_open, na.rm = T),
+            time_open_mm_value = time_open_mm / (resposnes - not_answered)) 
 
 time_open_mm %>%
-  bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
-  kable() %>%
-  kable_styling()
-```
-
-### insuracnce awareness
-
-Proportion aware of insurance products offered on mobile money account... for those who have a mobile money account
-
-```{r echo=FALSE}
-insurance_mm = data %>%
-  select(all_of(level),
-         mobile_money_account, insurance_mobile_awareness, insurance_mobile_awareness_logic) %>%
-  filter(mobile_money_account == "Yes") %>%
-  mutate(not_answered = ifelse(insurance_mobile_awareness == "", 1, 0)) %>%
-  group_by(across(all_of(level))) %>%
-  summarise(insurance_mobile_awareness = sum(insurance_mobile_awareness_logic),
-            responses = n(),
-            not_answered_mobile_insurance_aware = sum(not_answered)) %>%
-  mutate(insurance_mm_value = insurance_mobile_awareness / (responses - not_answered_mobile_insurance_aware)) 
-
-insurance_mm %>%
   bind_rows(summarise_all(., ~if(is.numeric(.)) sum(.) else "total")) %>%
   kable() %>%
   kable_styling()
@@ -716,7 +692,6 @@ availability_critera = data %>%
   full_join(y = (pension %>% select(all_of(level), pension_value)), by = all_of(level)) %>%
   full_join(y = (mm_account %>% select(all_of(level), mm_account_value)), by = all_of(level)) %>%
   full_join(y = (time_open_mm %>% select(all_of(level), time_open_mm_value)), by = all_of(level)) %>%
-  full_join(y = (insurance_mm %>% select(all_of(level), insurance_mm_value)), by = all_of(level)) %>%
   full_join(y = (savings_facility %>% select(all_of(level), savings_facility_value)), by = all_of(level)) %>%
   full_join(y = (advice_sources %>% select(all_of(level), advice_sources_value)), by = all_of(level)) %>%
   select(all_of(level), n, all_of(criteria)) %>%
@@ -735,6 +710,6 @@ availability_critera %>%
 ```
 
 ```{r}
-write.csv(availability_critera, file = "~/SIVIOgit/availability_criteria.csv")
+write.csv(availability_critera, file = "~/SIVIOgit/FI_index/availability_criteria.csv")
 ```
 
