@@ -1,0 +1,532 @@
+---
+title: "cleaning"
+author: "Beks"
+date: "10/14/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+```
+
+This Rmarkdown includes the code that was used to clean the data.
+
+This involved fixing codes and enumerator names: 
+
+- I chose to do this tidy up in code rather than in survey monkey so that there a record of the changes that were made and why. 
+
+A main portion of the code renames every column as Survey Monkey provides the condensed version of worded questions and chose to do it in code so that it was automatic.
+
+A couple columns were added to help in counting of pre-decided variables.
+
+And then collapse the other columns.... this is still a debated stage as this interferes with grouping
+
+**The most important section is the classification of enterprises by size**
+
+This uses the ministry's classification by sub sector and then using a point system to assign sizes to those that do not meet the sub sector specifics.
+
+
+
+```{r}
+read_completedata = read.csv(file = '~/SIVIOgit/12_11_2021_complete.csv',
+                          header = T, sep = ',')
+```
+
+```{r}
+survey_completedata = read_completedata %>%
+  select(-c(Email.Address, First.Name, Last.Name, Custom.Data.1, Collector.ID, Start.Date, End.Date, IP.Address)) %>%
+  
+  # give each question, referable variable names
+  rename(enumerator_name = Enumerator.name,
+         code = Business.code.allocated.by.enumerator,
+         
+         # section on business characteristics
+         gender_owner = Gender.of.business.owner,
+         age_owner = Age.of.business.owner,
+         occupation_respondent = Occupation.of.respondent, #                                                                                                  X               handled
+         education_owner = What.is.the.highest.level.of.education.achieved.by.the.business.owner., #                                                          X.1             handled
+         province = What.province.is.your.business.located.,
+         urbanrural = Does.your.business.operate.in.a.rural.or.urban.area.,
+         industry = Please.indicate.the.industry.in.which.you.operate., #                                                                                     X.2 : X.20      clean table 
+         year_established = What.year.were.you.established.,
+         year_commence = What.year.did.you.commence.operations.,
+         full_time = Are.you.engaged.in.the.business.on.a.full.time.basis.,
+         other_commitments = What.else.do.you.do., #                                                                                                          X.21 : X.23     ?????   (other commitments)
+         time_commitment = How.much.time.do.you.commit.to.your.business.per.week.,
+         main_objective = What.was.your.main.objective.in.starting.your.business., #                                                                          X.24            handled
+         funds_start = What.were.the.sources.of.funds.used.to.start.the.business., #                                                                          X.25 : X.37     clean table
+         govt_asstance_program = Please.provide.the.name.of.the.government.assistance.program., 
+         amount_start = How.much.did.you.need.to.start.your.business.Specify.the.amount.in.USD.equivalent..rounded.figure.,
+         annual_turnover = What.is.your.Annual.Turnover..Specify.the.amount.in.USD.equivalent.rounded.figure.,
+         gross_assets = What.is.the.Gross.Value.of.business.Assets..Excluding.Immovable.Assets..Specify.the.amount.in.USD.equivalent.rounded.figure.,
+         products_services = What.Products.services.does.the.business.offer,
+         export = Does.this.company.produce.goods.for.export.,
+         num_employees = How.many.employees.does.your.business.have..in.figures., 
+         import = Does.this.company.import.materials.for.your.business.,
+         opportunities = What.are.the.opportunities.for.business.growth.,
+         pressing_problems = What.are.currently.the.most.pressing.problems.your.business.is.facing., #                                                        X.38 : X.44     ?????   (pressing problems)
+         funds_ongoing = Where.do.you.generally.get.funds.for.ongoing.business.operations., #                                                                 X.45 : X.58     clean table
+         
+         # section on registration
+         registered = Is.your.business.registered.,
+         registration = How.is.it.registered., #                                                                                                              X.59          handled
+         reason_not_registered = Why.is.your.business.not.registered., #                                                                                      X.60          handled
+         zimra_registration = Which.of.the.following.ZIMRA.registrations.is.your.business.registered.with.,
+         reason_not_zimra = Why.is.your.business.not.registered.with.a.ZIMRA.registration., #                                                                 X.61          handled
+         
+         # section on banking services
+         bank_account = Does.your.business.have.a.bank.account.in.its.name.,
+         reason_no_bank_account = Why.does.your.business.not.have.an.account., #                                                                              X.62          handled
+         time_open_bank_account = X..If.yes..how.long.did.it.take.to.open.the.account.,
+         time_held_bank_account = How.long.has.the.enterprise.held.an.account.,
+         frequency_bank_account = How.frequently.do.you.use.this.account.,
+         restrictions_bank_account = Do.you.experience.any.restrictions.from.opening.and..or.using.a.bank.account.,
+         barriers_use_bank_account = What.were.some.of.the.restrictions.in.the.regular.use.of.your.account., #                                                X.63          handled
+         bank_account_type = What.are.the.types.of.accounts.held.by.your.business., #                                                                         X.64 : X.68   ????     (bank account types)
+         single_bank = Are.these.accounts.held.at.more.than.one.bank.,
+         number_banks = How.many.banks.does.your.business.have.an.account.with., # If single_bank = yes then number_banks = 1... change to be made
+         bank_services = What.services.do.you.get.from.your.bank., #                                                                                          X.69 : X.78   ????      (bank services)
+         foreign_currency = Does.your.business.need.regular.access.to.foreign.currency.for.imports.,
+         sme_foreign_exchange_auction = Are.you.registered.on.the.SME..Foreign.ExchangeAuction.,
+         reason_not_sme_auction = Why.are.you.not.registered.on.the.SME.Foreign.Exchange.Auction., #                                                          X.79          handled
+         successful_bids = Have.you.made.any.successful.bids.on.the.foreign.currency.auction.,
+         
+         # section on loans
+         commercial_loan_application = Has.your.business.applied.for.a.loan.from.the.bank.in.the.past.,
+         reason_not_apply_commercial_loan = Why.have.you.not.applied.for.a.commercial.loan., #                                                                X.80          handled
+         number_commercial_loan_applications_12months = How.many.times.did.you.apply.for.a.commercial.loan.in.the.past.12.months...July.2020.to.June.2021.,
+         success_commercial_loan_application_12months = Were.you.successful.in.your.application.for.a.commercial.loan.in.the.last.12.months.,
+         time_approval_commercial_loan_12months = How.long.did.it.take.to.get.approval.for.the.loan.,
+         amount_commercial_loan_12months_USD_loan1 = How.much.was.it.for...Equivalent.in.US....Enter.a.whole.number,
+         amount_commercial_loan_12months_USD_loan2 = X.81, #                                                                                                  X.81          handled
+         amount_commercial_loan_12months_USD_loan3 = X.82, #                                                                                                  X.82          handled
+         service_commercial_loan_12months = Have.you.managed.to.successfully.service.the.loan,
+         purpose_commercial_loan_12months = What.was.the.purpose.of.the.loan., #                                                                              X.83          handled
+         collateral_commercial_loan_12months = Did.you.have.to.provide.collateral.for.the.loan.you.applied.for.in.the.past.12.months..July.2020.to.June.2021.,
+         collateral_specific_commercial_loan_12months = What.was.the.collateral.,
+         interest_rate_commercial_loan_12months = What.was.the.interest.rate..Enter.the.loan.value.in.figures.only.ie.do.not.write.the...sign.,
+         payback_commercial_loan_12months_months = What.was.the.payback.period...specify.the.period.in.months.ie..write.answer.in.figures.only.,
+         
+         number_commercial_loan_applications_4years = How.many.times.has.your.business.applied.for.a.commercial.loan.in.the.previous.4.years....July.2016.to.Jun.2020..,
+         success_commercial_loan_application_4years = Were.you.successful.,
+         time_approval_commercial_loan_4years = How.long.was.the.approval.period.,
+         amount_commercial_loan_4years_USD_loan1 = How.much.was.it.for..Equivalent.in.US...Enter.a.whole.number,
+         amount_commercial_loan_4years_USD_loan2 = X.84, #                                                                                                    X.84          handled
+         amount_commercial_loan_4years_USD_loan3 = X.85, #                                                                                                    X.85          handled
+         service_commercial_loan_4years = Have.you.managed.to.successfully.service.the.loan.,
+         purpose_commercial_loan_4years = What.was.the.purpose.of.the.loan..1, #                                                                              X.86          handled
+         collateral_commercial_loan_4years = Did.you.have.to.provide.collateral.for.the.loan.you.applied.for.in.the.previous.4.years..July.2016.to.Jun.2020..,
+         collateral_specific_commercial_loan_4years = What.was.the.collateral..1,
+         interest_rate_commercial_loan_4years = What.was.the.interest.rate...Enter.the.loan.value.in.figures.only.ie.do.not.write.the....sign., 
+         payback_commercial_loan_4years_months = What.was.the.payback.period...specify.the.period.in.months..Write.in.figures.only,
+         
+         reason_rejected_commercial_loan_12months = What.were.the.reasons.for.rejection., #                                                                   X.87          handled
+         denied_commercial_loan_5years = How.many.times.has.your.business.been.denied.for.a.commercial.loan.in.the.past.5.years..July.2016.to.Jun.2021..,
+         
+         # loans that are not commercial loans
+         other_finance_institutions = Outside.of.your.main.bank..do.you.have.a.relationship.with.other.financial.service.providers..such.as.microfinance.institutions..order.finance.companies..rotating.and.savings.groups..loan.sharks..chimbadzo..etc..,
+         services_other_financial_institutions = What.services.do.you.get.from.other.financial.service.providers., #                                          X.88 : X.96   ????        (financial services)
+         loan_other_5years = From.the.following..where.have.you.received.a.loan.from.in.the.past.5.years., #                                                  X.97 : X.108  ????        (loan other 5 years)
+         service_loan_other_5years = Have.you.managed.to.successfully.service.the.loan..1,
+         purpose_loan_other_5years = What.was.the.purpose.of.the.loan..2, #                                                                                   X.109         handled
+         time_approval_loan_other_5years = How.long.was.the.approval.period..1,
+         amount_loan_other_5years = How.much.was.it.for..Enter.amount.in.rounded.figures.only.,
+         collateral_loan_other_5years = Did.you.have.to.provide.collateral.for.the.loan.you.applied.for.from.the.above.institutions.,
+         collateral_specific_loan_other_5years = What.was.the.collateral..2,
+         interest_rate_loan_other_5years = What.was.the.interest.rate..Enter.the.loan.value.in.figures.only.ie.do.not.write.the...sign..1,
+         payback_loan_other_5years = What.was.the.payback.period..specify.the.period.in.months..Write.in.figures.only,
+         
+         # section on insurance
+         insurance_business_products = Does.the.organisation.have.access.to.business.insurance.products.,
+         insurance_12months = List.the.broad.categories.of.insurance.you.have.accessed.in.the.last.12.months...July.2020.to.June.2021., #                     X.110 : X.115   ???       (insurance 12 months)
+         insurance_4years = List.the.broad.categories.of.insurance.you.have.accessed.in.the.previous.4.years...July.2016.to.June.2020., #                     X.116 : X.121   ???       (insurance 4 years)
+         access_insurance = How.do.you.access.these.business.insurance.products., #                                                                           X.122 : X.125   ???       (access insurance)
+         reason_no_insurance_products_services = Why.does.your.business.not.have.insurance.products.and.services., #                                          X.126           handled
+         
+         # section on pensions
+         pension_policy = Does.the.organization.have.a.pensions.policy.for.its.workers.,
+         pension_org_contribution = How.much.does.the.company.contribute.in.terms.of.pensions.products.for.employees.,
+         reason_no_pension_policy = What.is.the.reason.for.not.having.a.pensions.policy.,
+         
+         # section on mobile money
+         mobile_money_account = Does.your.business.have.a.mobile.money.account.,
+         reason_no_mobile_money_account = Why.does.your.business.not.have.a.mobile.money.account., #                                                          X.127           handled
+         mobile_money_services = Which.mobile.money.services.do.you.use.for.your.business., #                                                                 X.128 : X.135   ???       (mm services)
+         frequency_mobile_money = How.frequently.do.you.use.these.,
+         time_open_mobile_money_account = How.long.did.it.take.to.open.a.mobile.money.account.for.your.business.,
+         restrictions_use_mobile_money = Do.you.experience.any.restrictions.when.conducting.mobile.transactions.,
+         barriers_use_mobile_money = What.are.the.barriers., #                                                                                                X.136 : X.142   ???       (barriers mm)
+         loan_mobile_platform = Have.you.ever.been.able.to.access.a.loan.from.your.mobile.service.provider.to.use.in.business.operations.,
+         insurance_mobile_awareness = Are.you.aware.of.insurance.products.for.businesses.provided.via.mobile.phone.platforms.,
+         insurance_products_mobile = Which.ones.are.you.aware.of.,
+         
+         # section on savings
+         savings_facility_access = Do.you.have.access.to.savings.facilities.,
+         saving_facilities = Which.facilities.do.you.use.for.short..and.long.term.saving., #                                                                  X.143 : X.148   ???       (saving facilities)
+         investments = Do.you.have.any.investments.for.or.on.behalf.of.your.business..,
+         investment_types = What.type.of.investments., #                                                                                                      X.149 : X.155   ???       (investment_types)
+         reason_no_investments = Why.not., #                                                                                                             X.156           handled
+         
+         # section on knowledge
+         business_advice = Where.do.you.get.advice.on.your.business.finances..savings..and.investment.options.,
+         knowledge_mobile_money_services = How.would.you.rate.your.knowledge.on.the.following.products.and.services.in.Zimbabwe.,
+         knowledge_investements_capital_markets = X.157, #                                                                                                    X.157           handled
+         knowledge_business_insurance_products = X.158, #                                                                                                     X.158           handled
+         knowledge_pension_products = X.159, #                                                                                                                X.159           handled
+         knowledge_loans_credit_commercial_banks = X.160, #                                                                                                   X.160           handled
+         knowledge_loans_credit_microfinance = X.161, #                                                                                                       X.161           handled
+         knowledge_loans_credit_roscas_isals = X.162, #                                                                                                       X.162           handled
+         knowledge_banking_services = X.163, #                                                                                                                X.163           handled
+         knowledge_taxation_regulations = X.164, #                                                                                                            X.164           handled
+  ) %>%
+  
+  # remove row with question type
+  filter(row_number() != 1) %>%
+  
+  # standardize code by removing spaces and dashes
+  mutate(standardcode = gsub(" ", "", code, fixed = T),
+         standardcode = gsub("_", "", standardcode, fixed = T),
+         standardcode = gsub("-", "", standardcode, fixed = T),
+         standardcode = gsub("^", "", standardcode, fixed = T),
+         standardcode = gsub("/", "", standardcode, fixed = T),
+         standardcode = tolower(standardcode),
+         standardcode = case_when(
+           Respondent.ID == 13039090570 ~ "hreu08",
+           Respondent.ID == 13036234152 ~ "mseu10",
+           Respondent.ID == 13036195924 ~ "mseu9",
+           Respondent.ID == 13035666590 ~ "mscu6",
+           Respondent.ID == 13024873736 ~ "mser3",
+           Respondent.ID == 13024805286 ~ 'mser2',
+           Respondent.ID == 13020180931 ~ "mtnr7",
+           Respondent.ID == 13019491698 ~ "bulu1",
+           Respondent.ID == 13045234860 ~ "bulu4",
+           Respondent.ID == 13044904226 ~ "bulu3",
+           Respondent.ID == 13044858079 ~ "bulu2",
+           Respondent.ID == 13043585864 ~ "mscr02",
+           Respondent.ID == 13041896522 ~ "mtsr1",
+           Respondent.ID == 13039295268 ~ "mscu04",
+           Respondent.ID == 13049340599 ~ "bulu4",
+           Respondent.ID == 13049008239 ~ "bulu3",
+           Respondent.ID == 13046729483 ~ "hreu55",
+           Respondent.ID == 13053147439 ~ "mtsr92",
+           Respondent.ID == 13052574715 ~ "mtnu122",
+           Respondent.ID == 13056182298 ~ "masr96",
+           Respondent.ID == 13055048930 ~ "mseu80",
+           Respondent.ID == 13054999730 ~ "mseu93",
+           Respondent.ID == 13054976105 ~ "mtsr21",
+           Respondent.ID == 13054893927 ~ "mtsr21",
+           Respondent.ID == 13059879145 ~ "mswr62",
+           Respondent.ID == 13070678779 ~ "bulu9",
+           Respondent.ID == 13070628515 ~ "bulu8",
+           Respondent.ID == 13076633674 ~ "bulu11",
+           Respondent.ID == 13073572094 ~ "bulu10",
+           Respondent.ID == 13081785998 ~ "bulu136",
+           Respondent.ID == 13081744994 ~ "bulu134",
+           Respondent.ID == 13081745761 ~ "bulu135",
+           Respondent.ID == 13081695141 ~ "bulu133",
+           Respondent.ID == 13081694679 ~ "bulu132",
+           Respondent.ID == 13081627803 ~ "bulu131",
+           Respondent.ID == 13081627894 ~ "bulu130",
+           Respondent.ID == 13081478375 ~ "bulu129",
+           Respondent.ID == 13081431622 ~ "bulu128",
+           Respondent.ID == 13081032478 ~ "bulu126",
+           Respondent.ID == 13081032462 ~ "bulu127",
+           Respondent.ID == 13080987011 ~ "bulu125",
+           Respondent.ID == 13080986583 ~ "bulu124",
+           Respondent.ID == 13080929176 ~ "bulu122",
+           Respondent.ID == 13080930810 ~ "bulu123",
+           Respondent.ID == 13080890888 ~ "bulu121",
+           Respondent.ID == 13080890046 ~ "bulu120",
+           Respondent.ID == 13080863968 ~ "bulu119",
+           Respondent.ID == 13080847211 ~ "bulu118",
+           Respondent.ID == 13080775517 ~ "bulu117",
+           Respondent.ID == 13080775635 ~ "bulu116",
+           Respondent.ID == 13080726552 ~ "bulu11636",
+           Respondent.ID == 13080724412 ~ "bulu13",
+           Respondent.ID == 13092924509 ~ "manu133",
+           Respondent.ID == 13093524221 ~ "manu125",
+           Respondent.ID == 13102432931 ~ "bulu46",
+           Respondent.ID == 13110394679 ~ "masu147",
+           TRUE ~ as.character(standardcode),
+          ),
+         
+         # standardize enumerator names
+         enumerator_name = trimws(enumerator_name),
+         enumerator_name = tolower(enumerator_name),
+         enumerator_name = case_when(
+           Respondent.ID == 13054976105 ~ "siduduzile masilela",
+           Respondent.ID == 13054893927 ~ "siduduzile masilela",
+           Respondent.ID == 13059879145 ~ "augustine jeke",
+           TRUE ~ as.character(enumerator_name),
+         ),
+         short_name = word(enumerator_name, 1),
+         short_name = case_when(
+           short_name == "annahmaphosa" ~ "anna",
+           short_name == "cecelia" ~ "cecilia",
+           short_name == "jeke" ~ "augustine",
+           short_name == "tshuma" ~ "mduduzi",
+           short_name == "rutend" ~ "rutendo",
+           short_name == "sidudizile" ~ "siduduzile",
+           short_name == "siiduduzile" ~ "siduduzile",
+           short_name == "siduduze" ~ "siduduzile",
+           short_name == "enumerator" ~ "catherine",
+           short_name == "ndlovu" ~ "chipo",
+           short_name == "annah" ~ "anna",
+           short_name == "ceicilia" ~ "cecilia",
+           short_name == "bul_u_56t056" ~ "lungile",
+           short_name == "lumgile" ~ "lungile",
+           TRUE ~ as.character(short_name)
+           ),
+         
+         # logic for counting purposes
+         urban = ifelse(urbanrural=="Urban", 1, 0),
+         rural = ifelse(urbanrural=="Rural", 1, 0),
+         primary = ifelse(education_owner == "Primary", 1, 0),
+         secondary = ifelse(education_owner == "Secondary O Level" | education_owner == "Secondary A Level", 1, 0),
+         tertiary = ifelse(education_owner == "First Degree" | education_owner == "Masters" | education_owner == "PHD", 1, 0),
+         vocational = ifelse(education_owner == "Vocational Training" | education_owner == "Diploma", 1, 0),
+         female_owner = ifelse(gender_owner == "Female", 1, 0),
+         male_owner = ifelse(gender_owner == "Male", 1, 0),
+         registration_logic = ifelse(registered == "Yes", 1, 0),
+         zimra_register_logic = ifelse(zimra_registration != "" & zimra_registration != "None of the above", 1, 0),
+         bank_account_logic = ifelse(bank_account == "Yes", 1, 0),
+         mobile_account_logic = ifelse(mobile_money_account == "Yes", 1, 0),
+         insurance_logic = ifelse(insurance_business_products == "Yes", 1, 0),
+         pension_logic = ifelse(pension_policy == "Yes", 1, 0),
+         savings_logic = ifelse(savings_facility_access == "Yes", 1, 0),
+         sme_auction_logic = ifelse(sme_foreign_exchange_auction == "Yes", 1, 0),
+         foreign_currency_logic = ifelse(foreign_currency == "Yes", 1, 0),
+         commercial_loan_application_past_logic = ifelse(commercial_loan_application == "Yes", 1, 0),
+         collateral_commercial_loan_12months_logic = ifelse(collateral_commercial_loan_12months == "No", 1, 0),
+         collateral_commercial_loan_4years_logic = ifelse(collateral_commercial_loan_4years == "No", 1, 0),
+         collateral_loan_other_5years_logic = ifelse(collateral_loan_other_5years == "No", 1, 0),
+         other_finance_institutions_logic = ifelse(other_finance_institutions == "Yes", 1, 0),
+         insurance_mobile_awareness_logic = ifelse(insurance_mobile_awareness == "Yes", 1, 0),
+         investments_logic = ifelse(investments == "Yes", 1, 0),
+         loan_MM_logic = ifelse(loan_mobile_platform == "Yes", 1, 0),
+         
+         # set type of columns when no data
+         year_commence = as.numeric(year_commence),
+         year_established = as.numeric(year_established),
+         X.27 = as.character(X.27),
+         X.49 = as.character(X.49),
+         
+         # age of business from when it commenced
+         age_business = 2021 - year_commence,
+         time_btwn_establish_commence = year_established - year_commence,
+         
+         # add conditions to classify micro/small/medium size of enterprises
+         num_employees = as.numeric(num_employees),
+         gross_assets = as.numeric(gross_assets),
+         annual_turnover = as.numeric(annual_turnover),
+         
+         # industry specifics outlined in the handbook
+         # step 1: sub sector specific maximum limits
+         enterprise = case_when(
+           # agriculture
+           industry != "" ~ ifelse(num_employees <= 5 & 
+                                     gross_assets <= 10000 & 
+                                     annual_turnover <= 30000, 
+                                   "micro", 
+                                   ifelse(num_employees <= 30 & num_employees > 5 &
+                                            gross_assets <= 250000 & gross_assets > 10000 &
+                                            annual_turnover <= 500000 & annual_turnover > 30000, 
+                                          "small",
+                                          ifelse(num_employees <= 75 & num_employees > 30 &
+                                                   gross_assets <= 500000 & gross_assets > 250000 &
+                                                   annual_turnover <= 1000000 & annual_turnover > 500000, 
+                                                 "medium",
+                                                 "other"))),
+           #arts, education
+           X.16 != "" | X.19 != "" ~ ifelse(num_employees <= 5 & 
+                                              gross_assets <= 10000 & 
+                                              annual_turnover <= 30000, 
+                                            "micro", 
+                                            ifelse(num_employees <= 30 & num_employees > 5 &
+                                                     gross_assets <= 250000 & gross_assets > 10000 &
+                                                     annual_turnover <= 500000 & annual_turnover > 30000, 
+                                                   "small",
+                                                   ifelse(num_employees <= 75 & num_employees > 30 &
+                                                            gross_assets <= 500000 & gross_assets > 250000 &
+                                                            annual_turnover <= 1000000 & annual_turnover > 500000, 
+                                                          "medium",
+                                                          "other"))),
+           # mining and quarrying
+           X.2 != "" ~ ifelse(num_employees <= 5 & 
+                                gross_assets <= 50000 & 
+                                annual_turnover <= 50000, 
+                              "micro", 
+                              ifelse(num_employees <= 40 & num_employees > 5 &
+                                       gross_assets <= 1000000 & gross_assets > 50000 &
+                                       annual_turnover <= 1500000 & annual_turnover > 50000, 
+                                     "small",
+                                     ifelse(num_employees <= 75 & num_employees > 40 &
+                                              gross_assets <= 2000000 & gross_assets > 1000000 &
+                                              annual_turnover <= 3000000 & annual_turnover > 1500000, 
+                                            "medium",
+                                            "other"))),
+           # manufacturing
+           X.6 != "" ~ ifelse(num_employees <= 5 & 
+                                gross_assets <= 10000 & 
+                                annual_turnover <= 30000, 
+                              "micro", 
+                              ifelse(num_employees <= 40 & num_employees > 5 &
+                                       gross_assets <= 500000 & gross_assets > 10000 &
+                                       annual_turnover <= 500000 & annual_turnover > 30000, 
+                                     "small",
+                                     ifelse(num_employees <= 75 & num_employees > 40 &
+                                              gross_assets <= 1000000 & gross_assets > 500000 &
+                                              annual_turnover <= 1000000 & annual_turnover > 500000, 
+                                            "medium",
+                                            "other"))),
+           # construction and energy (maximum allowance) 
+           X.9 != "" ~ ifelse(num_employees <= 5 & 
+                                gross_assets <= 10000 & 
+                                annual_turnover <= 50000, 
+                              "micro", 
+                              ifelse(num_employees <= 40 & num_employees > 5 &
+                                       gross_assets <= 1000000 & gross_assets > 10000 &
+                                       annual_turnover <= 1000000 & annual_turnover > 50000, 
+                                     "small",
+                                     ifelse(num_employees <= 75 & num_employees > 40 &
+                                              gross_assets <= 2000000 & gross_assets > 1000000 &
+                                              annual_turnover <= 2000000 & annual_turnover > 1000000, 
+                                            "medium",
+                                            "other"))),
+           # financial services
+           X.18 != "" ~ ifelse(num_employees <= 5 & 
+                                 gross_assets <= 10000 & 
+                                 annual_turnover <= 30000, 
+                               "micro", 
+                               ifelse(num_employees <= 30 & num_employees > 5 &
+                                        gross_assets <= 250000 & gross_assets > 10000 &
+                                        annual_turnover <= 500000 & annual_turnover > 30000, 
+                                      "small",
+                                      ifelse(num_employees <= 75 & num_employees > 30 &
+                                               gross_assets <= 500000 & gross_assets > 250000 &
+                                               annual_turnover <= 1000000 & annual_turnover > 500000, 
+                                             "medium",
+                                             "other"))),
+           TRUE ~ "other",
+         ),
+         
+         # only consider number of employees for enterprise size
+         # enterprise = case_when(
+         #   enterprise == "other" & num_employees <= 5 ~ "micro",
+         #   enterprise == "other" & num_employees <= 30 ~ "small",
+         #   enterprise == "other" & num_employees <= 75 ~ "medium",
+         #   TRUE ~ as.character(enterprise)
+         #     ),
+  ) %>%
+  
+  # use point system to classify enterprises if noted as other above
+  mutate(points = 0,
+         points = case_when(
+           num_employees < 5 ~ points+1,
+           num_employees <= 30 & num_employees >= 5  ~ points+2,
+           num_employees <= 75 & num_employees > 30 ~ points+3,
+           is.na(num_employees) ~ points+1,
+           TRUE ~ points+4
+         ),
+         points = case_when(
+           gross_assets <= 10000 ~ points+1,
+           gross_assets <= 250000 & gross_assets > 10000 ~ points+2,
+           gross_assets <= 500000 & gross_assets > 250000 ~ points+3,
+           is.na(gross_assets) ~ points+1,
+           TRUE ~ points+4
+         ),
+         points = case_when(
+           annual_turnover < 30000 ~ points+1,
+           annual_turnover <= 50000 & annual_turnover >= 30000 ~ points+2,
+           annual_turnover <= 1000000 & annual_turnover > 50000 ~ points+3,
+           is.na(annual_turnover) ~ points+1,
+           TRUE ~ points+4
+         )
+         ) %>%
+  # use points to classify as micro/small/medium
+  mutate(enterprise = case_when(
+    enterprise == "other" & points <= 4 ~ "micro",
+    enterprise == "other" & points <= 7 & points >= 5 ~ "small",
+    enterprise == "other" & points >= 8 ~ "medium",
+    TRUE ~ as.character(enterprise))
+  ) %>%
+  # segment sizes
+  mutate(micro = ifelse(enterprise == "micro", 1, 0),
+         small = ifelse(enterprise == "small", 1, 0),
+         medium = ifelse(enterprise == "medium", 1, 0)) %>%
+  
+  # log that codes are duplicated
+  group_by(standardcode) %>%
+  mutate(entry_same_code = n(),
+         duplicated = ifelse(entry_same_code > 1, "duplicates", "single")) %>%
+  ungroup() %>% 
+  
+  # combine multiple entries
+  # suggestion: make a list of options... then will break apart when analyzing
+  # Option 2: pivot longer then use distinct for 
+  
+  # remove/add OTHER specifications... 
+  # replace other with their answer. Can then work from that column... how to aggregate.
+  mutate(occupation_respondent = ifelse(occupation_respondent == "Other (please specify)", X, occupation_respondent),
+         education_owner = ifelse(education_owner == "Other (please specify)", X.1, education_owner),
+         main_objective = ifelse(main_objective == "Other (please specify)", X.24, main_objective),
+         registration = ifelse(registration == "Other (please specify)", X.59, registration),
+         reason_not_registered = ifelse(reason_not_registered == "Other (please specify)", X.60, reason_not_registered),
+         reason_not_zimra = ifelse(reason_not_zimra == "Other (please specify)", X.61, reason_not_zimra),
+         reason_no_bank_account = ifelse(reason_no_bank_account == "Other (please specify)", X.62, reason_no_bank_account),
+         barriers_use_bank_account = ifelse(barriers_use_bank_account == "Other (please specify)", X.63, barriers_use_bank_account),
+         reason_not_sme_auction = ifelse(reason_not_sme_auction == "Other (please specify)", X.79, reason_not_sme_auction),
+         reason_not_apply_commercial_loan = ifelse(reason_not_apply_commercial_loan == "Other (please specify)", X.80, reason_not_apply_commercial_loan),
+         purpose_commercial_loan_12months = ifelse(purpose_commercial_loan_12months == "Other (please specify)", X.83, purpose_commercial_loan_12months),
+         purpose_commercial_loan_4years = ifelse(purpose_commercial_loan_4years == "Other (please specify)", X.86, purpose_commercial_loan_4years),
+         reason_rejected_commercial_loan_12months = ifelse(reason_rejected_commercial_loan_12months == "Other (please specfiy)", X.87, reason_rejected_commercial_loan_12months),
+         purpose_loan_other_5years = ifelse(purpose_loan_other_5years == "Other (please specify)", X.109, purpose_loan_other_5years),
+         reason_no_insurance_products_services = ifelse(reason_no_insurance_products_services == "Other (please specify)", X.126, reason_no_insurance_products_services),
+         reason_no_mobile_money_account = ifelse(reason_no_mobile_money_account == "Other (please specify)", X.127, reason_no_mobile_money_account),
+         reason_no_investments = ifelse(reason_no_investments == "Other (please specify)", X.156, reason_no_investments)
+         ) %>%
+  # if accounted for remove the other reasons.
+  select(-c(X, X.1, 
+            X.24, 
+            X.59, 
+            X.60, X.61, X.62, X.63,
+            X.79,
+            X.80, X.83, X.86, X.87,
+            X.109,
+            X.126, X.127,
+            X.156
+            )
+         ) %>%
+  
+   # inclusion measures
+  mutate(gender_inclusion = gender_owner, # survey data
+         location_inclusion = urbanrural, # survey data
+         size_inclusion = enterprise, # calculated below reassign other...
+         age_inclusion = ifelse(age_owner == "18 to 25" | age_owner == "26 to 35", "Youth", "35+"),
+         formality_inclusion = ifelse(registered == "Yes" & zimra_registration != "None of the above", "Formal", "Informal"),
+         sector_inclusion = case_when(industry != "" ~ "Agriculture", 
+                                      X.2 != "" ~ "Mining",
+                                      X.3 != "" ~ "Retail",
+                                      X.5 != "" ~ "Vending",
+                                      TRUE ~ as.character("Other")))
+```
+
+```{r}
+provincecodes = c("hre", "bul", "msc", "msw", "mse", "mas", "mtn", "mts", "mid", "man")
+# might have to add blu for bulawayo as common error??
+
+clean_completedata = survey_completedata %>%
+  filter(substr(standardcode, 1, 3) %in% provincecodes,
+         substr(standardcode, 4, 4) %in% c("u", "r")
+         )
+```
+
+
+```{r}
+write.csv(survey_completedata, file = "~/SIVIOgit/survey_FI_2021.csv")
+
+write.csv(clean_completedata, file = "~/SIVIOgit/clean_FI_2021.csv")
+```
+

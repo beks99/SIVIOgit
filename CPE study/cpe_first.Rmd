@@ -7,6 +7,8 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
 ```
 
 Qualifiers
@@ -30,5 +32,13 @@ num_respondents = data %>%
   nrow()
 
 names(data)
+```
+
+```{r}
+data %>% 
+  group_by(Respondent.s.gender, Did.you.vote.in.the.last.general.elections) %>%
+  summarise(n=n()) %>%
+  ggplot(mapping = aes(x = Respondent.s.gender, y = n, fill = Did.you.vote.in.the.last.general.elections, )) +
+  geom_col(position = position_dodge())
 ```
 
