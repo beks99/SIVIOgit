@@ -287,8 +287,8 @@ survey_completedata = read_completedata %>%
          secondary = ifelse(education_owner == "Secondary O Level" | education_owner == "Secondary A Level", 1, 0),
          tertiary = ifelse(education_owner == "First Degree" | education_owner == "Masters" | education_owner == "PHD", 1, 0),
          vocational = ifelse(education_owner == "Vocational Training" | education_owner == "Diploma", 1, 0),
-         female_owner = ifelse(gender_owner == "Female", 1, 0),
-         male_owner = ifelse(gender_owner == "Male", 1, 0),
+         women_owner = ifelse(gender_owner == "Female", 1, 0),
+         men_owner = ifelse(gender_owner == "Male", 1, 0),
          registration_logic = ifelse(registered == "Yes", 1, 0),
          zimra_register_logic = ifelse(zimra_registration != "" & zimra_registration != "None of the above", 1, 0),
          bank_account_logic = ifelse(bank_account == "Yes", 1, 0),
@@ -457,6 +457,19 @@ survey_completedata = read_completedata %>%
          small = ifelse(enterprise == "small", 1, 0),
          medium = ifelse(enterprise == "medium", 1, 0)) %>%
   
+  # update values
+  # female -> women, male -> men
+  mutate(gender_owner = case_when(
+           gender_owner == "Female" ~ "Women",
+           gender_owner == "Male" ~ "Men",
+           TRUE ~ gender_owner),
+         enterprise = case_when(
+           enterprise == "micro" ~ "Micro",
+           enterprise == "small" ~ "Small",
+           enterprise == "medium" ~ "Medium",
+           TRUE ~ enterprise
+         )) %>%
+
   # log that codes are duplicated
   group_by(standardcode) %>%
   mutate(entry_same_code = n(),
